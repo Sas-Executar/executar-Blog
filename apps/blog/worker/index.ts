@@ -2,6 +2,9 @@
  * Borda do blog (ADR-002): valida Turnstile e limite por IP, depois encaminha ao Worker do agente
  * por service binding. Qualquer falha do agente vira 503 sem afetar a leitura do site.
  */
+/** AGENTE é opcional: o binding só entra no wrangler.jsonc depois que o Worker do agente existir. */
+type EnvBlog = Omit<Env, 'AGENTE'> & { AGENTE?: Fetcher };
+
 const SITEVERIFY = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 export async function turnstileValido(token: string, secret: string, ip: string | null): Promise<boolean> {
@@ -20,7 +23,7 @@ export async function turnstileValido(token: string, secret: string, ip: string 
 	}
 }
 
-export async function perguntar(request: Request, env: Env): Promise<Response> {
+export async function perguntar(request: Request, env: EnvBlog): Promise<Response> {
 	if (request.method !== 'POST') return Response.json({ erro: 'use POST' }, { status: 405 });
 	const ip = request.headers.get('CF-Connecting-IP');
 
@@ -37,6 +40,8 @@ export async function perguntar(request: Request, env: Env): Promise<Response> {
 		return Response.json({ erro: 'verificação anti-robô falhou' }, { status: 403 });
 	}
 
+	if (!env.AGENTE) return Response.json({ erro: 'o assistente está indisponível agora' }, { status: 503 });
+
 	try {
 		const res = await env.AGENTE.fetch('https://agente/perguntar', {
 			method: 'POST',
@@ -52,8 +57,8 @@ export async function perguntar(request: Request, env: Env): Promise<Response> {
 }
 
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch(request: Request, env: EnvBlog): Promise<Response> {
 		if (new URL(request.url).pathname === '/api/perguntar') return perguntar(request, env);
 		return env.ASSETS.fetch(request);
 	},
-} satisfies ExportedHandler<Env>;
+} satisfies ExportedHandler<EnvBlog>;

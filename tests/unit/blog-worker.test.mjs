@@ -62,3 +62,10 @@ test('403 (fail closed) quando o Turnstile está fora do ar', async () => {
 	};
 	assert.equal((await worker.fetch(req({ pergunta: 'Como?', token: 't' }), env())).status, 403);
 });
+
+test('503 enquanto o binding AGENTE não existe', async () => {
+	turnstile(true);
+	const { AGENTE, ...semAgente } = env();
+	const res = await worker.fetch(req({ pergunta: 'oi?', token: 't' }), semAgente);
+	assert.equal(res.status, 503);
+});
