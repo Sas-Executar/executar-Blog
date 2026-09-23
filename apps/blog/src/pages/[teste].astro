@@ -1,0 +1,17 @@
+---
+// Páginas de teste só existem quando E2E_FIXTURES=1 (nunca no site publicado).
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import Grafico from '../components/Grafico.astro';
+
+export function getStaticPaths() {
+	return process.env.E2E_FIXTURES ? [{ params: { teste: 'teste-grafico' } }] : [];
+}
+---
+
+<StarlightPage frontmatter={{ title: 'Teste de gráfico', pagefind: false }}>
+	<Grafico
+		titulo="Fixture de teste"
+		resumo="Barras com três valores usados apenas no teste automatizado."
+		opcoes={{ xAxis: { type: 'category', data: ['A', 'B', 'C'] }, yAxis: { type: 'value' }, series: [{ type: 'bar', data: [3, 5, 2] }] }}
+	/>
+</StarlightPage>
