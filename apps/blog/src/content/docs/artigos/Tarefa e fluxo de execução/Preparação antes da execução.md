@@ -9,6 +9,16 @@ description: Preparar o caminho evita decidir durante cada passo. — síntese a
 Preparar o caminho evita decidir durante cada passo. — síntese a partir de W3C COGA
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Preparação antes da execução
+  grupo: Tarefa e fluxo de execução
+  referencia: W3C COGA
+  problema: Pré-condições não verificadas transformam execução em busca e espera
+  controle: "Usar entrada mínima: objetivo, recursos, dependências e pronto para iniciar"
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Preparação antes da execução.\

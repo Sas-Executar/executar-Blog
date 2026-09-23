@@ -6,6 +6,16 @@ description: "Contexto estável reduz decisões repetidas de início. — sínte
 > [!summary] Frase-síntese
 > Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO
 
+```yaml title="fator.yaml"
+fator:
+  termo: Rotina hábitos e contexto
+  grupo: Ambiente e contexto
+  referencia: ISO
+  problema: Ausência de pistas estáveis aumenta preparação e decisão recorrente
+  controle: Definir gatilho, local, sequência curta e condição de encerramento
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Rotina hábitos e contexto.  

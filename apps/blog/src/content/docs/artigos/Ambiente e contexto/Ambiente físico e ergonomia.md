@@ -8,6 +8,16 @@ description: O ambiente deve se ajustar ao trabalho humano. — síntese a parti
 O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Ambiente físico e ergonomia
+  grupo: Ambiente e contexto
+  referencia: ISO
+  problema: Condições físicas e organizacionais acrescentam demanda evitável
+  controle: Ajustar posto, sinais, ruído, iluminação, pausas e circulação ao contexto
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Ambiente físico e ergonomia.\

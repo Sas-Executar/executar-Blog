@@ -8,6 +8,16 @@ description: Tarefa ambígua adia a decisão para a execução. — síntese a p
 Tarefa ambígua adia a decisão para a execução. — síntese a partir de W3C COGA
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Clareza e escrita da tarefa
+  grupo: Tarefa e fluxo de execução
+  referencia: W3C COGA
+  problema: Tarefa vaga não define ação observável nem estado de pronto
+  controle: Registrar verbo, objeto, resultado, contexto e critério de conclusão
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Clareza e escrita da tarefa.\

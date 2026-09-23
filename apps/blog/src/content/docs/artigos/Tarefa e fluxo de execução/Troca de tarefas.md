@@ -9,6 +9,16 @@ description: Trocar rapidamente não significa trocar sem custo. — síntese a
 Trocar rapidamente não significa trocar sem custo. — síntese a partir de Rogers e Monsell
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Troca de tarefas
+  grupo: Tarefa e fluxo de execução
+  referencia: Rogers e Monsell
+  problema: Cada troca pode exigir abandonar e reativar regras e contexto
+  controle: Reduzir trocas evitáveis e registrar um ponto de retomada
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Troca de tarefas.\

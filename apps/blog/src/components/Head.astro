@@ -62,14 +62,65 @@ import Default from '@astrojs/starlight/components/Head.astro';
 		}
 	}
 
-	new MutationObserver(() => void retemarizar()).observe(document.documentElement, {
+	// Diagramas Mermaid (rehype-mermaid, strategy img-svg) saem como <picture> com
+	// <source media="(prefers-color-scheme: dark)">: o navegador escolhe pela preferência do
+	// SISTEMA e ignora o botão claro/escuro. Aqui a media query vira "all"/"not all" conforme o
+	// data-theme escolhido, e o <picture> reavalia a fonte na hora.
+	function sincronizarDiagramas() {
+		const escuro = document.documentElement.dataset.theme === 'dark';
+		document.querySelectorAll<HTMLSourceElement>('picture > source[media*="prefers-color-scheme"], picture > source[data-media-tema]').forEach((s) => {
+			s.dataset.mediaTema ??= s.media;
+			const paraEscuro = s.dataset.mediaTema!.includes('dark');
+			s.media = paraEscuro === escuro ? 'all' : 'not all';
+		});
+	}
+
+	new MutationObserver(() => {
+		sincronizarDiagramas();
+		void retemarizar();
+	}).observe(document.documentElement, {
 		attributes: true,
 		attributeFilter: ['data-theme'],
 	});
 
+	// Ponte do menu mobile: o botão ☰ do Starlight 0.42 abre o menu pela Popover API nativa
+	// (popovertarget="starlight__sidebar"), mas o PageFrame do starlight-theme-obsidian 0.4.1 (última
+	// versão) renderiza o painel sem o atributo `popover` e ainda espera o mecanismo antigo
+	// (aria-expanded). Resultado: no celular o ☰ não abria nada e o botão claro/escuro, que fica
+	// dentro desse menu, ficava inalcançável. Mesmo comportamento do PageFrame padrão do Starlight:
+	// popover só abaixo de 50rem. Remover quando o tema publicar versão compatível.
+	function ponteMenuMobile() {
+		const painel = document.getElementById('starlight__sidebar');
+		if (!painel || painel.dataset.ponteMenu) return;
+		painel.dataset.ponteMenu = 'true';
+		const desktop = matchMedia('(min-width: 50rem)');
+		const ajustar = () => {
+			if (desktop.matches) {
+				if (painel.matches(':popover-open')) painel.hidePopover();
+				painel.removeAttribute('popover');
+			} else {
+				painel.setAttribute('popover', 'auto');
+			}
+		};
+		ajustar();
+		desktop.addEventListener('change', ajustar);
+		// Ao abrir/fechar: liga o atributo que o tema usa para deslizar o painel para dentro
+		// (body[data-mobile-menu-expanded], centered-reading.css) e mantém o foco no menu aberto
+		// (mesmo tratamento do Starlight: conteúdo atrás fica inert).
+		painel.addEventListener('toggle', (e) => {
+			const aberto = (e as ToggleEvent).newState === 'open';
+			document.body.toggleAttribute('data-mobile-menu-expanded', aberto);
+			document.querySelectorAll<HTMLElement>('.main-frame > :not(.mobile-header), .sl-skip-link').forEach((el) => el.toggleAttribute('inert', aberto));
+		});
+	}
+
+	ponteMenuMobile();
+	sincronizarDiagramas();
 	iniciar();
 	document.addEventListener('astro:page-load', () => {
 		graficos.clear();
+		ponteMenuMobile();
+		sincronizarDiagramas();
 		iniciar();
 	});
 </script>

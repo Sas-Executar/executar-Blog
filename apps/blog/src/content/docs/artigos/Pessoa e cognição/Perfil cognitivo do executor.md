@@ -9,6 +9,16 @@ description: O sistema deve apoiar diferenças sem rotular pessoas. — síntese
 O sistema deve apoiar diferenças sem rotular pessoas. — síntese a partir de W3C COGA
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Perfil cognitivo do executor
+  grupo: Pessoa e cognição
+  referencia: W3C COGA
+  problema: Desenho uniforme que ignora variação funcional e contexto
+  controle: Oferecer alternativas de apresentação, ritmo, lembretes e sequência sem diagnosticar
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Perfil cognitivo do executor.\

@@ -16,6 +16,27 @@ for (const tema of ['light', 'dark'] as const) {
 	});
 }
 
+// O botão claro/escuro precisa funcionar no celular (fica dentro do menu ☰) e os diagramas Mermaid
+// precisam seguir o tema escolhido, não o do sistema. Sistema em "dark" de propósito: o botão
+// precisa vencer a preferência do aparelho.
+test('botão claro/escuro no celular: menu abre, tema troca, diagrama acompanha', async ({ browser }) => {
+	const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, colorScheme: 'dark' });
+	const page = await ctx.newPage();
+	await page.goto(ARTIGO);
+	await page.locator('button[popovertarget="starlight__sidebar"]').click();
+	const toggle = page.locator('#starlight__sidebar starlight-obsidian-theme-select button').filter({ visible: true }).first();
+	await expect(toggle).toBeInViewport();
+	const antes = await page.evaluate(() => document.documentElement.dataset.theme);
+	await toggle.click();
+	await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).not.toBe(antes);
+	const depois = await page.evaluate(() => document.documentElement.dataset.theme);
+	const diagrama = page.locator('.markdown-body picture img').first();
+	await expect.poll(() => diagrama.evaluate((img: HTMLImageElement) => img.currentSrc.includes('mermaid-dark'))).toBe(depois === 'dark');
+	await page.reload();
+	expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(depois);
+	await ctx.close();
+});
+
 test('21 artigos publicados sem IDs internos', async ({ page }) => {
 	await page.goto(ARTIGO);
 	const links = await page.locator('.sidebar-content a[href^="/artigos/"]').count();

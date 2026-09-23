@@ -6,6 +6,16 @@ description: "Saber o que fazer não garante lembrar na hora. — síntese a par
 > [!summary] Frase-síntese
 > Saber o que fazer não garante lembrar na hora. — síntese a partir de Gilbert et al.
 
+```yaml title="fator.yaml"
+fator:
+  termo: Memória prospectiva
+  grupo: Pessoa e cognição
+  referencia: Gilbert et al.
+  problema: Intenção futura compete com outras atividades até surgir o gatilho
+  controle: Vincular lembrete ou automação ao evento que torna a ação possível
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Memória prospectiva.  

@@ -6,6 +6,16 @@ description: "Lista completa pode esconder a ordem real do trabalho. — síntes
 > [!summary] Frase-síntese
 > Lista completa pode esconder a ordem real do trabalho. — síntese a partir de ISO
 
+```yaml title="fator.yaml"
+fator:
+  termo: Dependências e cadeia de valor
+  grupo: Tarefa e fluxo de execução
+  referencia: ISO
+  problema: Dependências implícitas geram início prematuro, espera e retrabalho
+  controle: Representar depende de, desbloqueia, bloqueado e pronto para iniciar
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Dependências e cadeia de valor.  

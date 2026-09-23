@@ -6,6 +6,16 @@ description: "Objetivo visível ainda não é próxima ação. — síntese a pa
 > [!summary] Frase-síntese
 > Objetivo visível ainda não é próxima ação. — síntese a partir de W3C WAI
 
+```yaml title="fator.yaml"
+fator:
+  termo: Decomposição de tarefas
+  grupo: Tarefa e fluxo de execução
+  referencia: W3C WAI
+  problema: Objetivos amplos transferem planejamento para o momento de executar
+  controle: Converter objetivo em entrega, etapa, dependência e próxima ação
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Decomposição de tarefas.  

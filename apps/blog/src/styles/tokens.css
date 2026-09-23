@@ -141,6 +141,11 @@ site-search button {
 	display: flex;
 	align-items: center;
 }
+/* Botão claro/escuro: 44×44 pt também na largura (o tema usa 28px). */
+starlight-obsidian-theme-select button {
+	min-width: var(--hit-target);
+	justify-content: center;
+}
 
 /* Painel de gráfico (ADR-007, Grafico.astro). Global (não escopado ao componente) porque o
    mesmo HTML aparece cru nos artigos gerados do vault (.md), fora do compilador do Astro. */
@@ -153,6 +158,50 @@ site-search button {
 .grafico .resumo {
 	color: var(--muted);
 	font-size: 0.9em;
+}
+
+/* Ponte do menu mobile (ver Head.astro, ponteMenuMobile): o painel vira popover abaixo de 50rem.
+   Neutraliza o estilo padrão de popover do navegador (margin/borda/tamanho) e liga a visibilidade
+   que o PageFrame do tema Obsidian controla por --sl-sidebar-visibility. */
+#starlight__sidebar[popover] {
+	margin: 0;
+	border: 0;
+	padding: 0;
+	inset: var(--sl-nav-height) 0 0 0;
+	width: 100%;
+	height: auto;
+	max-width: none;
+	max-height: none;
+	color: inherit;
+}
+#starlight__sidebar:popover-open {
+	--sl-sidebar-visibility: visible;
+}
+/* O ☰ vira ✕ com o menu aberto (o Starlight detecta isso por irmão no DOM, que o tema separou). */
+body[data-mobile-menu-expanded] .sl-menu-button .open-menu {
+	display: none;
+}
+body[data-mobile-menu-expanded] .sl-menu-button .close-menu {
+	display: inline-block;
+}
+
+/* Blocos com <figure> (Expressive Code, painel de gráfico): zera a margem lateral padrão do
+   navegador (40px), que estreitava o bloco em relação à coluna de texto, sobretudo no celular. */
+.markdown-body figure {
+	margin-inline: 0;
+}
+
+/* Expressive Code com wrap (astro.config): o GitHub Markdown CSS (camada mais alta) força
+   white-space: pre no código e desfaz a quebra de linha — o bloco voltava a rolar na horizontal. */
+.markdown-body .expressive-code .ec-line .code {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+/* WCAG 1.4.1: link no meio do texto não pode depender só da cor (no escuro, #409cff vs texto dá 2,6:1). */
+.markdown-body :is(p, li, td) a {
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
 }
 
 /* Layout adaptável: respeita safe areas */

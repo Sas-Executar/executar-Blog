@@ -6,6 +6,16 @@ description: "Controle útil transforma barreira em aprendizado operacional. —
 > [!summary] Frase-síntese
 > Controle útil transforma barreira em aprendizado operacional. — síntese a partir de ISO
 
+```yaml title="fator.yaml"
+fator:
+  termo: Cadeia de desvalor para cadeia de valor
+  grupo: Sistema e arquitetura de suporte
+  referencia: ISO
+  problema: Problema tratado isoladamente não retorna como aprendizagem do sistema
+  controle: Encadear barreira, controle, processo adaptado, evidência e aprendizado
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Cadeia de desvalor para cadeia de valor.  
