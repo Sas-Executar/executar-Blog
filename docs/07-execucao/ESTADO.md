@@ -3,7 +3,7 @@
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
 **Última atualização:** 2026-09-23
-**Estágio atual:** 4 — Implementação
+**Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
 ## Estágios
@@ -14,12 +14,12 @@
 | 1 | System design | engineering:system-design | ✅ concluído | `07-execucao/01-system-design.md` |
 | 2 | ADRs | engineering:architecture | ✅ concluído | `02-adr/ADR-001` (Superseded) … `ADR-009` |
 | 3 | Estratégia de testes | engineering:testing-strategy | ✅ concluído | `04-testes/plano-de-testes.md` |
-| 4 | Implementação | — | 🔄 em andamento | gate 4a resolvido com opção (d) — `07-execucao/04a-spike-shell.md` |
-| 5 | Code review | engineering:code-review + design:accessibility-review + security-guidance | ⬜ pendente | |
-| 6 | Tech debt | engineering:tech-debt | ⬜ pendente | |
-| 7 | Deploy checklist | engineering:deploy-checklist | ⬜ pendente | |
-| 8 | Documentação | engineering:documentation | ⬜ pendente | |
-| 9 | Preview → Produção | — | ⬜ pendente (USER_ACTION_REQUIRED) | |
+| 4 | Implementação | — | ✅ concluído | `npm run check` (0 erros, 21/21 unit, contraste, guard) · `npm run build` · e2e 16/16 · 21 artigos limpos |
+| 5 | Code review | engineering:code-review + design:accessibility-review + security-guidance | ✅ concluído | `07-execucao/05-code-review.md` (0 🔴; 6 achados corrigidos) |
+| 6 | Tech debt | engineering:tech-debt | ✅ concluído | `07-execucao/06-tech-debt.md` |
+| 7 | Deploy checklist | engineering:deploy-checklist | ✅ concluído | `05-deploy/checklist.md` (rollback definido) |
+| 8 | Documentação | engineering:documentation | ✅ concluído | `README.md`, `06-docs/onboarding.md`, `06-docs/runbook.md` |
+| 9 | Preview → Produção | — | ⛔ aguardando usuário | Conta Workers Paid, conexão Workers Builds, secrets (ver pendências) |
 
 Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 
@@ -46,7 +46,8 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 
 ## Bloqueios
 
-(vazio) — gate 4a resolvido: usuário escolheu (d) "Atual, sem grafo" em 2026-09-23.
+- Passo 9 depende de ações exclusivas do usuário (conta/segredos/painel Cloudflare) — ver Pendências.
+- Gate 4a resolvido: usuário escolheu (d) "Atual, sem grafo" em 2026-09-23.
 
 ## Pendências de usuário (passo 9)
 
