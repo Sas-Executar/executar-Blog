@@ -2,7 +2,7 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-23 20:30 UTC
+**Última atualização:** 2026-09-23 21:15 UTC
 **Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
@@ -52,6 +52,7 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
   1. Sessão original: rede da sessão negava (403) qualquer saída a `api.cloudflare.com`. Corrigido depois pelo usuário (Network access → Full + credencial de API cadastrada nas configurações do ambiente).
   2. Sessão de deploy (com a rede já liberada e a credencial cadastrada): `wrangler whoami` e `npm run check`/`build` passaram, mas o `wrangler deploy` falhou com 401 no upload dos arquivos do site. Causa: o Workers asset upload usa um **token JWT temporário próprio** (obtido numa chamada prévia à API), diferente do token principal — e o proxy de credenciais desta sessão **substitui o cabeçalho Authorization de toda chamada a `api.cloudflare.com`/`dash.cloudflare.com` pelo token principal fixo**, atropelando esse JWT temporário. Não é um bug de rede pontual: é a forma como a injeção de credencial desta plataforma funciona (por desenho, para o token nunca ficar visível à sessão) colidindo com o fluxo de autenticação em duas etapas do `wrangler` para assets. Não deve funcionar em nenhuma sessão Claude Code com esse tipo de credencial.
   - **Conclusão:** não tentar mais `wrangler deploy` a partir de uma sessão Claude Code para o `apps/blog`. Caminho recomendado: import pelo painel via Workers Builds (issue #3) — a Cloudflare builda e publica nos próprios servidores dela, sem passar pelo proxy desta plataforma.
+- **Import pelo painel (Worker `executar-blogg`, com dois "g" porque `executar-blog` já existia como Worker vazio, sobra da tentativa via `wrangler`):** build OK (24 páginas, 31 assets enviados), mas o deploy falhava com `required secrets have not been set: TURNSTILE_SECRET_KEY`. Pela API (leitura), o Worker estava sem secrets e sem versões: o painel não guarda secret antes da primeira versão, e o `secrets.required` impedia a primeira versão. Correção: `secrets.required` removido do blog (ADR-009 atualizado; `/api/perguntar` continua fail closed com 403 sem o secret). Depois do primeiro deploy: cadastrar o secret no painel, na seção de runtime *Variables and Secrets* (não na de Build).
   - Se algum dia quisermos automatizar de novo: chamar a API REST da Cloudflare diretamente (sem `wrangler`) pode não sofrer do mesmo problema se o fluxo não depender de um segundo token — não testado.
 
 ## Pendências de usuário (passo 9) — uma issue detalhada por item
