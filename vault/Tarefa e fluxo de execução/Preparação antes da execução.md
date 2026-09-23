@@ -3,7 +3,8 @@ title: "Preparação antes da execução"
 description: "Preparar o caminho evita decidir durante cada passo. — síntese a partir de W3C COGA"
 ---
 
-> **Frase-síntese:** Preparar o caminho evita decidir durante cada passo. — síntese a partir de W3C COGA
+> [!summary] Frase-síntese
+> Preparar o caminho evita decidir durante cada passo. — síntese a partir de W3C COGA
 
 ## 1. Origem
 

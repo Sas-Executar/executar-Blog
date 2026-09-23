@@ -3,7 +3,8 @@ title: "Fatores de Riscos Cognitivos"
 description: "A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA"
 ---
 
-> **Frase-síntese:** A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA
+> [!summary] Frase-síntese
+> A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA
 
 ## 1. Origem
 

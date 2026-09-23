@@ -5,7 +5,9 @@ description: Decisões repetidas podem degradar a qualidade da escolha. — sín
   a partir de Pignatiello et al.
 ---
 
-> **Frase-síntese:** Decisões repetidas podem degradar a qualidade da escolha. — síntese a partir de Pignatiello et al.
+:::tip[Frase-síntese]
+Decisões repetidas podem degradar a qualidade da escolha. — síntese a partir de Pignatiello et al.
+:::
 
 ## 1. Origem
 

@@ -5,7 +5,9 @@ description: Lista completa pode esconder a ordem real do trabalho. — síntese
   partir de ISO
 ---
 
-> **Frase-síntese:** Lista completa pode esconder a ordem real do trabalho. — síntese a partir de ISO
+:::tip[Frase-síntese]
+Lista completa pode esconder a ordem real do trabalho. — síntese a partir de ISO
+:::
 
 ## 1. Origem
 

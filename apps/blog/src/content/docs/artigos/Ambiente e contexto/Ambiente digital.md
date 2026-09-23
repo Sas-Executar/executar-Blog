@@ -5,7 +5,9 @@ description: Digitalizar não garante reduzir trabalho cognitivo. — síntese a
   partir de W3C WAI
 ---
 
-> **Frase-síntese:** Digitalizar não garante reduzir trabalho cognitivo. — síntese a partir de W3C WAI
+:::tip[Frase-síntese]
+Digitalizar não garante reduzir trabalho cognitivo. — síntese a partir de W3C WAI
+:::
 
 ## 1. Origem
 

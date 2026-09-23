@@ -3,7 +3,8 @@ title: "Cadeia de desvalor para cadeia de valor"
 description: "Controle útil transforma barreira em aprendizado operacional. — síntese a partir de ISO"
 ---
 
-> **Frase-síntese:** Controle útil transforma barreira em aprendizado operacional. — síntese a partir de ISO
+> [!summary] Frase-síntese
+> Controle útil transforma barreira em aprendizado operacional. — síntese a partir de ISO
 
 ## 1. Origem
 

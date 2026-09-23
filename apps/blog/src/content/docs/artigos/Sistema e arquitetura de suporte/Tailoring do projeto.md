@@ -4,7 +4,9 @@ editUrl: false
 description: Adaptar o método reduz esforço sem perder controle. — síntese a partir de ISO
 ---
 
-> **Frase-síntese:** Adaptar o método reduz esforço sem perder controle. — síntese a partir de ISO
+:::tip[Frase-síntese]
+Adaptar o método reduz esforço sem perder controle. — síntese a partir de ISO
+:::
 
 ## 1. Origem
 

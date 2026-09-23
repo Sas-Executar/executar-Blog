@@ -3,7 +3,8 @@ title: "Forma e visualização da informação"
 description: "A forma da informação também consome capacidade. — síntese a partir de Rosenholtz et al."
 ---
 
-> **Frase-síntese:** A forma da informação também consome capacidade. — síntese a partir de Rosenholtz et al.
+> [!summary] Frase-síntese
+> A forma da informação também consome capacidade. — síntese a partir de Rosenholtz et al.
 
 ## 1. Origem
 

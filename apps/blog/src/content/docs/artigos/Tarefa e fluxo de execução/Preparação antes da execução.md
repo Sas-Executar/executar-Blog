@@ -5,7 +5,9 @@ description: Preparar o caminho evita decidir durante cada passo. — síntese a
   partir de W3C COGA
 ---
 
-> **Frase-síntese:** Preparar o caminho evita decidir durante cada passo. — síntese a partir de W3C COGA
+:::tip[Frase-síntese]
+Preparar o caminho evita decidir durante cada passo. — síntese a partir de W3C COGA
+:::
 
 ## 1. Origem
 

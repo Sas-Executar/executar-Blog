@@ -3,7 +3,8 @@ title: "Externalização cognitiva"
 description: "O ambiente pode carregar parte do trabalho mental. — síntese a partir de Risko e Gilbert"
 ---
 
-> **Frase-síntese:** O ambiente pode carregar parte do trabalho mental. — síntese a partir de Risko e Gilbert
+> [!summary] Frase-síntese
+> O ambiente pode carregar parte do trabalho mental. — síntese a partir de Risko e Gilbert
 
 ## 1. Origem
 

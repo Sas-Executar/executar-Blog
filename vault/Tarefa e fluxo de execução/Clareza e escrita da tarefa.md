@@ -3,7 +3,8 @@ title: "Clareza e escrita da tarefa"
 description: "Tarefa ambígua adia a decisão para a execução. — síntese a partir de W3C COGA"
 ---
 
-> **Frase-síntese:** Tarefa ambígua adia a decisão para a execução. — síntese a partir de W3C COGA
+> [!summary] Frase-síntese
+> Tarefa ambígua adia a decisão para a execução. — síntese a partir de W3C COGA
 
 ## 1. Origem
 

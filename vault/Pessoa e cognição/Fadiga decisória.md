@@ -3,7 +3,8 @@ title: "Fadiga decisória"
 description: "Decisões repetidas podem degradar a qualidade da escolha. — síntese a partir de Pignatiello et al."
 ---
 
-> **Frase-síntese:** Decisões repetidas podem degradar a qualidade da escolha. — síntese a partir de Pignatiello et al.
+> [!summary] Frase-síntese
+> Decisões repetidas podem degradar a qualidade da escolha. — síntese a partir de Pignatiello et al.
 
 ## 1. Origem
 

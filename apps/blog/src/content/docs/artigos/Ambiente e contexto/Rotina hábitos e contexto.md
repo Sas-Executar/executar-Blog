@@ -4,7 +4,9 @@ editUrl: false
 description: Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO
 ---
 
-> **Frase-síntese:** Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO
+:::tip[Frase-síntese]
+Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO
+:::
 
 ## 1. Origem
 

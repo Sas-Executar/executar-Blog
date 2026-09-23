@@ -3,7 +3,8 @@ title: "Troca de tarefas"
 description: "Trocar rapidamente não significa trocar sem custo. — síntese a partir de Rogers e Monsell"
 ---
 
-> **Frase-síntese:** Trocar rapidamente não significa trocar sem custo. — síntese a partir de Rogers e Monsell
+> [!summary] Frase-síntese
+> Trocar rapidamente não significa trocar sem custo. — síntese a partir de Rogers e Monsell
 
 ## 1. Origem
 

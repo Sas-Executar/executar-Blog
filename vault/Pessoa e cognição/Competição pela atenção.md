@@ -3,7 +3,8 @@ title: "Competição pela atenção"
 description: "Quando tudo chama atenção nada orienta a ação. — síntese a partir de W3C WAI"
 ---
 
-> **Frase-síntese:** Quando tudo chama atenção nada orienta a ação. — síntese a partir de W3C WAI
+> [!summary] Frase-síntese
+> Quando tudo chama atenção nada orienta a ação. — síntese a partir de W3C WAI
 
 ## 1. Origem
 

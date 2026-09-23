@@ -5,7 +5,9 @@ description: A execução também depende do sistema ao redor. — síntese a pa
   de ISO e W3C COGA
 ---
 
-> **Frase-síntese:** A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA
+:::tip[Frase-síntese]
+A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA
+:::
 
 ## 1. Origem
 

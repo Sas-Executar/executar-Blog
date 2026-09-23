@@ -3,7 +3,8 @@ title: "Quantidade de informação"
 description: "Mais informação disponível não significa mais informação utilizável. — síntese a partir de W3C WAI"
 ---
 
-> **Frase-síntese:** Mais informação disponível não significa mais informação utilizável. — síntese a partir de W3C WAI
+> [!summary] Frase-síntese
+> Mais informação disponível não significa mais informação utilizável. — síntese a partir de W3C WAI
 
 ## 1. Origem
 

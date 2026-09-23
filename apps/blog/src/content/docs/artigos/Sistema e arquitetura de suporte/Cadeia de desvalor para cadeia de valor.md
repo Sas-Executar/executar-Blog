@@ -5,7 +5,9 @@ description: Controle útil transforma barreira em aprendizado operacional. —
   síntese a partir de ISO
 ---
 
-> **Frase-síntese:** Controle útil transforma barreira em aprendizado operacional. — síntese a partir de ISO
+:::tip[Frase-síntese]
+Controle útil transforma barreira em aprendizado operacional. — síntese a partir de ISO
+:::
 
 ## 1. Origem
 

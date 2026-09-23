@@ -3,7 +3,8 @@ title: "Excesso de opções e padrões manipulativos"
 description: "Escolha útil exige opções compreensíveis e honestas. — síntese a partir de W3C WAI"
 ---
 
-> **Frase-síntese:** Escolha útil exige opções compreensíveis e honestas. — síntese a partir de W3C WAI
+> [!summary] Frase-síntese
+> Escolha útil exige opções compreensíveis e honestas. — síntese a partir de W3C WAI
 
 ## 1. Origem
 

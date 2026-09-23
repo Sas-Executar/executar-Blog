@@ -4,7 +4,9 @@ editUrl: false
 description: O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO
 ---
 
-> **Frase-síntese:** O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO
+:::tip[Frase-síntese]
+O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO
+:::
 
 ## 1. Origem
 

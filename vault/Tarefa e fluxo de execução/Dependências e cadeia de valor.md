@@ -3,7 +3,8 @@ title: "Dependências e cadeia de valor"
 description: "Lista completa pode esconder a ordem real do trabalho. — síntese a partir de ISO"
 ---
 
-> **Frase-síntese:** Lista completa pode esconder a ordem real do trabalho. — síntese a partir de ISO
+> [!summary] Frase-síntese
+> Lista completa pode esconder a ordem real do trabalho. — síntese a partir de ISO
 
 ## 1. Origem
 

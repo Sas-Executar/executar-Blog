@@ -5,7 +5,9 @@ description: A forma da informação também consome capacidade. — síntese a 
   de Rosenholtz et al.
 ---
 
-> **Frase-síntese:** A forma da informação também consome capacidade. — síntese a partir de Rosenholtz et al.
+:::tip[Frase-síntese]
+A forma da informação também consome capacidade. — síntese a partir de Rosenholtz et al.
+:::
 
 ## 1. Origem
 

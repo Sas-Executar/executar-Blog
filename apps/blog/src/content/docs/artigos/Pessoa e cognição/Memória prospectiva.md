@@ -5,7 +5,9 @@ description: Saber o que fazer não garante lembrar na hora. — síntese a part
   de Gilbert et al.
 ---
 
-> **Frase-síntese:** Saber o que fazer não garante lembrar na hora. — síntese a partir de Gilbert et al.
+:::tip[Frase-síntese]
+Saber o que fazer não garante lembrar na hora. — síntese a partir de Gilbert et al.
+:::
 
 ## 1. Origem
 

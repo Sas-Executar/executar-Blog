@@ -3,7 +3,8 @@ title: "Sobrecarga cognitiva sistêmica"
 description: "Pequenas fricções podem formar um problema do sistema. — síntese a partir de ISO"
 ---
 
-> **Frase-síntese:** Pequenas fricções podem formar um problema do sistema. — síntese a partir de ISO
+> [!summary] Frase-síntese
+> Pequenas fricções podem formar um problema do sistema. — síntese a partir de ISO
 
 ## 1. Origem
 

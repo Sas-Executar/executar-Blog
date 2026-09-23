@@ -3,7 +3,8 @@ title: "Agrupamento e segmentação"
 description: "Agrupar bem transforma muitos itens em unidades navegáveis. — síntese a partir de Luck e Vogel"
 ---
 
-> **Frase-síntese:** Agrupar bem transforma muitos itens em unidades navegáveis. — síntese a partir de Luck e Vogel
+> [!summary] Frase-síntese
+> Agrupar bem transforma muitos itens em unidades navegáveis. — síntese a partir de Luck e Vogel
 
 ## 1. Origem
 

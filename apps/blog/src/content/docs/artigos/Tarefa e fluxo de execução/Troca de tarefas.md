@@ -5,7 +5,9 @@ description: Trocar rapidamente não significa trocar sem custo. — síntese a
   partir de Rogers e Monsell
 ---
 
-> **Frase-síntese:** Trocar rapidamente não significa trocar sem custo. — síntese a partir de Rogers e Monsell
+:::tip[Frase-síntese]
+Trocar rapidamente não significa trocar sem custo. — síntese a partir de Rogers e Monsell
+:::
 
 ## 1. Origem
 

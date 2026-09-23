@@ -3,7 +3,8 @@ title: "Memória prospectiva"
 description: "Saber o que fazer não garante lembrar na hora. — síntese a partir de Gilbert et al."
 ---
 
-> **Frase-síntese:** Saber o que fazer não garante lembrar na hora. — síntese a partir de Gilbert et al.
+> [!summary] Frase-síntese
+> Saber o que fazer não garante lembrar na hora. — síntese a partir de Gilbert et al.
 
 ## 1. Origem
 

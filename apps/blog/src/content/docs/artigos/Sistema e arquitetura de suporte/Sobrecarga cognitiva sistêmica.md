@@ -5,7 +5,9 @@ description: Pequenas fricções podem formar um problema do sistema. — sínte
   partir de ISO
 ---
 
-> **Frase-síntese:** Pequenas fricções podem formar um problema do sistema. — síntese a partir de ISO
+:::tip[Frase-síntese]
+Pequenas fricções podem formar um problema do sistema. — síntese a partir de ISO
+:::
 
 ## 1. Origem
 

@@ -3,7 +3,8 @@ title: "Ambiente digital"
 description: "Digitalizar não garante reduzir trabalho cognitivo. — síntese a partir de W3C WAI"
 ---
 
-> **Frase-síntese:** Digitalizar não garante reduzir trabalho cognitivo. — síntese a partir de W3C WAI
+> [!summary] Frase-síntese
+> Digitalizar não garante reduzir trabalho cognitivo. — síntese a partir de W3C WAI
 
 ## 1. Origem
 

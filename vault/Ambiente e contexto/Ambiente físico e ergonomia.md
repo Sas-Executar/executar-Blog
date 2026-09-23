@@ -3,7 +3,8 @@ title: "Ambiente físico e ergonomia"
 description: "O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO"
 ---
 
-> **Frase-síntese:** O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO
+> [!summary] Frase-síntese
+> O ambiente deve se ajustar ao trabalho humano. — síntese a partir de ISO
 
 ## 1. Origem
 

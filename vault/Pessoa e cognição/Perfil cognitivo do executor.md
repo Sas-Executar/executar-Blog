@@ -3,7 +3,8 @@ title: "Perfil cognitivo do executor"
 description: "O sistema deve apoiar diferenças sem rotular pessoas. — síntese a partir de W3C COGA"
 ---
 
-> **Frase-síntese:** O sistema deve apoiar diferenças sem rotular pessoas. — síntese a partir de W3C COGA
+> [!summary] Frase-síntese
+> O sistema deve apoiar diferenças sem rotular pessoas. — síntese a partir de W3C COGA
 
 ## 1. Origem
 

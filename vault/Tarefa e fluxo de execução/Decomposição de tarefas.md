@@ -3,7 +3,8 @@ title: "Decomposição de tarefas"
 description: "Objetivo visível ainda não é próxima ação. — síntese a partir de W3C WAI"
 ---
 
-> **Frase-síntese:** Objetivo visível ainda não é próxima ação. — síntese a partir de W3C WAI
+> [!summary] Frase-síntese
+> Objetivo visível ainda não é próxima ação. — síntese a partir de W3C WAI
 
 ## 1. Origem
 

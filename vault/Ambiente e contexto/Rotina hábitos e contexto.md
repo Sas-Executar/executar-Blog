@@ -3,7 +3,8 @@ title: "Rotina hábitos e contexto"
 description: "Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO"
 ---
 
-> **Frase-síntese:** Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO
+> [!summary] Frase-síntese
+> Contexto estável reduz decisões repetidas de início. — síntese a partir de ISO
 
 ## 1. Origem
 
