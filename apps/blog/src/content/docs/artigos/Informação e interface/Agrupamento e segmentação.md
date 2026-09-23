@@ -77,6 +77,15 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [The capacity of visual working memory for features and conjunctions](https://doi.org/10.1038/36846) — Luck e Vogel, 1997.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Tempo de busca por organização da lista (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Sem grupo","Grupo simples","Grupo + rótulo","Grupo + busca"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[42,30,18,10],"itemStyle":{"borderRadius":4}}]}' data-descricao="Tempo de busca por organização da lista (dados fictícios). Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios." role="img" aria-label="Tempo de busca por organização da lista (dados fictícios). Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios."></div>
+	<p class="resumo">Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 * [Clareza e escrita da tarefa](/artigos/tarefa-e-fluxo-de-execução/clareza-e-escrita-da-tarefa)

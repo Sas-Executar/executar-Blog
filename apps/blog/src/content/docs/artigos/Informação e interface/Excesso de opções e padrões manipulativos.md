@@ -77,6 +77,15 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Avoid Too Much Content](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p03-manageable-quantity/) — W3C WAI, 2021.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Desistência por número de opções (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["3 opções","6 opções","12 opções","20+ opções"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[8,15,34,52],"itemStyle":{"borderRadius":4}}]}' data-descricao="Desistência por número de opções (dados fictícios). Taxa ilustrativa (%) de desistência da tarefa conforme o número de opções apresentadas. Dados fictícios." role="img" aria-label="Desistência por número de opções (dados fictícios). Taxa ilustrativa (%) de desistência da tarefa conforme o número de opções apresentadas. Dados fictícios."></div>
+	<p class="resumo">Taxa ilustrativa (%) de desistência da tarefa conforme o número de opções apresentadas. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 * [Memória prospectiva](/artigos/pessoa-e-cognição/memória-prospectiva)

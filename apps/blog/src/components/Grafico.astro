@@ -1,5 +1,8 @@
 ---
 // Gráfico/dashboard com Apache ECharts (ADR-007). HIG: título e resumo obrigatórios, aria ligado.
+// O runtime que desenha o gráfico é global (ver src/components/Head.astro): assim o mesmo
+// <div data-grafico> funciona tanto vindo deste componente (.mdx) quanto de HTML bruto nos
+// artigos gerados do vault (.md), que não passam pelo compilador de componentes do Astro.
 import type { EChartsOption } from 'echarts';
 
 interface Props {
@@ -16,40 +19,3 @@ const { titulo, resumo, opcoes, altura = '360px' } = Astro.props;
 	<div class="area" style={`height:${altura}`} data-grafico={JSON.stringify(opcoes)} data-descricao={`${titulo}. ${resumo}`} role="img" aria-label={`${titulo}. ${resumo}`}></div>
 	<p class="resumo">{resumo}</p>
 </figure>
-
-<script>
-	// Carrega o ECharts só quando o gráfico entra na tela (custo zero em páginas sem gráficos).
-	const observer = new IntersectionObserver(async (entries) => {
-		for (const entry of entries) {
-			if (!entry.isIntersecting) continue;
-			observer.unobserve(entry.target);
-			const echarts = await import('echarts');
-			const el = entry.target as HTMLElement;
-			const escuro = document.documentElement.dataset.theme === 'dark';
-			const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
-			const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
-			chart.setOption({
-				backgroundColor: 'transparent',
-				animation: !reduzir,
-				// HIG: a descrição acessível é o título + resumo do autor, não a gerada automaticamente.
-				aria: { enabled: true, label: { description: el.dataset.descricao } },
-				...JSON.parse(el.dataset.grafico!),
-			});
-			el.dataset.pronto = 'true';
-			new ResizeObserver(() => chart.resize()).observe(el);
-		}
-	});
-	document.querySelectorAll('[data-grafico]').forEach((el) => observer.observe(el));
-</script>
-
-<style>
-	.grafico {
-		margin-block: 1.5rem;
-	}
-	figcaption {
-		font-weight: 600;
-	}
-	.resumo {
-		color: var(--muted);
-	}
-</style>

@@ -77,6 +77,15 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Limit Interruptions](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p01-minimal-interruptions/) — W3C WAI, 2021.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Fricção por tipo de interface (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Notificações","Formulários","Navegação","Permissões"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[72,58,45,63],"itemStyle":{"borderRadius":4}}]}' data-descricao="Fricção por tipo de interface (dados fictícios). Esforço percebido (0–100) ao concluir uma tarefa comum, por tipo de interface. Dados ilustrativos, não medidos." role="img" aria-label="Fricção por tipo de interface (dados fictícios). Esforço percebido (0–100) ao concluir uma tarefa comum, por tipo de interface. Dados ilustrativos, não medidos."></div>
+	<p class="resumo">Esforço percebido (0–100) ao concluir uma tarefa comum, por tipo de interface. Dados ilustrativos, não medidos.</p>
+</figure>
+
 ## Relacionados
 
 * [Ambiente físico e ergonomia](/artigos/ambiente-e-contexto/ambiente-físico-e-ergonomia)

@@ -76,6 +76,15 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [ISO 10075-2:2024 — Ergonomic principles related to mental workload](https://www.iso.org/standard/76686.html) — International Organization for Standardization, 2024.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Energia percebida ao longo do dia (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Manhã","Meio-dia","Tarde","Noite"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"line","data":[80,55,40,60],"smooth":true,"symbolSize":8}]}' data-descricao="Energia percebida ao longo do dia (dados fictícios). Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios." role="img" aria-label="Energia percebida ao longo do dia (dados fictícios). Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios."></div>
+	<p class="resumo">Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 * [Ambiente digital](/artigos/ambiente-e-contexto/ambiente-digital)

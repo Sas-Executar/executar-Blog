@@ -88,6 +88,15 @@ flowchart TD
 
 - [Costs of a predictable switch between simple cognitive tasks](https://doi.org/10.1037/0096-3445.124.2.207) — Rogers e Monsell, 1995.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Custo de retomada por interrupção (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Curta (<1min)","Média (1–5min)","Longa (5–15min)","Muito longa (15min+)"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[10,25,48,70],"itemStyle":{"borderRadius":4}}]}' data-descricao="Custo de retomada por interrupção (dados fictícios). Minutos ilustrativos perdidos até retomar o foco, por duração da interrupção. Dados fictícios." role="img" aria-label="Custo de retomada por interrupção (dados fictícios). Minutos ilustrativos perdidos até retomar o foco, por duração da interrupção. Dados fictícios."></div>
+	<p class="resumo">Minutos ilustrativos perdidos até retomar o foco, por duração da interrupção. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 - [[Forma e visualização da informação]]
