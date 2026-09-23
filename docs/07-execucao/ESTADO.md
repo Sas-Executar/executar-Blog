@@ -45,7 +45,7 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 
 ## Bloqueios
 
-(vazio)
+- **Gate 4a (shell)** — ⛔ tema completo incompatível com Astro 7/Starlight 0.42; baseline Starlight 0.42 + adapter Cloudflare com bug upstream. Opções (a) travar versões e (d) estático atual sem Graph View validadas com build verde. Ver `04a-spike-shell.md`. **Aguarda decisão do usuário.**
 
 ## Pendências de usuário (passo 9)
 
