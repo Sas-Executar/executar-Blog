@@ -3,7 +3,7 @@
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
 **Última atualização:** 2026-09-23
-**Estágio atual:** 1 — System design
+**Estágio atual:** 4 — Implementação
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
 ## Estágios
@@ -11,10 +11,10 @@
 | # | Estágio | Skill | Status | Evidência |
 |---|---|---|---|---|
 | 0 | Verificação | — | ✅ concluído | `07-execucao/00-verificacao.md`; plugins `engineering`, `design`, `security-guidance` instalados e declarados em `.claude/settings.json` |
-| 1 | System design | engineering:system-design | 🔄 em andamento | |
-| 2 | ADRs | engineering:architecture | ⬜ pendente | |
-| 3 | Estratégia de testes | engineering:testing-strategy | ⬜ pendente | |
-| 4 | Implementação | — | ⬜ pendente | |
+| 1 | System design | engineering:system-design | ✅ concluído | `07-execucao/01-system-design.md` |
+| 2 | ADRs | engineering:architecture | ✅ concluído | `02-adr/ADR-001` (Superseded) … `ADR-009` |
+| 3 | Estratégia de testes | engineering:testing-strategy | ✅ concluído | `04-testes/plano-de-testes.md` |
+| 4 | Implementação | — | 🔄 em andamento | gate 4a resolvido com opção (d) — `07-execucao/04a-spike-shell.md` |
 | 5 | Code review | engineering:code-review + design:accessibility-review + security-guidance | ⬜ pendente | |
 | 6 | Tech debt | engineering:tech-debt | ⬜ pendente | |
 | 7 | Deploy checklist | engineering:deploy-checklist | ⬜ pendente | |
@@ -42,10 +42,11 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - Agente: **Claude Agent SDK** em Cloudflare Sandbox (template oficial `sandbox-sdk/examples/claude-code`), função "Pergunte aos artigos".
 - Shell: Starlight + Starlight Obsidian Theme + GitHub Markdown CSS + tokens mínimos.
 - Estratégia renomeada: "minimal code, max upstream".
+- Gate 4a: opção (d) — Starlight 0.42 estático + CSS/overrides do tema sem Graph View; `/api` via Worker de borda (ADR-002, ADR-003).
 
 ## Bloqueios
 
-- **Gate 4a (shell)** — ⛔ tema completo incompatível com Astro 7/Starlight 0.42; baseline Starlight 0.42 + adapter Cloudflare com bug upstream. Opções (a) travar versões e (d) estático atual sem Graph View validadas com build verde. Ver `04a-spike-shell.md`. **Aguarda decisão do usuário.**
+(vazio) — gate 4a resolvido: usuário escolheu (d) "Atual, sem grafo" em 2026-09-23.
 
 ## Pendências de usuário (passo 9)
 
