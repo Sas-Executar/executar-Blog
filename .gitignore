@@ -1,0 +1,24 @@
+# dependências e builds
+node_modules/
+dist/
+.astro/
+.wrangler/
+*.tgz
+
+# ambiente — .env nasce por script; só .env.example é versionado
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# CSS proprietário do Obsidian — nunca versionar nem publicar
+**/app.css
+
+# testes
+test-results/
+playwright-report/
+
+# SO
+.DS_Store
