@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Decision Fatigue: A Conceptual Analysis](https://pmc.ncbi.nlm.nih.gov/articles/PMC6119549/) — Pignatiello, Martin e Hickman, 2018.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

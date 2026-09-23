@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Cognitive Offloading](https://pubmed.ncbi.nlm.nih.gov/27542527/) — Risko e Gilbert, 2016.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

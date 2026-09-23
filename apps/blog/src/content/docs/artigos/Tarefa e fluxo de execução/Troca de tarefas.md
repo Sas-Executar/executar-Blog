@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Costs of a predictable switch between simple cognitive tasks](https://doi.org/10.1037/0096-3445.124.2.207) — Rogers e Monsell, 1995.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

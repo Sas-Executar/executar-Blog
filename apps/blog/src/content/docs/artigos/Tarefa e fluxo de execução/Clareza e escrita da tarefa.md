@@ -76,7 +76,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Making Content Usable for People with Cognitive and Learning Disabilities](https://www.w3.org/TR/coga-usable/) — W3C WAI, 2021.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

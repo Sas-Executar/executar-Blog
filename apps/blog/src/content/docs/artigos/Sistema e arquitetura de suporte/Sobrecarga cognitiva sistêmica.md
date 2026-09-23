@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [ISO 10075-2:2024 — Ergonomic principles related to mental workload](https://www.iso.org/standard/76686.html) — International Organization for Standardization, 2024.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

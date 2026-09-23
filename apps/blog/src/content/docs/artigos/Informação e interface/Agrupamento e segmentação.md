@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [The capacity of visual working memory for features and conjunctions](https://doi.org/10.1038/36846) — Luck e Vogel, 1997.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

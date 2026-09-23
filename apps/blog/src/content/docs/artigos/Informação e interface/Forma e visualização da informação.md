@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Measuring visual clutter](https://doi.org/10.1167/7.2.17) — Rosenholtz, Li e Nakano, 2007.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

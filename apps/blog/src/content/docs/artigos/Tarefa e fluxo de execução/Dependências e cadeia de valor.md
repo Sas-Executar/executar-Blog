@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [ISO 31000:2018 — Risk management guidelines](https://www.iso.org/iso-31000-risk-management.html) — International Organization for Standardization, 2018.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

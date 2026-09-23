@@ -76,7 +76,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Make Short Critical Paths](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p02-short-paths/) — W3C WAI, 2021.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

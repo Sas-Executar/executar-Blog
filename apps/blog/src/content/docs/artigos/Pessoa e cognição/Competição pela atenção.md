@@ -76,7 +76,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Limit Interruptions](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p01-minimal-interruptions/) — W3C WAI, 2021.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">

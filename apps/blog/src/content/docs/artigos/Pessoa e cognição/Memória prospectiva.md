@@ -77,7 +77,6 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Optimal use of reminders: Metacognition, effort, and cognitive offloading](https://pubmed.ncbi.nlm.nih.gov/31448938/) — Gilbert et al., 2019.
 
-
 ## 13. Painel ilustrativo (dados fictícios)
 
 <figure class="grafico">
