@@ -1,0 +1,154 @@
+/*
+ * Tokens de ponte (ADR-005/ADR-006). Apple HIG vence: valores de cor inspirados nas cores de
+ * sistema do HIG, ajustados para contraste ≥ 4,5:1 (verificado por scripts/check-contrast.mjs).
+ * Cada token só é repassado às variáveis do Starlight/tema e do GitHub Markdown CSS.
+ */
+:root {
+	--font-sans: -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+	--font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+	--font-size-body: 1.0625rem; /* HIG: texto padrão 17 pt */
+	--content-width: 46rem;
+	--hit-target: 44px; /* HIG: controle mínimo 44×44 pt */
+}
+
+:root,
+:root[data-theme='light'] {
+	--background: #ffffff; /* systemBackground */
+	--foreground: #1d1d1f; /* label */
+	--muted: #6e6e73; /* secondaryLabel com contraste AA */
+	--border: #c6c6c8; /* opaqueSeparator */
+	--accent: #0066cc; /* systemBlue, variante acessível */
+	--link: #0066cc;
+	--code-background: #f2f2f7; /* secondarySystemBackground */
+}
+
+:root[data-theme='dark'] {
+	--background: #000000;
+	--foreground: #f5f5f7;
+	--muted: #a1a1a6;
+	--border: #38383a;
+	--accent: #0a84ff;
+	--link: #409cff;
+	--code-background: #1c1c1e;
+}
+
+/* HIG "Increase Contrast" */
+@media (prefers-contrast: more) {
+	:root,
+	:root[data-theme='light'] {
+		--foreground: #000000;
+		--muted: #3a3a3c;
+		--border: #8e8e93;
+		--link: #0040dd;
+		--accent: #0040dd;
+	}
+	:root[data-theme='dark'] {
+		--foreground: #ffffff;
+		--muted: #d1d1d6;
+		--border: #8e8e93;
+		--link: #6cb4ff;
+		--accent: #6cb4ff;
+	}
+}
+
+/* Ponte → Starlight / tema Obsidian */
+:root,
+:root[data-theme='light'],
+:root[data-theme='dark'] {
+	--sl-font: var(--font-sans);
+	--sl-font-mono: var(--font-mono);
+	--sl-text-body: var(--font-size-body);
+	--sl-content-width: var(--content-width);
+	--sl-menu-button-size: var(--hit-target);
+	--sl-color-bg: var(--background);
+	--sl-color-bg-nav: var(--background);
+	--sl-color-bg-sidebar: var(--background);
+	--sl-color-text: var(--foreground);
+	--sl-color-white: var(--foreground);
+	--sl-color-gray-2: var(--foreground);
+	--sl-color-gray-3: var(--muted);
+	--sl-color-hairline: var(--border);
+	--sl-color-hairline-light: var(--border);
+	--sl-color-text-accent: var(--link);
+	--sl-color-accent: var(--accent);
+	--sl-color-accent-high: var(--accent);
+}
+
+/* Ponte → GitHub Markdown CSS (reconcilia com data-theme em vez de prefers-color-scheme) */
+.markdown-body {
+	--fgColor-default: var(--foreground);
+	--fgColor-muted: var(--muted);
+	--fgColor-accent: var(--link);
+	--bgColor-default: var(--background);
+	--bgColor-muted: var(--code-background);
+	--bgColor-neutral-muted: var(--code-background);
+	--borderColor-default: var(--border);
+	--borderColor-muted: var(--border);
+	color-scheme: inherit;
+	background: transparent;
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	font-size: var(--font-size-body);
+}
+
+/* Escala tipográfica HIG (iOS text styles: Large Title 34, Title 1 28, Title 2 22, Title 3 20, Headline 17) */
+:root {
+	--sl-text-h1: 2.125rem;
+	--sl-text-h2: 1.75rem;
+	--sl-text-h3: 1.375rem;
+	--sl-text-h4: 1.25rem;
+	--sl-text-h5: 1.0625rem;
+}
+/* Starlight envolve títulos (h inline + âncora): o tamanho e a borda do GitHub vão para o wrapper */
+.markdown-body .sl-heading-wrapper > :is(h1, h2, h3, h4, h5, h6) {
+	font-size: inherit;
+	line-height: inherit;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+.markdown-body .sl-heading-wrapper:is(.level-h1, .level-h2) {
+	padding-bottom: 0.3em;
+	border-bottom: 1px solid var(--border);
+}
+
+/* O PageFrame do tema já põe o sumário mobile no cabeçalho; esconde o do PageSidebar padrão
+   (o PageSidebar do tema depende do Graph View, ADR-003). */
+.right-sidebar-container mobile-starlight-toc {
+	display: none;
+}
+.markdown-body .sl-heading-wrapper {
+	margin-bottom: 0.5em;
+}
+
+/* HIG: alvos de toque ≥ 44 pt em navegação e controles */
+.sidebar-content a,
+.right-sidebar a,
+.pagination-links a,
+button,
+starlight-theme-select select,
+site-search button {
+	min-height: var(--hit-target);
+}
+.sidebar-content a,
+.right-sidebar a {
+	display: flex;
+	align-items: center;
+}
+
+/* Layout adaptável: respeita safe areas */
+body {
+	padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+}
+
+/* HIG "Reduce Motion" */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

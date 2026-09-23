@@ -1,0 +1,5 @@
+/* GitHub Markdown CSS (upstream, sem cópia) numa camada acima do tema Obsidian (ADR-005).
+   Aplica-se só dentro de .markdown-body (override MarkdownContent). Blocos de código ficam
+   com o Expressive Code; cores são reconciliadas com data-theme em tokens.css. */
+@layer starlight, sitegraph, obsidian, github;
+@import 'github-markdown-css/github-markdown.css' layer(github);
