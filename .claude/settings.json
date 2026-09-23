@@ -11,5 +11,17 @@
         "repo": "anthropics/knowledge-work-plugins"
       }
     }
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && { [ -d node_modules ] || npm ci --no-audit --no-fund; }"
+          }
+        ]
+      }
+    ]
   }
 }
