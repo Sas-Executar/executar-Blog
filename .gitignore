@@ -22,3 +22,5 @@ playwright-report/
 
 # SO
 .DS_Store
+# Playwright/cache local
+.cache/

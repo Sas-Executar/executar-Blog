@@ -20,6 +20,7 @@
 	--accent: #0066cc; /* systemBlue, variante acessível */
 	--link: #0066cc;
 	--code-background: #f2f2f7; /* secondarySystemBackground */
+	--on-accent: #ffffff;
 }
 
 :root[data-theme='dark'] {
@@ -30,6 +31,7 @@
 	--accent: #0a84ff;
 	--link: #409cff;
 	--code-background: #1c1c1e;
+	--on-accent: #000000;
 }
 
 /* HIG "Increase Contrast" */

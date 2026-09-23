@@ -1,0 +1,97 @@
+---
+// "Pergunte aos artigos" (ADR-008): Turnstile + POST /api/perguntar. Estilo via tokens (HIG).
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<form class="perguntar" data-perguntar>
+	<label for="pergunta">Sua pergunta sobre os artigos</label>
+	<textarea id="pergunta" name="pergunta" rows="3" minlength="3" maxlength="500" required
+		placeholder="Ex.: Como reduzir a troca de tarefas no dia a dia?"></textarea>
+	<div class="cf-turnstile" data-sitekey={siteKey} data-language="pt-BR"></div>
+	<button type="submit">Perguntar</button>
+	<p class="estado" role="status" aria-live="polite"></p>
+	<div class="resposta" hidden>
+		<div class="texto"></div>
+		<h3>Fontes</h3>
+		<ul class="fontes"></ul>
+	</div>
+</form>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+	for (const form of document.querySelectorAll<HTMLFormElement>('[data-perguntar]')) {
+		const estado = form.querySelector<HTMLElement>('.estado')!;
+		const resposta = form.querySelector<HTMLElement>('.resposta')!;
+		const botao = form.querySelector('button')!;
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const dados = new FormData(form);
+			botao.disabled = true;
+			resposta.hidden = true;
+			estado.textContent = 'Pensando… o assistente está lendo os artigos.';
+			try {
+				const res = await fetch('/api/perguntar', {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ pergunta: dados.get('pergunta'), token: dados.get('cf-turnstile-response') }),
+				});
+				const body = await res.json();
+				if (!res.ok) throw new Error(body.erro ?? 'erro inesperado');
+				form.querySelector('.texto')!.textContent = body.resposta;
+				const lista = form.querySelector('.fontes')!;
+				lista.replaceChildren(
+					...body.fontes.map((f: { titulo: string; url: string }) => {
+						const li = document.createElement('li');
+						const a = document.createElement('a');
+						a.href = f.url;
+						a.textContent = f.titulo;
+						li.append(a);
+						return li;
+					}),
+				);
+				resposta.hidden = false;
+				estado.textContent = '';
+			} catch (error) {
+				estado.textContent = error instanceof Error ? error.message : String(error);
+			} finally {
+				botao.disabled = false;
+				(window as any).turnstile?.reset();
+			}
+		});
+	}
+</script>
+
+<style>
+	.perguntar {
+		display: grid;
+		gap: 0.75rem;
+	}
+	textarea {
+		font: inherit;
+		padding: 0.75rem;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--background);
+		color: var(--foreground);
+		min-height: var(--hit-target);
+	}
+	button {
+		justify-self: start;
+		min-height: var(--hit-target);
+		min-width: var(--hit-target);
+		padding: 0 1.25rem;
+		border: 0;
+		border-radius: 8px;
+		background: var(--accent);
+		color: var(--on-accent);
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	button:disabled {
+		opacity: 0.6;
+	}
+	.texto {
+		white-space: pre-wrap;
+	}
+</style>

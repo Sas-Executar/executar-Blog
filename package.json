@@ -2,16 +2,24 @@
   "name": "executar-blog",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*"],
-  "engines": { "node": ">=22" },
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "postinstall": "node scripts/setup-env.mjs",
     "dev": "npm run dev -w apps/blog",
     "build": "npm run build --workspaces --if-present",
     "check": "npm run check --workspaces --if-present && npm run test:unit && node scripts/check-contrast.mjs && node scripts/guard.mjs",
-    "test:unit": "node --test tests/unit/",
+    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
     "test:e2e": "playwright test",
     "content:sync": "npm run content:sync -w apps/blog",
     "update:upstream": "npm update && npm run check && npm run build"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
   }
 }
