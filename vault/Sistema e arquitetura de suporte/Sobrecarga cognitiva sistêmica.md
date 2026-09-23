@@ -88,6 +88,15 @@ flowchart TD
 
 - [ISO 10075-2:2024 — Ergonomic principles related to mental workload](https://www.iso.org/standard/76686.html) — International Organization for Standardization, 2024.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Carga percebida por fonte (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Processos","Ferramentas","Comunicação","Decisões"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[45,38,52,41],"itemStyle":{"borderRadius":4}}]}' data-descricao="Carga percebida por fonte (dados fictícios). Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios." role="img" aria-label="Carga percebida por fonte (dados fictícios). Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios."></div>
+	<p class="resumo">Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 - [[Competição pela atenção]]

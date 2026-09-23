@@ -41,6 +41,7 @@ export default defineConfig({
 				Pagination: theme('overrides/Pagination.astro'),
 				ThemeSelect: theme('overrides/ThemeSelect.astro'),
 				MarkdownContent: './src/components/MarkdownContent.astro',
+				Head: './src/components/Head.astro',
 			},
 			expressiveCode: { themes: ['github-dark', 'github-light'] },
 		}),

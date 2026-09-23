@@ -77,6 +77,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [ISO 31000:2018 — Risk management guidelines](https://www.iso.org/iso-31000-risk-management.html) — International Organization for Standardization, 2018.
 
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Retrabalho por etapa (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Entrada","Processo","Validação","Entrega"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[20,35,15,8],"itemStyle":{"borderRadius":4}}]}' data-descricao="Retrabalho por etapa (dados fictícios). Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios." role="img" aria-label="Retrabalho por etapa (dados fictícios). Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios."></div>
+	<p class="resumo">Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 * [Sobrecarga cognitiva sistêmica](/artigos/sistema-e-arquitetura-de-suporte/sobrecarga-cognitiva-sistêmica)

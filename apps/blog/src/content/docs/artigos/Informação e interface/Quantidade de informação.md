@@ -77,6 +77,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Avoid Too Much Content](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p03-manageable-quantity/) — W3C WAI, 2021.
 
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Retenção por volume de itens (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["3 itens","5 itens","7 itens","9+ itens"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[92,81,63,44],"itemStyle":{"borderRadius":4}}]}' data-descricao="Retenção por volume de itens (dados fictícios). Percentual ilustrativo de itens lembrados corretamente conforme a lista cresce. Dados fictícios." role="img" aria-label="Retenção por volume de itens (dados fictícios). Percentual ilustrativo de itens lembrados corretamente conforme a lista cresce. Dados fictícios."></div>
+	<p class="resumo">Percentual ilustrativo de itens lembrados corretamente conforme a lista cresce. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 * [Perfil cognitivo do executor](/artigos/pessoa-e-cognição/perfil-cognitivo-do-executor)

@@ -88,6 +88,15 @@ flowchart TD
 
 - [Making Content Usable for People with Cognitive and Learning Disabilities](https://www.w3.org/TR/coga-usable/) — W3C WAI, 2021.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Barreiras relatadas por tipo (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Memória","Atenção","Linguagem","Organização"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[35,28,15,22],"itemStyle":{"borderRadius":4}}]}' data-descricao="Barreiras relatadas por tipo (dados fictícios). Distribuição ilustrativa (%) de barreiras relatadas por executores. Dados fictícios." role="img" aria-label="Barreiras relatadas por tipo (dados fictícios). Distribuição ilustrativa (%) de barreiras relatadas por executores. Dados fictícios."></div>
+	<p class="resumo">Distribuição ilustrativa (%) de barreiras relatadas por executores. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 - [[Tailoring do projeto]]

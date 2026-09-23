@@ -91,3 +91,11 @@ flowchart TD
 - [ISO 10075-2:2024](https://www.iso.org/standard/76686.html) — International Organization for Standardization, 2024.
 - [Making Content Usable](https://www.w3.org/TR/coga-usable/) — W3C WAI, 2021.
 - [Cognitive Offloading](https://pubmed.ncbi.nlm.nih.gov/27542527/) — Risko e Gilbert, 2016.
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Fatores mapeados por grupo (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Pessoa e cognição","Tarefa e fluxo","Informação e interface","Ambiente e contexto","Sistema e suporte"],"axisLabel":{"interval":0,"rotate":20}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[4,5,4,3,4],"itemStyle":{"borderRadius":4}}]}' data-descricao="Fatores mapeados por grupo (dados fictícios). Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios." role="img" aria-label="Fatores mapeados por grupo (dados fictícios). Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios."></div>
+	<p class="resumo">Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios.</p>
+</figure>

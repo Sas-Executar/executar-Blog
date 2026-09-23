@@ -88,6 +88,15 @@ flowchart TD
 
 - [Limit Interruptions](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p01-minimal-interruptions/) — W3C WAI, 2021.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Interrupções por canal (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Notificação push","E-mail","Chat","Reunião"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[24,12,31,9],"itemStyle":{"borderRadius":4}}]}' data-descricao="Interrupções por canal (dados fictícios). Número ilustrativo de interrupções por dia, por canal. Dados fictícios." role="img" aria-label="Interrupções por canal (dados fictícios). Número ilustrativo de interrupções por dia, por canal. Dados fictícios."></div>
+	<p class="resumo">Número ilustrativo de interrupções por dia, por canal. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 - [[Preparação antes da execução]]

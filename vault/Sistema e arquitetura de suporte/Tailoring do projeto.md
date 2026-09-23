@@ -88,6 +88,15 @@ flowchart TD
 
 - [ISO 31000:2018 — Risk management guidelines](https://www.iso.org/iso-31000-risk-management.html) — International Organization for Standardization, 2018.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Adequação por nível de tailoring (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Genérico","Adaptado","Tailored leve","Tailored completo"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[30,55,74,88],"itemStyle":{"borderRadius":4}}]}' data-descricao="Adequação por nível de tailoring (dados fictícios). Percentual ilustrativo de adequação ao contexto, por nível de tailoring aplicado. Dados fictícios." role="img" aria-label="Adequação por nível de tailoring (dados fictícios). Percentual ilustrativo de adequação ao contexto, por nível de tailoring aplicado. Dados fictícios."></div>
+	<p class="resumo">Percentual ilustrativo de adequação ao contexto, por nível de tailoring aplicado. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 - [[Cadeia de desvalor para cadeia de valor]]

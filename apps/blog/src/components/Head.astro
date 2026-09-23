@@ -1,0 +1,41 @@
+---
+// Override do Head do Starlight: só acrescenta o runtime global dos gráficos (ADR-007).
+// Precisa ser global (não escopado a <Grafico>) porque os artigos gerados do vault são .md puro
+// (ver docs/07-execucao) e contêm o HTML do gráfico direto, sem importar o componente Astro.
+import Default from '@astrojs/starlight/components/Head.astro';
+---
+
+<Default><slot /></Default>
+<script>
+	// Carrega o ECharts só quando o gráfico entra na tela (custo zero em páginas sem gráficos).
+	// Reobserva em navegações client-side (astro:page-load) e cobre load normal (chamada direta).
+	function iniciar() {
+		const observer = new IntersectionObserver((entries) => {
+			for (const entry of entries) {
+				if (!entry.isIntersecting) continue;
+				observer.unobserve(entry.target);
+				void desenhar(entry.target as HTMLElement);
+			}
+		});
+		document.querySelectorAll<HTMLElement>('[data-grafico]:not([data-pronto])').forEach((el) => observer.observe(el));
+	}
+
+	async function desenhar(el: HTMLElement) {
+		const echarts = await import('echarts');
+		const escuro = document.documentElement.dataset.theme === 'dark';
+		const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
+		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		chart.setOption({
+			backgroundColor: 'transparent',
+			animation: !reduzir,
+			// HIG: a descrição acessível é o título + resumo do autor, não a gerada automaticamente.
+			aria: { enabled: true, label: { description: el.dataset.descricao } },
+			...JSON.parse(el.dataset.grafico!),
+		});
+		el.dataset.pronto = 'true';
+		new ResizeObserver(() => chart.resize()).observe(el);
+	}
+
+	iniciar();
+	document.addEventListener('astro:page-load', iniciar);
+</script>

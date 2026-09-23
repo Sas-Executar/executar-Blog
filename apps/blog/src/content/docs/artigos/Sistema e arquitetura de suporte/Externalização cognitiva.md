@@ -77,6 +77,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 * [Cognitive Offloading](https://pubmed.ncbi.nlm.nih.gov/27542527/) — Risko e Gilbert, 2016.
 
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Confiabilidade por forma de registro (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Memória","Nota simples","Checklist","Sistema"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[40,62,81,93],"itemStyle":{"borderRadius":4}}]}' data-descricao="Confiabilidade por forma de registro (dados fictícios). Percentual ilustrativo de recuperação correta da informação, por forma de registro. Dados fictícios." role="img" aria-label="Confiabilidade por forma de registro (dados fictícios). Percentual ilustrativo de recuperação correta da informação, por forma de registro. Dados fictícios."></div>
+	<p class="resumo">Percentual ilustrativo de recuperação correta da informação, por forma de registro. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 * [Dependências e cadeia de valor](/artigos/tarefa-e-fluxo-de-execução/dependências-e-cadeia-de-valor)

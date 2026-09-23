@@ -88,6 +88,15 @@ flowchart TD
 
 - [Make Short Critical Paths](https://www.w3.org/WAI/WCAG2/supplemental/patterns/o5p02-short-paths/) — W3C WAI, 2021.
 
+
+## 13. Painel ilustrativo (dados fictícios)
+
+<figure class="grafico">
+	<figcaption>Tempo até início por tamanho da tarefa (dados fictícios)</figcaption>
+	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Tarefa única grande","Dividida em 2","Dividida em 4","Dividida em 6+"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[50,32,18,12],"itemStyle":{"borderRadius":4}}]}' data-descricao="Tempo até início por tamanho da tarefa (dados fictícios). Minutos ilustrativos até o início efetivo, conforme a tarefa é decomposta. Dados fictícios." role="img" aria-label="Tempo até início por tamanho da tarefa (dados fictícios). Minutos ilustrativos até o início efetivo, conforme a tarefa é decomposta. Dados fictícios."></div>
+	<p class="resumo">Minutos ilustrativos até o início efetivo, conforme a tarefa é decomposta. Dados fictícios.</p>
+</figure>
+
 ## Relacionados
 
 - [[Troca de tarefas]]
