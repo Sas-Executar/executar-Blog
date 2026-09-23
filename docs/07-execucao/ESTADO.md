@@ -2,8 +2,8 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-23 19:45 UTC
-**Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — issues #2 a #7)
+**Última atualização:** 2026-09-23 20:30 UTC
+**Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
 ## Estágios
@@ -19,7 +19,7 @@
 | 6 | Tech debt | engineering:tech-debt | ✅ concluído | `07-execucao/06-tech-debt.md` |
 | 7 | Deploy checklist | engineering:deploy-checklist | ✅ concluído | `05-deploy/checklist.md` (rollback definido) |
 | 8 | Documentação | engineering:documentation | ✅ concluído | `README.md`, `06-docs/onboarding.md`, `06-docs/runbook.md` |
-| 9 | Preview → Produção | — | ⛔ aguardando usuário | PR #1 **mesclado em `main`** (f80a392). Issues #2–#7 abertas, uma por pendência. Deploy direto por mim bloqueado: rede desta sessão nega `api.cloudflare.com` (403 de política, não da Cloudflare) |
+| 9 | Preview → Produção | — | ⛔ aguardando usuário | PR #1 **mesclado em `main`** (f80a392). Issues #2–#7 abertas. Deploy por `wrangler` a partir de uma sessão Claude Code: **inviável estruturalmente** (ver Bloqueios). Caminho recomendado: import pelo painel (issue #3) |
 
 Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 
@@ -48,7 +48,11 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 
 - Passo 9 depende de ações exclusivas do usuário (conta/segredos/painel Cloudflare) — ver Pendências.
 - Gate 4a resolvido: usuário escolheu (d) "Atual, sem grafo" em 2026-09-23.
-- **Deploy via `wrangler`/API a partir desta sessão: bloqueado.** O usuário gerou um token de API da Cloudflare e eu confirmei a identidade estava correta, mas o próprio ambiente desta sessão nega (403) qualquer conexão de saída a `api.cloudflare.com` — é uma política de rede da sessão, não uma falha da Cloudflare nem do token. Correção: o usuário amplia o acesso de rede desta sessão (menu da sessão → Network access) ou faz os passos do painel ele mesmo (issues #2–#6), que não dependem da minha rede.
+- **Deploy via `wrangler` a partir de uma sessão Claude Code: inviável estruturalmente, não só bloqueado.** Duas tentativas, em duas sessões:
+  1. Sessão original: rede da sessão negava (403) qualquer saída a `api.cloudflare.com`. Corrigido depois pelo usuário (Network access → Full + credencial de API cadastrada nas configurações do ambiente).
+  2. Sessão de deploy (com a rede já liberada e a credencial cadastrada): `wrangler whoami` e `npm run check`/`build` passaram, mas o `wrangler deploy` falhou com 401 no upload dos arquivos do site. Causa: o Workers asset upload usa um **token JWT temporário próprio** (obtido numa chamada prévia à API), diferente do token principal — e o proxy de credenciais desta sessão **substitui o cabeçalho Authorization de toda chamada a `api.cloudflare.com`/`dash.cloudflare.com` pelo token principal fixo**, atropelando esse JWT temporário. Não é um bug de rede pontual: é a forma como a injeção de credencial desta plataforma funciona (por desenho, para o token nunca ficar visível à sessão) colidindo com o fluxo de autenticação em duas etapas do `wrangler` para assets. Não deve funcionar em nenhuma sessão Claude Code com esse tipo de credencial.
+  - **Conclusão:** não tentar mais `wrangler deploy` a partir de uma sessão Claude Code para o `apps/blog`. Caminho recomendado: import pelo painel via Workers Builds (issue #3) — a Cloudflare builda e publica nos próprios servidores dela, sem passar pelo proxy desta plataforma.
+  - Se algum dia quisermos automatizar de novo: chamar a API REST da Cloudflare diretamente (sem `wrangler`) pode não sofrer do mesmo problema se o fluxo não depender de um segundo token — não testado.
 
 ## Pendências de usuário (passo 9) — uma issue detalhada por item
 
