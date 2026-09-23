@@ -27,6 +27,9 @@ jobs:
       - name: build
         run: npm run build
       - name: Páginas geradas em dia com o vault
+        # rehype-mermaid (Chromium) passa do heap padrão de ~2 GB e derruba o Node (exit 134).
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run content:sync && git diff --exit-code -- apps/blog/src/content/docs
       - name: e2e (Playwright + axe + regras HIG)
         run: npm run test:e2e
