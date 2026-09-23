@@ -55,3 +55,10 @@ test('503 quando o agente falha', async () => {
 	const res = await worker.fetch(req({ pergunta: 'Como?', token: 't' }), env({ agente: async () => new Response('x', { status: 502 }) }));
 	assert.equal(res.status, 503);
 });
+
+test('403 (fail closed) quando o Turnstile está fora do ar', async () => {
+	globalThis.fetch = async () => {
+		throw new Error('rede');
+	};
+	assert.equal((await worker.fetch(req({ pergunta: 'Como?', token: 't' }), env())).status, 403);
+});

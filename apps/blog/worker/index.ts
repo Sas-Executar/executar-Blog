@@ -9,9 +9,15 @@ export async function turnstileValido(token: string, secret: string, ip: string 
 	form.append('secret', secret);
 	form.append('response', token);
 	if (ip) form.append('remoteip', ip);
-	const res = await fetch(SITEVERIFY, { method: 'POST', body: form });
-	const data = await res.json<{ success?: boolean }>();
-	return data.success === true;
+	try {
+		const res = await fetch(SITEVERIFY, { method: 'POST', body: form });
+		const data = await res.json<{ success?: boolean }>();
+		return data.success === true;
+	} catch (error) {
+		// Falha do Turnstile nunca libera o agente (fail closed).
+		console.error('turnstile:', error);
+		return false;
+	}
 }
 
 export async function perguntar(request: Request, env: Env): Promise<Response> {
@@ -27,7 +33,7 @@ export async function perguntar(request: Request, env: Env): Promise<Response> {
 	} catch {
 		return Response.json({ erro: 'JSON inválido' }, { status: 400 });
 	}
-	if (typeof body.token !== 'string' || !(await turnstileValido(body.token, env.TURNSTILE_SECRET_KEY, ip))) {
+	if (typeof body.token !== 'string' || body.token.length > 2048 || !(await turnstileValido(body.token, env.TURNSTILE_SECRET_KEY, ip))) {
 		return Response.json({ erro: 'verificação anti-robô falhou' }, { status: 403 });
 	}
 

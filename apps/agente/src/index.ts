@@ -42,7 +42,8 @@ export async function perguntar(request: Request, env: Env): Promise<Response> {
 
 	const sandbox = getSandbox(env.Sandbox, 'agente');
 	const result = await sandbox.exec(`node /app/agente.mjs ${shellQuote(pergunta.trim())}`, {
-		env: { IS_SANDBOX: '1', ANTHROPIC_API_KEY: 'proxy-injected' },
+		// Container sem internet: desliga tráfego não essencial (telemetria) do Agent SDK.
+		env: { IS_SANDBOX: '1', ANTHROPIC_API_KEY: 'proxy-injected', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1' },
 	});
 	try {
 		const body = JSON.parse(result.stdout);
