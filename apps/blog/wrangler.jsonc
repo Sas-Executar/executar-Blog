@@ -3,6 +3,9 @@
  * Só /api/* executa código (worker/index.ts); o resto é asset grátis no edge.
  * TURNSTILE_SECRET_KEY é secret do Worker, mas sem `secrets.required`: o painel só aceita secret
  * depois da primeira versão publicada. Sem o secret, /api/perguntar responde 403 (fail closed).
+ * Service binding AGENTE → executar-agente fica fora até o Worker do agente existir (a Cloudflare
+ * recusa o deploy com binding para Worker inexistente). Para ligar, acrescente:
+ *   "services": [{ "binding": "AGENTE", "service": "executar-agente" }],
  */
 {
 	"$schema": "../../node_modules/wrangler/config-schema.json",
@@ -16,6 +19,5 @@
 		"not_found_handling": "404-page",
 		"run_worker_first": ["/api/*"]
 	},
-	"services": [{ "binding": "AGENTE", "service": "executar-agente" }],
 	"ratelimits": [{ "name": "LIMITE", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }]
 }

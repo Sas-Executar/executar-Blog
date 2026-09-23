@@ -2,7 +2,7 @@
 
 **Skill:** `engineering:deploy-checklist` · **Data:** 2026-09-23 · **Deployer:** usuário (painel) + Claude Code (preparação/verificação)
 
-> Ordem obrigatória: **agente antes do blog** (o service binding `AGENTE` precisa do Worker `executar-agente` existente).
+> O blog sobe sozinho: o service binding `AGENTE` fica fora do `apps/blog/wrangler.jsonc` até o Worker `executar-agente` existir (a Cloudflare recusa binding para Worker inexistente — erro 10143). Depois do agente publicado, reacrescente o binding (comentário no `wrangler.jsonc`) e rode `npm run cf-typegen -w apps/blog`.
 
 ## Pré-deploy
 - [ ] CI verde no PR (check, build, conteúdo em dia, e2e) — ver aba Checks do PR
