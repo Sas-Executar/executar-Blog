@@ -1,7 +1,11 @@
 // @executar/ui (ADR-014): comportamento dos componentes editoriais no navegador — o mesmo no blog e
 // no Studio. Sem framework; tudo funciona sem JS (abas mostram a 1ª, Mermaid mostra o código).
+export { iniciarGraficos, retemarizarGraficos } from './graficos.mjs';
+import { iniciarGraficos } from './graficos.mjs';
+
 export function iniciarEditorial(raiz = document) {
 	iniciarAbas(raiz);
+	iniciarGraficos(raiz);
 	void iniciarMermaid(raiz);
 }
 

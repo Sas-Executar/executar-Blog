@@ -4,7 +4,8 @@
 import chart from './chart.mjs';
 import codigo from './codigo.mjs';
 import diretivas from './diretivas.mjs';
-import obsidian from './obsidian.mjs';
+import GithubSlugger from 'github-slugger';
+import obsidian, { callouts } from './obsidian.mjs';
 
 export { criarIndice, indiceVazio, lerFrontmatter } from './indice.mjs';
 export { idDoCaminho, slugTitulo, idBloco } from './slug.mjs';
@@ -25,7 +26,7 @@ export const RECURSOS = {
  * @returns {import('satteri').MdastPluginDefinition[]}
  */
 export function pluginsEditoriais(opcoes) {
-	return /** @type {any} */ ([diretivas(opcoes), obsidian(opcoes), codigo(), chart()]);
+	return /** @type {any} */ ([callouts(), diretivas(opcoes), obsidian(opcoes), codigo(), chart()]);
 }
 
 /**
@@ -44,5 +45,25 @@ export function hastEditorial() {
 				},
 			},
 		],
+	});
+}
+
+/**
+ * Plugin hast: ids de título iguais aos do Astro (github-slugger, um por documento). Só para o
+ * renderer (Studio/exports) — no blog o próprio Astro já faz isso.
+ */
+export function idsDeTitulo() {
+	return /** @type {any} */ (() => {
+		const slugger = new GithubSlugger();
+		return {
+			name: 'executar-ids-titulo',
+			element: {
+				filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+				visit(node, ctx) {
+					if (typeof node.properties?.id === 'string') return;
+					ctx.setProperty(node, 'id', slugger.slug(ctx.textContent(node)));
+				},
+			},
+		};
 	});
 }

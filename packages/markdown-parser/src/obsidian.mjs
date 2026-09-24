@@ -72,23 +72,6 @@ export default function obsidian({ indice, urlAsset, avisar = () => {} }) {
 			}
 		},
 
-		blockquote(node) {
-			const primeiro = node.children[0];
-			const t0 = primeiro?.type === 'paragraph' ? primeiro.children[0] : null;
-			if (t0?.type !== 'text') return;
-			const quebra = t0.value.indexOf('\n');
-			const linha = quebra < 0 ? t0.value : t0.value.slice(0, quebra);
-			const m = CALLOUT.exec(linha);
-			if (!m) return;
-			const [, tipo, dobra, titulo] = m;
-			const restoTexto = quebra < 0 ? '' : t0.value.slice(quebra + 1);
-			const restoPrimeiro = [...(restoTexto ? [texto(restoTexto)] : []), ...primeiro.children.slice(1)];
-			// O título vai até a primeira quebra; nós inline logo após o [!tipo] (ex.: **negrito**) entram nele.
-			const tituloNos = quebra < 0 ? [...(titulo ? [texto(titulo)] : []), ...primeiro.children.slice(1)] : titulo ? [texto(titulo)] : [];
-			const corpo = [...(quebra >= 0 && restoPrimeiro.length ? [{ type: 'paragraph', children: restoPrimeiro }] : []), ...node.children.slice(1)];
-			return callout(tipo, tituloNos, corpo, dobra);
-		},
-
 		paragraph(node, ctx) {
 			// Âncora de bloco: "texto ^id" no fim do parágrafo.
 			const ultimo = node.children.at(-1);
@@ -152,6 +135,34 @@ export default function obsidian({ indice, urlAsset, avisar = () => {} }) {
 			// Tarefas GFM ([ ]/[x]) já saem com a classe task-list-item; as estendidas precisam dela.
 			const props = node.checked == null ? { class: 'task-list-item' } : {};
 			ctx.setProperty(node, 'data', { hProperties: { ...props, 'data-task': marca === 'X' ? 'x' : marca } });
+		},
+	};
+}
+
+/**
+ * Callouts num plugin próprio, executado ANTES dos demais: o callout substitui o blockquote, e o
+ * Sätteri descarta transformações enfileiradas em nós substituídos na mesma passada. Assim
+ * ==destaque==, [[links]], #tags e diretivas dentro de callouts são processados normalmente.
+ */
+export function callouts() {
+	return {
+		name: 'executar-callouts',
+
+		blockquote(node) {
+			const primeiro = node.children[0];
+			const t0 = primeiro?.type === 'paragraph' ? primeiro.children[0] : null;
+			if (t0?.type !== 'text') return;
+			const quebra = t0.value.indexOf('\n');
+			const linha = quebra < 0 ? t0.value : t0.value.slice(0, quebra);
+			const m = CALLOUT.exec(linha);
+			if (!m) return;
+			const [, tipo, dobra, titulo] = m;
+			const restoTexto = quebra < 0 ? '' : t0.value.slice(quebra + 1);
+			const restoPrimeiro = [...(restoTexto ? [texto(restoTexto)] : []), ...primeiro.children.slice(1)];
+			// O título vai até a primeira quebra; nós inline logo após o [!tipo] (ex.: **negrito**) entram nele.
+			const tituloNos = quebra < 0 ? [...(titulo ? [texto(titulo)] : []), ...primeiro.children.slice(1)] : titulo ? [texto(titulo)] : [];
+			const corpo = [...(quebra >= 0 && restoPrimeiro.length ? [{ type: 'paragraph', children: restoPrimeiro }] : []), ...node.children.slice(1)];
+			return callout(tipo, tituloNos, corpo, dobra);
 		},
 	};
 }

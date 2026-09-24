@@ -1,0 +1,39 @@
+{
+  "name": "@executar/studio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "prebuild": "node scripts/satteri-wasm.mjs",
+    "predev": "node scripts/satteri-wasm.mjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro build && wrangler dev",
+    "check": "astro check && tsc -p worker",
+    "deploy": "astro build && wrangler deploy",
+    "cf-typegen": "wrangler types"
+  },
+  "dependencies": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
+    "@executar/content-schema": "*",
+    "@executar/editorial-renderer": "*",
+    "@executar/markdown-parser": "*",
+    "@executar/theme": "*",
+    "@executar/ui": "*",
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@napi-rs/wasm-runtime": "1.2.4",
+    "astro": "7.3.4",
+    "github-markdown-css": "5.9.0",
+    "katex": "0.18.9",
+    "satteri": "0.10.5",
+    "yaml": "2.9.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "typescript": "6.0.3",
+    "wrangler": "4.137.0"
+  }
+}

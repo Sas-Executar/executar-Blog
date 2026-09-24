@@ -60,6 +60,14 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - Rotas: Hoje, Explorar, Categoria, Artigo, Buscar, Salvos e Preferências (HF01–HF05).
 - Evidência: `npm run check` (0 erros, 25 testes unitários, contraste 12 pares × 4 modos, guard ok), `npm run build` ok e `npm run test:e2e` 25/25. Os e2e cobrem Busca com e sem resultado, Explorar com filtros e estado vazio, Salvos (adicionar, remover e vazio), Preferências (tema e texto), Copiar link, redirecionamento, barra inferior de 44pt, axe em 10 páginas nos modos claro e escuro, e teclado.
 
+## Linguagem editorial única + Studio (ADR-013/ADR-014) — 2026-09-24 — VERIFIED (local)
+- **Fonte única:** o blog lê `vault/` direto (loader `glob`). O `content:sync`, a cópia em `content/docs/blog` e o `starlight-obsidian` foram removidos. Commit `d2e23da` na `main`.
+- **Pacotes:** `markdown-parser` (Obsidian + diretivas + chart, plugins Sätteri; callouts num plugin próprio, para a sintaxe inline funcionar dentro deles), `editorial-renderer` (HTML + EPUB 3 sem dependências), `content-schema` (Zod + propriedades tipadas), `theme` (tokens do DS + `editorial.css`) e `ui` (abas, Mermaid, ECharts).
+- **Studio** (`apps/studio`): editor, preview com o mesmo parser em WebAssembly (COOP/COEP), validação, propriedades → frontmatter, imagens, rascunho local, Rascunho/Preview/PR/Publicar, PDF/EPUB. O Worker tem Access JWT (fail closed), GitHub App ou PAT, Publish API (Git Data API) e MCP (`/mcp`).
+- **Exports:** `npm run export:epub` (XML validado nos 3 artigos e na fixture) e `npm run export:pdf` (11 páginas geradas a partir do blog local).
+- **Evidência:** `npm run check` ok (51 testes unitários, contraste, guard); `npm run build` ok; `npm run test:e2e` com 35/35 (31 do blog + 4 do Studio, axe incluído).
+- **Pendente (usuário):** credencial do GitHub (App ou PAT) e ativação do Zero Trust com os e-mails autorizados; ver ADR-014 e o guia, seção 6.
+
 ## Nova conta Cloudflare (2026-09-24)
 
 - O usuário criou uma conta nova, `Sas_executar@outlook.com's Account` (`99b69…`), para um build e deploy do zero. A conta antiga (`92fdc…`, Worker `executar-blogg`) fica desativada para este fluxo.

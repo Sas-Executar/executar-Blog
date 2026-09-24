@@ -1,9 +1,10 @@
 # EXECUTAR — Blog
 
-Blog sobre **fatores de risco cognitivo na execução**: 21 artigos, busca, gráficos e um assistente que responde **só com base nos artigos**. Roda no **Cloudflare Workers**.
+Blog sobre **fatores de risco cognitivo na execução**: artigos, busca, gráficos e um assistente que responde **só com base nos artigos**. Roda no **Cloudflare Workers**.
 
 - **Shell editorial:** [Starlight](https://starlight.astro.build) + CSS/componentes do [Starlight Obsidian Theme](https://github.com/Fevol/starlight-theme-obsidian) + [GitHub Markdown CSS](https://github.com/sindresorhus/github-markdown-css)
-- **Conteúdo:** Markdown em `vault/` (abre no Obsidian), publicado pelo [starlight-obsidian](https://github.com/HiDeoo/starlight-obsidian)
+- **Conteúdo:** um arquivo Markdown por artigo em `vault/` (abre no Obsidian), lido direto pelo blog com a gramática editorial única ([ADR-013](docs/02-adr/ADR-013.md), [sintaxe](docs/06-docs/EDITORIAL-SYNTAX-SPEC.md))
+- **Studio:** editor com preview idêntico ao blog, validação, publicação no GitHub e MCP ([ADR-014](docs/02-adr/ADR-014.md))
 - **Design:** regras do [Apple HIG](https://developer.apple.com/design/human-interface-guidelines) aplicadas por tokens e verificadas por testes
 - **Assistente:** [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk) em [Cloudflare Sandbox](https://developers.cloudflare.com/sandbox/)
 - **Gráficos:** [Apache ECharts](https://echarts.apache.org)
@@ -22,7 +23,7 @@ npm run dev          # abre o blog em http://localhost:4321
 | `npm run check` | Tipos, testes unitários, contraste HIG e guardrails |
 | `npm run build` | Build do blog e validação do agente |
 | `npm run test:e2e` | Testes no navegador (acessibilidade, HIG, busca, assistente) |
-| `npm run content:sync` | Regenera as páginas a partir do `vault/` |
+| `npm run export:epub -- "vault/…md"` | Gera EPUB 3 (`export:pdf` gera PDF a partir do blog local) |
 | `npm run update:upstream` | Atualiza dependências e revalida |
 
 ## Estrutura
@@ -31,7 +32,9 @@ npm run dev          # abre o blog em http://localhost:4321
 vault/            artigos (fonte editorial, compatível com Obsidian)
 apps/blog/        site Starlight + Worker de borda (/api/perguntar)
 apps/agente/      Worker + container do assistente (Claude Agent SDK)
-scripts/          setup-env, import-content, guard, check-contrast
+apps/studio/      EXECUTAR Studio: editor, preview, Publish API e MCP
+packages/         markdown-parser, editorial-renderer, content-schema, theme, ui
+scripts/          setup-env, guard, check-contrast, export
 tests/            unit (node:test) e e2e (Playwright + axe)
 docs/             ADRs, plano de testes, deploy, runbook, estado do pipeline
 ```

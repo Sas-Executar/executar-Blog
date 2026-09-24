@@ -51,7 +51,7 @@ Usuário iniciante e solo · minimal code, max upstream · Cloudflare como hosti
 | Componente | Tecnologia (upstream) | Nosso código |
 |---|---|---|
 | Shell editorial | Starlight 0.42 + CSS/overrides `starlight-theme-obsidian` (sem grafo, decisão (d)) | config |
-| Conteúdo | `starlight-obsidian` lê `vault/` | `scripts/import-content.mjs` (execução única, limpeza) |
+| Conteúdo | loader `glob` do Astro lê `vault/` + `packages/markdown-parser` (ADR-013) | — |
 | Markdown | `github-markdown-css` + Expressive Code tema GitHub | override `MarkdownContent` (≈10 linhas) |
 | Tokens HIG | — | `tokens.css` (≈60 linhas) |
 | Gráficos | Apache ECharts | `Grafico.astro` (≈40 linhas) |
@@ -60,7 +60,7 @@ Usuário iniciante e solo · minimal code, max upstream · Cloudflare como hosti
 
 ## 3. Fluxos de dados
 
-**Publicação (build):** `vault/*.md` → `starlight-obsidian` gera `src/content/docs/artigos/` → `astro build` → `dist/` (HTML, Pagefind) → Workers Builds → deploy. Mermaid: renderizado com Chromium; se o build Cloudflare não tiver navegador, geração no CI e `skipGeneration` no build Cloudflare (ADR-004).
+**Publicação (build):** `vault/*.md` → `astro build` (Sätteri + `packages/markdown-parser`) → `dist/` (HTML, Pagefind) → Workers Builds → deploy. Mermaid é desenhado no navegador (ADR-013); o build não precisa de Chromium. Edição e publicação pelo Studio: ADR-014.
 
 **Leitura:** request → asset estático no edge (cache automático). Sem Worker invocado → grátis.
 

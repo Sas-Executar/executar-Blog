@@ -41,7 +41,7 @@ export function agentOptions() {
 	};
 }
 
-/** Caminho do vault → URL publicada pelo starlight-obsidian (output "blog"). */
+/** Caminho do vault → URL publicada pelo blog (mesmo slug de idDoCaminho, ADR-013). */
 export function toArticle(vaultPath) {
 	const clean = vaultPath.replace(/^\.?\//, '').replace(/\.md$/, '');
 	const titulo = clean.split('/').pop();

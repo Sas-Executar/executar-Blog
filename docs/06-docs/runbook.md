@@ -10,10 +10,14 @@
    description: "Uma frase de resumo."
    ---
    ```
-   Links internos: `[[Título de outro artigo]]`. Diagramas: blocos ```` ```mermaid ````.
-2. `npm run content:sync` (precisa de Chromium para Mermaid; no CI já existe).
-3. `npm run check && npm run test:e2e`.
-4. Abrir PR → conferir a **Preview URL** comentada pela Cloudflare → merge = produção.
+   Sintaxe completa: `docs/06-docs/EDITORIAL-SYNTAX-SPEC.md`. O blog lê o vault direto (sem conversão).
+2. Pelo **Studio** (Rascunho → Preview → Publicar) ou pelo GitHub (PR → **Preview URL** → merge = produção). Guia: `GUIA-ARTIGO-MARKDOWN.md`.
+3. Mudanças de código: `npm run check && npm run build && npm run test:e2e`.
+
+## Studio fora do ar
+- 403 em tudo: Access não configurado ou JWT inválido (`ACCESS_TEAM`/`ACCESS_AUD` no Worker `executar-studio`).
+- "O GitHub recusou a operação": credencial expirada ou sem permissão; ver logs do Worker e renovar `GITHUB_TOKEN` ou a chave do GitHub App.
+- "A main mudou enquanto você editava": publicar de novo (o Studio nunca força a `main`).
 
 ## Atualizar upstream
 `npm run update:upstream` → se `check`/`build` passarem, abrir PR. Se o tema quebrar, ver ADR-003.

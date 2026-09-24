@@ -1,5 +1,5 @@
 // Comportamento de página comum (ADR-012): Copiar link e Salvar nos artigos.
-import { iniciarEditorial, iniciarMermaid } from '@executar/ui';
+import { iniciarEditorial, iniciarMermaid, retemarizarGraficos } from '@executar/ui';
 import { alternarSalvo, anunciar, estaSalvo, type Salvo } from '../lib/salvos';
 
 function iniciar() {
@@ -46,5 +46,8 @@ function tudo() {
 
 tudo();
 document.addEventListener('astro:page-load', tudo);
-// Diagramas Mermaid acompanham a troca de tema (claro/escuro).
-new MutationObserver(() => void iniciarMermaid()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+// Diagramas e gráficos acompanham a troca de tema (claro/escuro).
+new MutationObserver(() => {
+	void iniciarMermaid();
+	void retemarizarGraficos();
+}).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

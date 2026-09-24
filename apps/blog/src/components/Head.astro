@@ -1,7 +1,6 @@
 ---
-// Override do Head do Starlight: só acrescenta o runtime global dos gráficos (ADR-007).
-// Precisa ser global (não escopado a <Grafico>) porque os artigos gerados do vault são .md puro
-// (ver docs/07-execucao) e contêm o HTML do gráfico direto, sem importar o componente Astro.
+// Override do Head do Starlight: preferências aplicadas antes da pintura e a ponte do menu mobile.
+// Gráficos, Mermaid e abas ficam em @executar/ui (carregado em scripts/cliente.ts).
 import Default from '@astrojs/starlight/components/Head.astro';
 ---
 
@@ -15,85 +14,6 @@ import Default from '@astrojs/starlight/components/Head.astro';
 	} catch {}
 </script>
 <script>
-	// Carrega o ECharts só quando o gráfico entra na tela (custo zero em páginas sem gráficos).
-	// Reobserva em navegações client-side (astro:page-load) e cobre load normal (chamada direta).
-	// Também reage à troca de tema (claro/escuro): sem isso, o gráfico fica com as cores do tema
-	// que estava ativo no primeiro render e não acompanha o toggle (StarlightObsidianThemeSelect).
-	const graficos = new Map<HTMLElement, import('echarts').ECharts>();
-
-	function iniciar() {
-		const observer = new IntersectionObserver((entries) => {
-			for (const entry of entries) {
-				if (!entry.isIntersecting) continue;
-				observer.unobserve(entry.target);
-				void desenhar(entry.target as HTMLElement);
-			}
-		});
-		document.querySelectorAll<HTMLElement>('[data-grafico]:not([data-pronto])').forEach((el) => observer.observe(el));
-	}
-
-	async function desenhar(el: HTMLElement) {
-		const echarts = await import('echarts');
-		const escuro = document.documentElement.dataset.theme === 'dark';
-		const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
-		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.movimento === 'reduzido';
-		chart.setOption({
-			backgroundColor: 'transparent',
-			// Paleta do Desyng System (ADR-012): verde e azure de marca, depois neutros.
-			color: ['#00BF63', '#1F93FF', '#007A45', '#0B6FD3', '#7C7B7B'],
-			animation: !reduzir,
-			// HIG: a descrição acessível é o título + resumo do autor, não a gerada automaticamente.
-			aria: { enabled: true, label: { description: el.dataset.descricao } },
-			...JSON.parse(el.dataset.grafico!),
-		});
-		el.dataset.pronto = 'true';
-		graficos.set(el, chart);
-		new ResizeObserver(() => chart.resize()).observe(el);
-	}
-
-	// Ao trocar de tema, recria (dispose + init) cada gráfico já renderizado com o tema novo do
-	// ECharts: setOption sozinho não troca a paleta de cores do tema base de uma instância existente.
-	async function retemarizar() {
-		if (graficos.size === 0) return;
-		const echarts = await import('echarts');
-		const escuro = document.documentElement.dataset.theme === 'dark';
-		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.movimento === 'reduzido';
-		for (const [el, chartAntigo] of graficos) {
-			const opcoes = { ...JSON.parse(el.dataset.grafico!) };
-			chartAntigo.dispose();
-			const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
-			chart.setOption({
-				backgroundColor: 'transparent',
-				color: ['#00BF63', '#1F93FF', '#007A45', '#0B6FD3', '#7C7B7B'],
-				animation: !reduzir,
-				aria: { enabled: true, label: { description: el.dataset.descricao } },
-				...opcoes,
-			});
-			graficos.set(el, chart);
-		}
-	}
-
-	// Diagramas Mermaid (rehype-mermaid, strategy img-svg) saem como <picture> com
-	// <source media="(prefers-color-scheme: dark)">: o navegador escolhe pela preferência do
-	// SISTEMA e ignora o botão claro/escuro. Aqui a media query vira "all"/"not all" conforme o
-	// data-theme escolhido, e o <picture> reavalia a fonte na hora.
-	function sincronizarDiagramas() {
-		const escuro = document.documentElement.dataset.theme === 'dark';
-		document.querySelectorAll<HTMLSourceElement>('picture > source[media*="prefers-color-scheme"], picture > source[data-media-tema]').forEach((s) => {
-			s.dataset.mediaTema ??= s.media;
-			const paraEscuro = s.dataset.mediaTema!.includes('dark');
-			s.media = paraEscuro === escuro ? 'all' : 'not all';
-		});
-	}
-
-	new MutationObserver(() => {
-		sincronizarDiagramas();
-		void retemarizar();
-	}).observe(document.documentElement, {
-		attributes: true,
-		attributeFilter: ['data-theme'],
-	});
-
 	// Ponte do menu mobile: o botão ☰ do Starlight 0.42 abre o menu pela Popover API nativa
 	// (popovertarget="starlight__sidebar"), mas o PageFrame do starlight-theme-obsidian 0.4.1 (última
 	// versão) renderiza o painel sem o atributo `popover` e ainda espera o mecanismo antigo
@@ -126,12 +46,5 @@ import Default from '@astrojs/starlight/components/Head.astro';
 	}
 
 	ponteMenuMobile();
-	sincronizarDiagramas();
-	iniciar();
-	document.addEventListener('astro:page-load', () => {
-		graficos.clear();
-		ponteMenuMobile();
-		sincronizarDiagramas();
-		iniciar();
-	});
+	document.addEventListener('astro:page-load', ponteMenuMobile);
 </script>

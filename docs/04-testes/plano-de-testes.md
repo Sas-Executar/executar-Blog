@@ -24,7 +24,8 @@ Ferramentas: `node:test` (zero dependência) para unit; `@playwright/test` + `@a
 | `apps/agente/agente.mjs` | Unit (SDK mockado) | só ferramentas de leitura; cwd `/vault`; saída JSON `{resposta, fontes}`; erro vira JSON de erro | contrato |
 | `apps/agente/src/index.ts` | Typecheck | tipos do Worker/Sandbox | `tsc --noEmit` |
 | Build blog | Integração | `astro check` + `astro build`; 21 páginas de artigo; Pagefind indexado | 0 erros |
-| Conteúdo gerado | Integração (CI) | `content:sync` não gera diff (páginas commitadas = vault) | 0 diff |
+| Gramática editorial | Unit + e2e | fixture `tests/fixtures/vault/Laboratório/Sintaxe completa.md` renderiza toda a sintaxe (ADR-013) | verde |
+| Studio | Unit + e2e | Access, JWT do GitHub App, Publish API, MCP; preview WebAssembly igual ao blog (ADR-014) | verde |
 | HIG (ADR-006) | E2E | corpo ≥ 17px; nada < 11px; alvos ≥ 44px; zoom 200% sem scroll horizontal; `prefers-reduced-motion`; `prefers-contrast: more`; dark/light | todas as regras |
 | Acessibilidade | E2E | axe sem violações `serious`/`critical` em home, artigo, página de dados — light e dark | 0 |
 | Responsivo | E2E | 375 / 768 / 1280 px sem overflow horizontal | 0 |

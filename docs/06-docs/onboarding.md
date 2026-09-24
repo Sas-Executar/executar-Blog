@@ -9,7 +9,8 @@
 
 ## 2. Como as peças se conectam
 ```
-vault/*.md ──starlight-obsidian──► apps/blog/src/content/docs/artigos ──astro build──► dist/ (estático)
+vault/*.md ──packages/markdown-parser (Sätteri)──► astro build ──► dist/ (estático)
+Studio ──mesmo parser em WebAssembly──► preview ── /api/publicar ──► GitHub (vault/) ──► Workers Builds
 leitor ──► Worker executar-blog ──assets──► páginas
              └─ /api/perguntar ─Turnstile─► Worker executar-agente ─► container (Agent SDK lê /vault) ─► Anthropic
 ```
@@ -19,8 +20,8 @@ Detalhes: `docs/07-execucao/01-system-design.md` e ADR-002…009.
 | Tarefa | Como |
 |---|---|
 | Publicar/editar artigo | Ver runbook "Publicar artigo" |
-| Adicionar gráfico | Criar página `.mdx` em `apps/blog/src/content/docs/` com `<Grafico titulo resumo opcoes={...} />` (dados reais, título e resumo obrigatórios) |
-| Mudar cores/tamanhos | Só em `apps/blog/src/styles/tokens.css`; rode `npm run check` (contraste 4,5:1) |
+| Adicionar gráfico | Bloco ```` ```chart ```` no artigo, com `title` e `summary` obrigatórios (ver EDITORIAL-SYNTAX-SPEC.md) |
+| Mudar cores/tamanhos | `packages/theme/src/cores.css` (tokens do DS via `npm run tokens:sync`); rode `npm run check` (contraste 4,5:1) |
 | Atualizar dependências | `npm run update:upstream` (ou aprovar PR do Dependabot com CI verde) |
 
 ## 4. Regras

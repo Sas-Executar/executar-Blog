@@ -1,0 +1,73 @@
+---
+// EXECUTAR Studio (ADR-014): escrever, pré-visualizar, validar e publicar artigos do vault.
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '@executar/theme/ds/variables.css';
+import '@executar/theme/ds/theme.css';
+import '@executar/theme/cores.css';
+import 'katex/dist/katex.min.css';
+import '@executar/theme/editorial.css';
+import '../styles/studio.css';
+---
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<title>EXECUTAR Studio</title>
+		<script is:inline>
+			try { const t = localStorage.getItem('studio-tema'); document.documentElement.dataset.theme = t || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch { document.documentElement.dataset.theme = 'light'; }
+		</script>
+	</head>
+	<body>
+		<header class="topo">
+			<h1>EXECUTAR Studio</h1>
+			<span class="eu" id="eu"></span>
+			<button type="button" id="tema" aria-label="Alternar tema claro/escuro">Tema</button>
+			<button type="button" id="novo">Novo artigo</button>
+		</header>
+		<main class="area">
+			<nav class="lista" aria-label="Artigos do vault">
+				<h2>Artigos</h2>
+				<ul id="artigos"><li>Carregando…</li></ul>
+			</nav>
+			<section class="editor" aria-label="Editor">
+				<label class="rodape" for="caminho">Arquivo em vault/
+					<input id="caminho" name="caminho" style="flex:1;min-height:var(--hit-target)" placeholder="Pasta/Título.md" autocomplete="off" />
+				</label>
+				<textarea id="markdown" aria-label="Markdown do artigo" spellcheck="true"></textarea>
+				<div class="rodape">
+					<span id="contagem" aria-live="polite">0 palavras</span>
+					<label>Imagem <input type="file" id="imagem" accept="image/*" /></label>
+				</div>
+				<div class="lateral">
+					<h2>Propriedades</h2>
+					<label>Título <input id="p-title" data-prop="title" /></label>
+					<label>Descrição <input id="p-description" data-prop="description" /></label>
+					<label>Tags (separadas por vírgula) <input id="p-tags" data-prop="tags" /></label>
+					<h2>Validação</h2>
+					<div id="validacao" aria-live="polite">—</div>
+					<h2>Publicar</h2>
+					<div class="rodape" style="padding:0;border:0">
+						<button type="button" data-modo="draft">Rascunho</button>
+						<button type="button" data-modo="preview">Preview</button>
+						<button type="button" data-modo="pr">Abrir PR</button>
+						<button type="button" class="primario" data-modo="publish">Publicar</button>
+						<button type="button" id="epub">Baixar EPUB</button>
+						<button type="button" id="pdf">Baixar PDF</button>
+					</div>
+					<p id="status" role="status"></p>
+				</div>
+			</section>
+			<section class="preview" aria-label="Pré-visualização">
+				<article class="markdown-body" id="preview"></article>
+			</section>
+		</main>
+		<script>
+			import { iniciarStudio } from '../scripts/studio.ts';
+			iniciarStudio();
+		</script>
+	</body>
+</html>

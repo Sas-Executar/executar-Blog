@@ -112,3 +112,28 @@ test('degradação: diretiva desconhecida preserva o conteúdo e avisa', async (
 	assert.match(r.html, /class="diretiva diretiva--nova-coisa"><p>conteúdo mantido<\/p>/);
 	assert.ok(r.avisos.some((a) => a.includes('nova-coisa')));
 });
+
+test('callout: destaque, #tag e [[wikilink]] dentro do callout são processados', async () => {
+	const { renderMarkdown } = await import('@executar/editorial-renderer');
+	const { criarIndice } = await import('@executar/markdown-parser');
+	const indice = criarIndice([{ caminho: 'Lab/X.md', conteudo: '---\ntitle: X\n---' }]);
+	const { html } = await renderMarkdown('> [!tip] Dica\n> ok ==m== #tag\n>\n> ver [[X]]\n', { indice });
+	assert.match(html, /<mark>m<\/mark>/);
+	assert.match(html, /<span class="tag">#tag<\/span>/);
+	assert.match(html, /href="\/blog\/lab\/x\/" class="wikilink"/);
+});
+
+test('EPUB: zip válido com mimetype primeiro e XHTML bem formado', async () => {
+	const { gerarEpub } = await import('@executar/editorial-renderer');
+	const bytes = gerarEpub({ titulo: 'Título & teste', html: '<p>a<br>b</p><img src="x.png" alt="x"><input type="checkbox" checked disabled>', data: '2026-01-01T00:00:00.000Z' });
+	const txt = Buffer.from(bytes).toString('latin1');
+	assert.equal(txt.slice(0, 4), 'PK\u0003\u0004');
+	assert.equal(txt.slice(30, 38), 'mimetype');
+	assert.equal(txt.slice(38, 58), 'application/epub+zip');
+	for (const n of ['META-INF/container.xml', 'OEBPS/content.opf', 'OEBPS/nav.xhtml', 'OEBPS/capitulo.xhtml']) assert.ok(txt.includes(n), n);
+	const utf = Buffer.from(bytes).toString('utf8');
+	assert.match(utf, /<br \/>/);
+	assert.match(utf, /<input type="checkbox" checked="checked" disabled="disabled" \/>/);
+	assert.match(utf, /Título &amp; teste/);
+	assert.match(utf, /<meta property="dcterms:modified">2026-01-01T00:00:00Z<\/meta>/);
+});

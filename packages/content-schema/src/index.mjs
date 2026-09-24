@@ -135,3 +135,33 @@ export function calcularRollup({ from, campo, funcao = 'count' }, notas) {
 	const soma = nums.reduce((a, b) => a + b, 0);
 	return { sum: soma, avg: Math.round((soma / nums.length) * 100) / 100, min: Math.min(...nums), max: Math.max(...nums) }[funcao] ?? null;
 }
+
+/**
+ * Validação leve, sem renderizar (Worker do Studio e MCP): frontmatter + schema, gráficos com
+ * título/resumo, wikilinks e caminho. A validação completa (com render) roda no Studio e no build.
+ * @param {string} markdown
+ * @param {{ z: typeof import('zod').z, lerFrontmatter: (md: string) => { dados: any, erro?: string }, indice?: { porNome: Map<string, unknown> } }} deps
+ */
+export function validarLeve(markdown, { z, lerFrontmatter, indice }) {
+	const erros = [];
+	const avisos = [];
+	if (!/^---\r?\n[\s\S]*?\r?\n---/.test(markdown)) erros.push('Falta o frontmatter (bloco entre --- no início do arquivo).');
+	const { dados, erro } = lerFrontmatter(markdown);
+	if (erro) erros.push('O frontmatter não é um YAML válido.');
+	if (!dados.title) erros.push('Falta o título (title).');
+	if (!dados.description) erros.push('Falta a descrição (description).');
+	const r = esquemaEditorial(z).safeParse(dados);
+	if (!r.success) for (const i of r.error.issues) erros.push(`Propriedade “${i.path.join('.')}”: ${i.message}`);
+	for (const bloco of markdown.matchAll(/```chart\n([\s\S]*?)```/g)) {
+		if (!/^title:/m.test(bloco[1]) || !/^summary:/m.test(bloco[1])) erros.push('Gráfico sem title ou summary (obrigatórios para acessibilidade).');
+	}
+	if (indice) {
+		const semCodigo = markdown.replace(/```[\s\S]*?```/g, '');
+		for (const m of semCodigo.matchAll(/!?\[\[([^\]|#]+)(?:[#|][^\]]*)?\]\]/g)) {
+			const alvo = m[1].trim();
+			if (/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(alvo)) continue;
+			if (!indice.porNome.has(alvo.toLowerCase())) avisos.push(`Link interno não encontrado: [[${alvo}]]`);
+		}
+	}
+	return { ok: erros.length === 0, erros, avisos: [...new Set(avisos)] };
+}

@@ -1,6 +1,6 @@
 # CLAUDE.md — regras permanentes deste repositório
 
-Blog EXECUTAR: Starlight (Astro) estático + agente Claude Agent SDK, no Cloudflare Workers.
+Blog EXECUTAR: Starlight (Astro) estático + agente Claude Agent SDK + EXECUTAR Studio (editor/publicação), no Cloudflare Workers.
 Decisões em `docs/02-adr/`; estado do pipeline em `docs/07-execucao/ESTADO.md`.
 
 ## Modo de trabalho
@@ -38,13 +38,13 @@ npm run dev            # blog local
 npm run check          # astro check + tsc + unit + contraste HIG + guard
 npm run build          # build de todos os apps
 npm run test:e2e       # Playwright + axe + regras HIG (PW_CHROMIUM_PATH se o Chromium local for de outra versão)
-npm run content:sync   # regenera páginas a partir de vault/ (precisa de Chromium para Mermaid)
+npm run export:epub -- "vault/Pasta/Artigo.md"   # EPUB 3 (export:pdf gera PDF a partir do blog local)
 npm run update:upstream
 git ls-files | grep -cE 'app\.css|\.env$'   # deve imprimir 0
 ```
 
 ## Publicar um artigo
-Escreva em `vault/<Grupo>/<Título>.md` (frontmatter `title` e `description`) → `npm run content:sync` → PR → preview → merge.
+Escreva em `vault/<Grupo>/<Título>.md` (frontmatter `title` e `description`; sintaxe em `docs/06-docs/EDITORIAL-SYNTAX-SPEC.md`). O blog lê o vault direto (ADR-013). Publique pelo EXECUTAR Studio (`apps/studio`, ADR-014) ou por PR → preview → merge.
 
 ## Ao terminar cada estágio
 Atualize `docs/07-execucao/ESTADO.md` (status, decisões, evidência).
