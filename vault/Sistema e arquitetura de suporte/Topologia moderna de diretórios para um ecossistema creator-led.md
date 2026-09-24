@@ -498,3 +498,303 @@ repo/
 │   ├── auth/
 │   └── social-syndication/
 │
+├── infrastructure/
+│   ├── environments/
+│   ├── cdn/
+│   ├── dns/
+│   └── observability/
+│
+├── migrations/
+│   ├── content/
+│   └── redirects/
+│
+└── docs/
+    ├── url-governance.md
+    ├── taxonomy.md
+    └── tracking-plan.md
+```
+
+URLs públicas não devem carregar versões técnicas como `/blog/v2/...`. Versionamento pertence ao schema/API/deploy:
+
+```text
+content.schema_version = 3
+/api/v1/...
+migrations/content/003-add-primary-topic.ts
+```
+
+### CI/CD
+
+Pipeline recomendado:
+
+```text
+PR
+ ↓
+lint + typecheck
+ ↓
+unit/integration
+ ↓
+content-schema validation
+ ↓
+URL/canonical/hreflang tests
+ ↓
+JSON-LD validation
+ ↓
+broken-link crawl
+ ↓
+performance budget
+ ↓
+dependency/security checks
+ ↓
+preview deployment
+ ↓
+review editorial/SEO
+ ↓
+production
+ ↓
+smoke tests + telemetry
+```
+
+Dependabot pode abrir PRs para dependências vulneráveis ou desatualizadas e integrar essas atualizações ao workflow de Actions; isso deve ser apenas uma camada do programa de segurança, não seu substituto. [^fonte-20]
+
+### Hosting e edge CDN
+
+| Opção | Fit | Pontos fortes | Trade-offs arquiteturais | TCO provável |
+|---|---|---|---|---|
+| **Vercel** | Next.js / frontend-heavy | CDN integrado, cache framework-aware, ISR/SWR e previews/deploy velocity | custo cresce com uso; maior alinhamento a seu ecossistema | $$–$$$ |
+| **Cloudflare** | edge-first / alto volume | Workers, CDN/cache, queues, storage e edge compute em plataforma integrada | arquitetura edge exige disciplina sobre runtimes/limites | $–$$ |
+| **AWS + CloudFront** | controle/enterprise | controle granular de origins, cache policies, serviços AWS e edge | maior carga DevOps/FinOps | $$–$$$ |
+| **Netlify** | JAMstack e equipes web | CDN, Functions, Edge Functions, caching e workflow integrado | adequação depende do framework e workloads dinâmicos | $$ |
+
+Vercel documenta CDN global integrado aos deployments e caching incluindo stale-while-revalidate; Cloudflare Workers combina compute, cache/CDN, queues e storage distribuído; CloudFront usa edge locations para diminuir latência e carga do origin; Netlify permite controlar caching e executar Edge Functions. [^fonte-21]
+
+Como o orçamento é desconhecido, **não há um vencedor absoluto de custo**. TCO precisa incluir:
+
+```text
+TCO =
+  plataforma
++ bandwidth/requests
++ builds
++ CMS seats/API usage
++ observabilidade
++ dados
++ engenharia de plataforma
++ segurança
++ suporte
++ custo de oportunidade editorial
+```
+
+A escolha mais barata na fatura pode ser mais cara se exigir uma pessoa adicional de platform engineering. Da mesma forma, managed hosting mais caro pode ter TCO menor numa equipe pequena.
+
+### Identidade e SSO
+
+Use um único **identity plane**, mesmo que a web pública e o app tenham runtimes separados.
+
+```text
+anonymous visitor
+      ↓
+example.com/blog/...
+      ↓ signup/login
+Authorization Server
+      ↓
+OIDC identity
+      ↓
+app.example.com
+      ↓
+same internal user_id
+```
+
+OpenID Connect é a camada de identidade construída sobre OAuth 2.0 e permite ao cliente verificar a identidade do usuário e receber informações básicas interoperáveis; o RFC 9700 constitui a Best Current Practice atual de segurança OAuth. [^fonte-22]
+
+Recomendação operacional:
+
+- `user_id` interno e imutável;
+- `creator_id` separado do user;
+- handle público mutável;
+- roles/permissions server-side;
+- autenticação centralizada;
+- evitar sessão privilegiada baseada em cookie wildcard compartilhado indiscriminadamente por todos os subdomínios;
+- separar autenticação de autorização editorial.
+
+A atribuição de aquisição deve sobreviver ao handoff `www → app`, mas apenas com dados necessários e dentro das regras de privacidade aplicáveis.
+
+### Tracking e CDP
+
+Arquitetura:
+
+```mermaid
+flowchart LR
+    B["Browser"] --> CMP["Consent state"]
+    CMP --> COL["/m/collect\nfirst-party"]
+    APP["App"] --> COL
+    BE["Backend"] --> COL
+
+    COL --> ROUTE["Event router / CDP"]
+
+    ROUTE --> WH["Warehouse"]
+    ROUTE --> GA["GA4"]
+    ROUTE --> LC["Lifecycle"]
+    ROUTE --> ADS["Ad destinations"]
+
+    CMP -. "policy" .-> ROUTE
+    ID["Identity service"] -. "user_id" .-> ROUTE
+```
+
+Server-side tagging oferece controles adicionais de privacidade, qualidade de dados e performance, e o Google recomenda deployment same-origin/first-party quando possível. Isso permite, por exemplo:
+
+```text
+https://example.com/m/collect
+```
+
+em vez de depender diretamente de um hostname de terceiro. [^fonte-23]
+
+A CDP deve ser **opcional**, não pré-requisito para lançar o blog. Uma arquitetura boa permite começar com collector/event schema → warehouse/GA4 e encaixar um CDP quando existirem casos concretos de audience activation, journey orchestration ou reverse ETL.
+
+### Taxonomia de eventos
+
+Convenção: `object_action`, nomes em `snake_case`, eventos no passado para fatos consumados e IDs estáveis.
+
+| Evento | Momento | Propriedades específicas | Valor |
+|---|---|---|---|
+| `content_viewed` | conteúdo realmente renderizado | `content_id`, `content_type`, `topic` | alcance |
+| `content_engaged` | engagement threshold definido | `engagement_ms`, `scroll_depth` | qualidade |
+| `content_cta_clicked` | CTA | `cta_id`, `cta_type`, `placement` | intenção |
+| `creator_profile_viewed` | visita ao creator | `creator_id`, `source_content_id` | discovery |
+| `creator_followed` | follow concluído | `creator_id` | network effect |
+| `social_share_clicked` | share iniciado | `platform`, `content_id` | distribuição |
+| `newsletter_signup_completed` | inscrição confirmada | `form_id` | captura |
+| `account_signup_started` | início | `persona_hint` | funnel |
+| `account_signup_completed` | conta criada | `user_id` | aquisição |
+| `creator_activation_completed` | activation criterion | `creator_id` | KPI principal |
+| `channel_connected` | integração social | `channel_type` | activation |
+| `first_content_published` | primeiro post | `creator_id` | activation |
+| `subscription_started` | monetização | `plan_id` | receita |
+| `purchase_completed` | compra | `order_id`, `value`, `currency` | receita |
+| `affiliate_link_clicked` | outbound monetizado | `partner_id`, `offer_id` | affiliate |
+
+Envelope comum:
+
+```json
+{
+  "event": "content_cta_clicked",
+  "event_id": "evt_...",
+  "occurred_at": "2026-09-24T18:30:00Z",
+  "anonymous_id": "anon_...",
+  "user_id": null,
+  "session_id": "ses_...",
+  "consent_state": {
+    "analytics": true,
+    "advertising": false
+  },
+  "page": {
+    "canonical_url": "...",
+    "locale": "pt-BR"
+  },
+  "content": {
+    "id": "cnt_...",
+    "type": "guide",
+    "primary_topic": "monetizar"
+  },
+  "acquisition": {
+    "utm_source": "linkedin",
+    "utm_medium": "organic_social",
+    "utm_campaign": "creator-monetization-q3",
+    "utm_content": "carousel-01"
+  }
+}
+```
+
+Google recomenda que URLs de campanha incluam consistentemente `utm_source`, `utm_medium` e `utm_campaign`; os valores são case-sensitive, o que reforça a necessidade de uma nomenclatura governada. [^fonte-24]
+
+Padrão:
+
+```text
+utm_source      = instagram | tiktok | youtube | linkedin | newsletter | partner
+utm_medium      = organic_social | paid_social | email | referral | cpc
+utm_campaign    = {initiative}-{yyyyq#}
+utm_content     = {asset-or-placement}
+utm_id          = {internal-campaign-id}
+```
+
+**Nunca use UTM em links internos.** Links internos devem preservar a atribuição via estado/eventos próprios; UTMs internos sobrescrevem ou confundem a origem da sessão.
+
+### Syndication para redes sociais
+
+Fluxo recomendado:
+
+```text
+CMS publish
+   ↓
+webhook
+   ↓
+queue
+   ↓
+content transformer
+   ├── canonical web article
+   ├── short social excerpt
+   ├── carousel script
+   ├── video/short script
+   ├── newsletter abstract
+   └── in-app object
+          ↓
+platform adapters
+          ↓
+store external_post_id + status + URL
+```
+
+O **artigo permanece source of truth**. Cada plataforma recebe uma transformação apropriada, não simplesmente uma cópia indiscriminada do HTML.
+
+O registro de syndication deve guardar:
+
+```yaml
+syndication:
+  source_content_id: cnt_123
+  channel: linkedin
+  variant_id: v_04
+  external_post_id: "..."
+  campaign_id: "..."
+  published_at: "..."
+  status: published
+```
+
+Backlinks sociais devem usar UTMs padronizados. O CMS deve ser desacoplado das APIs de plataformas por adapters + queue, para que uma mudança ou falha em uma rede não bloqueie publicação no site.
+
+### Monetização
+
+O grafo de conteúdo deve suportar múltiplos caminhos sem contaminar a taxonomia editorial:
+
+```text
+SEO article
+ ├── creator signup
+ ├── follower signup
+ ├── premium plan
+ ├── creator membership
+ ├── marketplace/brand deal
+ ├── affiliate offer
+ ├── sponsorship
+ └── product/tool
+```
+
+Cada caminho deve ter `offer_id`, `placement_id` e eventos específicos, permitindo medir receita por conteúdo sem transformar todas as páginas em landing pages agressivas.
+
+## Privacidade, segurança e governança
+
+### LGPD e GDPR
+
+A LGPD se aplica ao tratamento de dados pessoais inclusive em meios digitais e define tratamento de maneira ampla. Também exige princípios como necessidade, segurança, prevenção, transparência e responsabilização; consentimento, quando usado, deve ser livre, informado, inequívoco e ligado a finalidade determinada. A lei consolidada disponível em setembro de 2026 já incorpora alterações de 2026, inclusive na definição do encarregado. [^fonte-25]
+
+Por isso, o tracking plan precisa conter um **data-processing register**, não somente um spreadsheet de eventos:
+
+| Campo | Exemplo |
+|---|---|
+| dado/evento | `content_viewed` |
+| finalidade | analytics de produto |
+| controlador | A DEFINIR |
+| processador/vendor | A DEFINIR |
+| base legal | definir com jurídico/DPO |
+| consent category | analytics, se aplicável |
+| retenção | A DEFINIR |
+| destino | warehouse/GA4 |
+| região | A DEFINIR |
+| contém identificador? | sim/não |
+| exclusão/DSR | procedimento definido |
+
