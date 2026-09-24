@@ -230,3 +230,66 @@ body {
 		scroll-behavior: auto !important;
 	}
 }
+
+/* ── Leitura editorial (ADR-010, telas de referência 05/06) ─────────────────────────────── */
+/* Callouts do Obsidian (asides do Starlight) como cartões suaves: dica = TipCard, nota = cartão
+   neutro, cuidado/perigo mantêm a cor semântica do Starlight só na borda. */
+.markdown-body .starlight-aside {
+	border: 0;
+	border-radius: var(--radius-md);
+	padding: 1rem 1.25rem;
+	background: var(--surface-subtle);
+	color: var(--foreground);
+}
+.markdown-body .starlight-aside--tip {
+	background: var(--tip-background);
+}
+.markdown-body :is(.starlight-aside--caution, .starlight-aside--danger) {
+	border-inline-start: 4px solid var(--sl-color-asides-border);
+}
+.markdown-body .starlight-aside__title {
+	color: var(--foreground);
+	font-weight: 600;
+}
+/* Citações = QuoteBlock: fundo quente, sem a barra cinza do GitHub. */
+.markdown-body blockquote {
+	border: 0;
+	border-radius: var(--radius-md);
+	padding: 1rem 1.25rem;
+	background: var(--quote-background);
+	color: var(--foreground);
+	font-size: 1.125rem;
+}
+/* Superfícies suaves: código, tabelas, figuras e diagramas com os raios do pacote de design. */
+.markdown-body .expressive-code .frame,
+.markdown-body .grafico,
+.markdown-body picture img {
+	border-radius: var(--radius-sm);
+}
+.markdown-body .grafico {
+	padding: 1rem;
+	background: var(--surface-subtle);
+}
+.markdown-body .grafico figcaption {
+	font-size: 1.125rem;
+}
+/* Títulos de seção sem o traço do GitHub: hierarquia pelo peso e pelo espaço, não por linhas. */
+.markdown-body .sl-heading-wrapper:is(.level-h1, .level-h2) {
+	border-bottom: 0;
+	margin-top: 2.25rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+/* Artigo = coluna única: no desktop, sem o sumário lateral (o sumário continua no menu do topo). */
+@media (min-width: 72rem) {
+	.page:has(.artigo-hero) .right-sidebar-container {
+		display: none;
+	}
+}
+/* Próximos artigos: cartões suaves. */
+.pagination-links a {
+	border: 0;
+	border-radius: var(--radius-md);
+	background: var(--surface-subtle);
+	box-shadow: none;
+}

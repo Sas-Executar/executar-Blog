@@ -42,6 +42,7 @@ export default defineConfig({
 				PageFrame: theme('overrides/PageFrame.astro'),
 				Pagination: theme('overrides/Pagination.astro'),
 				ThemeSelect: theme('overrides/ThemeSelect.astro'),
+				PageTitle: './src/components/ArticleHero.astro',
 				MarkdownContent: './src/components/MarkdownContent.astro',
 				Head: './src/components/Head.astro',
 			},
