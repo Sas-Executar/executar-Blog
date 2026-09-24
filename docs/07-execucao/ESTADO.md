@@ -66,6 +66,8 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - **Studio** (`apps/studio`): editor, preview com o mesmo parser em WebAssembly (COOP/COEP), validação, propriedades → frontmatter, imagens, rascunho local, Rascunho/Preview/PR/Publicar, PDF/EPUB. O Worker tem Access JWT (fail closed), GitHub App ou PAT, Publish API (Git Data API) e MCP (`/mcp`).
 - **Exports:** `npm run export:epub` (XML validado nos 3 artigos e na fixture) e `npm run export:pdf` (11 páginas geradas a partir do blog local).
 - **Evidência:** `npm run check` ok (51 testes unitários, contraste, guard); `npm run build` ok; `npm run test:e2e` com 35/35 (31 do blog + 4 do Studio, axe incluído).
+- **FRD/PRD do Studio fechados (commit `38bb427`):** validação com linha exata, RBAC, auditoria, conflitos e idempotência, histórico/rollback, status do build, comandos "/" e eBook multicapítulo. Matriz em `docs/06-docs/STUDIO-RASTREABILIDADE.md`; 56 testes unitários e 40 e2e.
+- **Produção (2026-09-24 17:15 UTC):** o build do blog `00a440d0…` (`5dec061`) terminou com sucesso. O Worker `executar-studio` foi criado via API, com gatilho `b5802fab…` na `main`, e o 1º build `f4b290c1…` terminou com sucesso. https://executar-studio.sas-executar.workers.dev serve a interface com COOP/COEP; `/api/eu` e `/mcp` respondem **403** sem Access (fail closed confirmado). Os builds de `38bb427` estão na fila.
 - **Pendente (usuário):** credencial do GitHub (App ou PAT) e ativação do Zero Trust com os e-mails autorizados; ver ADR-014 e o guia, seção 6.
 
 ## Nova conta Cloudflare (2026-09-24)
