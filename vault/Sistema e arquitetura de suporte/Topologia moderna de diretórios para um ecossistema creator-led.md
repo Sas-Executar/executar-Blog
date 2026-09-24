@@ -298,3 +298,203 @@ article:
   content_format: "guide"
   author_id: "usr_..."
   featured_creators:
+    - "creator_..."
+  locale: "pt-BR"
+  canonical_url: "..."
+  published_at: "..."
+  updated_at: "..."
+  schema_version: 3
+```
+
+### Taxonomia recomendada
+
+A taxonomia deve separar dimensões que frequentemente são misturadas:
+
+| Dimensão | Exemplos | Deve gerar URL indexável? |
+|---|---|---|
+| **Job-to-be-done/pilar** | criar, crescer, engajar, monetizar, operar | **Sim**, se houver hub curado |
+| Persona | iniciante, creator pro, agência, follower | geralmente não |
+| Formato | guia, estudo, entrevista, benchmark | só se houver volume/intenção |
+| Plataforma/canal | Instagram, YouTube, TikTok etc. | somente hubs com demanda e conteúdo suficientes |
+| Vertical | música, gaming, educação, beleza | conforme estratégia |
+| Funil | awareness, consideration, activation | não |
+| Tags livres | termos editoriais | **não por padrão** |
+
+O risco a evitar é criar automaticamente centenas de archives finos. Uma tag só deve virar landing page indexável quando puder funcionar como **destino editorial real**, com introdução, seleção e links próprios.
+
+### Link graph
+
+A arquitetura deve ser pensada como um grafo:
+
+```mermaid
+flowchart LR
+    T["Hub de tópico"] --> A1["Artigo"]
+    T --> A2["Artigo"]
+    T --> A3["Artigo"]
+
+    A1 --> A2
+    A1 --> CP["Perfil de creator"]
+    A2 --> TOOL["Recurso / ferramenta"]
+    A3 --> CP
+
+    AU["Página de autor"] --> A1
+    AU --> A2
+
+    CP --> PROD["CTA produto"]
+    TOOL --> PROD
+    A1 --> PROD
+    A2 --> PROD
+```
+
+Cada artigo deve ter um caminho editorial claro para um hub, autor, conteúdos relacionados e próximo passo de produto. Além de ajudar usuários, links internos são parte do mecanismo de descoberta e entendimento do site pelos mecanismos de busca; por isso, eles devem ser links HTML rastreáveis com anchors descritivos, não navegação dependente apenas de handlers JavaScript.
+
+### Canonicalização
+
+Cada página editorial original deve emitir canonical autocanônico:
+
+```html
+<link
+  rel="canonical"
+  href="https://example.com/blog/como-crescer-comunidade/"
+/>
+```
+
+O Google considera redirects e `rel="canonical"` sinais fortes de canonicalização e sitemap um sinal mais fraco; combinar sinais consistentes é preferível. Links internos também devem apontar diretamente para a versão canônica. [^fonte-15]
+
+Portanto:
+
+```text
+/blog/post?utm_source=linkedin
+/blog/post?ref=creator123
+/blog/post?campaign=launch
+```
+
+devem continuar com:
+
+```text
+canonical → /blog/post/
+```
+
+UTMs servem para atribuição, não para criar novas identidades editoriais.
+
+### Internacionalização e `hreflang`
+
+Como o mercado inicial foi assumido como pt-BR, há duas opções:
+
+**Sem internacionalização comprometida no curto prazo:**
+
+```text
+https://example.com/blog/{slug}/
+```
+
+**Internacionalização já contratada no roadmap:**
+
+```text
+https://example.com/pt-br/blog/{slug}/
+https://example.com/en/blog/{slug}/
+https://example.com/es/blog/{slug}/
+```
+
+Google suporta `hreflang` com código de idioma ISO 639-1 e região opcional ISO 3166-1 Alpha 2, além de `x-default` para fallback. [^fonte-16]
+
+Exemplo:
+
+```html
+<link rel="alternate"
+      hreflang="pt-BR"
+      href="https://example.com/pt-br/blog/monetizacao/" />
+
+<link rel="alternate"
+      hreflang="en"
+      href="https://example.com/en/blog/monetization/" />
+
+<link rel="alternate"
+      hreflang="x-default"
+      href="https://example.com/blog/" />
+```
+
+Não se deve criar versões linguísticas vazias ou traduções automáticas apenas para preencher a arquitetura. Internacionalizar URLs sem capacidade editorial correspondente aumenta complexidade sem gerar o benefício pretendido.
+
+### Structured data
+
+O mínimo útil:
+
+| Página | Schema |
+|---|---|
+| Artigo | `Article` ou subtipo adequado |
+| Página de autor | `ProfilePage` + `Person` |
+| Creator | `ProfilePage` + `Person`/`Organization` |
+| Breadcrumb | `BreadcrumbList` |
+| Entidade principal | `Organization` |
+| Vídeo original | `VideoObject`, quando aplicável |
+
+Google mantém documentação específica tanto para `Article` quanto para `ProfilePage`; para perfis, o markup pode conectar a entidade aos seus conteúdos recentes com `hasPart`, e `sameAs` pode referenciar perfis externos. [^fonte-17]
+
+Exemplo simplificado de perfil:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "mainEntity": {
+    "@type": "Person",
+    "name": "Nome do Creator",
+    "alternateName": "@creator",
+    "identifier": "creator_01H...",
+    "url": "https://example.com/criadores/creator/",
+    "sameAs": [
+      "https://social.example/creator"
+    ]
+  }
+}
+```
+
+### Performance
+
+Os budgets iniciais devem ser medidos com dados de usuários reais. Como referência, a documentação atual do Google recomenda LCP de até 2,5 segundos e INP abaixo de 200 ms para a faixa considerada boa; Core Web Vitals medem carregamento, responsividade e estabilidade visual. [^fonte-18]
+
+Consequências arquiteturais:
+
+- HTML editorial preferencialmente estático/cached ou incrementalmente regenerado;
+- imagens transformadas no CDN;
+- JavaScript de marketing sob orçamento;
+- scripts de terceiros retardados quando não essenciais;
+- conteúdo acima da dobra não deve depender de chamadas client-side lentas;
+- publicação CMS deve invalidar somente as páginas afetadas, não rebuildar o universo inteiro;
+- páginas de creators em grande escala devem usar rendering/cache incremental, não builds completos a cada deploy.
+
+## Plataforma, CMS, identidade, dados e infraestrutura
+
+### Comparação de CMS
+
+| Opção | Modelo | Melhor cenário | Vantagens | Trade-offs | TCO relativo |
+|---|---|---|---|---|---|
+| **Sanity** | Headless/structured content | ecossistema multicanal e product-content | conteúdo estruturado/referenciável; GROQ/GraphQL; webhooks; bom para reutilização | requer frontend e modelagem próprios | $$ |
+| **Contentful** | SaaS headless | enterprise e equipes editoriais governadas | Delivery API via CDN; Management API; workflows de conteúdo | custo SaaS e modelagem mais rígida dependendo do plano | $$–$$$ |
+| **Strapi** | Headless open source/self-hostable | controle de código, dados e infraestrutura | código MIT, REST/GraphQL, backend extensível, self-host ou cloud | operação, upgrades e segurança passam mais para a equipe | $–$$$ |
+| **WordPress híbrido** | monolítico + REST API | migração rápida/equipe WordPress | UX editorial madura e grande ecossistema; REST API permite frontend separado | plugins/updates e consistência arquitetural exigem disciplina | $–$$ |
+| **WordPress Multisite** | rede | muitos sites editoriais independentes | administração de múltiplos sites/domínios | complexidade desnecessária para um único acquisition blog | $$ |
+
+As capacidades centrais acima são documentadas pelos próprios produtos: Sanity posiciona conteúdo como dados estruturados para entrega a qualquer canal; Contentful fornece Delivery e Management APIs; Strapi fornece REST/GraphQL e opção self-hosted; WordPress expõe posts, páginas, taxonomias e outros objetos via REST API. [^fonte-19]
+
+**Escolha recomendada:** Sanity/headless quando o blog será realmente a primeira superfície de uma **content platform**. WordPress híbrido vence quando o principal risco é time-to-market editorial e já existe uma organização WordPress madura.
+
+### Topologia de código
+
+Para frontend próprio, um monorepo reduz divergência entre SEO, analytics e design system:
+
+```text
+repo/
+├── apps/
+│   ├── web/                  # site público + blog
+│   ├── studio/               # CMS customizado, se aplicável
+│   └── event-collector/      # endpoint first-party
+│
+├── packages/
+│   ├── design-system/
+│   ├── content-schema/
+│   ├── analytics-schema/
+│   ├── seo/
+│   ├── auth/
+│   └── social-syndication/
+│
