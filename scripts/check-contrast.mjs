@@ -17,6 +17,9 @@ export const PAIRS = [
 	['foreground', 'code-background'],
 	['muted', 'code-background'],
 	['on-accent', 'accent'],
+	['foreground', 'quote-background'],
+	['foreground', 'tip-background'],
+	['muted', 'surface-subtle'],
 ];
 
 function luminance(hex) {

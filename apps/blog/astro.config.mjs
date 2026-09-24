@@ -32,6 +32,8 @@ export default defineConfig({
 				theme('styles/theme.css'),
 				theme('styles/centered-reading.css'),
 				theme('styles/common.css'),
+				'@fontsource-variable/geist',
+				'@fontsource-variable/geist-mono',
 				'./src/styles/github.css',
 				'./src/styles/tokens.css',
 			],
