@@ -1098,3 +1098,69 @@ tenant-aware content
 O modelo resolve a principal tensão do problema: **maximiza coesão na superfície pública sem obrigar blog, aplicação, CMS, identidade e pipelines de dados a compartilhar o mesmo runtime**.
 
 A decisão deve ser considerada tecnicamente aceita quando os seguintes invariantes forem verdadeiros:
+
+| Invariante | Aceite |
+|---|---|
+| **Uma entidade, uma identidade** | conteúdo, usuário e creator têm IDs estáveis independentes da URL |
+| **Uma página pública, uma canonical** | parâmetros de campanha não multiplicam documentos |
+| **URLs não codificam taxonomia volátil** | reclassificar conteúdo não exige redirect |
+| **Conteúdo é estruturado** | web/social/newsletter podem consumir o mesmo source |
+| **Produto e conteúdo compartilham identidade** | signup originado no blog é conectável à ativação |
+| **Tracking é first-party e governado** | schema, consent state, event IDs e UTMs são consistentes |
+| **SEO é parte do CI** | canonical, links, JSON-LD, robots e sitemap são testáveis |
+| **Creators são entidades do grafo** | artigos podem apontar para perfis e perfis para conteúdo |
+| **Tenancy é explícita** | expansão para creator publishing não exige reescrever o editorial |
+| **Privacidade é enforcement, não documento** | destinos de dados obedecem consentimento/base legal definida |
+| **Migrações são reversíveis/rastreáveis** | schemas, redirect maps e content migrations ficam versionados |
+| **Distribuição é desacoplada** | falha em API social não impede publicação web |
+| **Performance é medida em campo** | Core Web Vitals/RUM entram no SLO operacional |
+| **Custo é observável** | budgets de CDN, compute, CMS e data são monitorados |
+
+Essa recomendação também evita três anti-patterns particularmente caros: usar `blog.example.com` apenas por conveniência organizacional; transformar cada filtro/tag em URL indexável; e lançar multi-tenancy antes de existir autonomia real de publicação por creators. A orientação atual do Google favorece estrutura rastreável, conteúdo people-first e sinais canônicos consistentes, enquanto `ProfilePage` oferece uma ponte particularmente adequada entre conteúdo editorial e o grafo de creators de uma plataforma social. [^fonte-42]
+
+**Arquitetura-base recomendada para 2026:** **domínio público unificado + app separado + CMS headless estruturado + identidade OIDC compartilhada + collector first-party/server-side + taxonomy-as-data + creator profiles como entidades públicas + multi-tenancy adiada até ser uma necessidade de produto real**. Essa configuração preserva simplicidade no lançamento e, ao mesmo tempo, deixa caminhos claros para internacionalização, publicação por creators, custom domains, syndication, monetização e escala sem obrigar uma segunda reestruturação fundamental.
+
+## Fontes do relatório
+
+[^fonte-1]: [developers.google.com](https://developers.google.com/search/docs/appearance/ai-features); [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/url-structure)
+[^fonte-2]: [developer.wordpress.org](https://developer.wordpress.org/advanced-administration/multisite/)
+[^fonte-3]: [sanity.io](https://www.sanity.io/docs/content-lake)
+[^fonte-4]: [contentful.com](https://contentful.com/developers/docs/sdks/javascript/sdks); [developer.wordpress.org](https://developer.wordpress.org/rest-api/); [strapi.io](https://strapi.io/)
+[^fonte-5]: [developers.google.com](https://developers.google.com/tag-platform/tag-manager/server-side); [developers.google.com](https://developers.google.com/tag-platform/tag-manager/server-side/custom-domain); [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/L13709compilado.htm)
+[^fonte-6]: [developers.google.com](https://developers.google.com/search/docs/appearance/structured-data/article); [developers.google.com](https://developers.google.com/search/docs/appearance/structured-data/profile-page)
+[^fonte-7]: [developers.google.com](https://developers.google.com/analytics/devguides/collection/protocol/ga4)
+[^fonte-8]: [developers.google.com](https://developers.google.com/search/docs/appearance/ai-features); [developers.google.com](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
+[^fonte-9]: [contentful.com](https://contentful.com/developers/docs/sdks/javascript/sdks); [sanity.io](https://www.sanity.io/docs/content-lake)
+[^fonte-10]: [developer.wordpress.org](https://developer.wordpress.org/advanced-administration/multisite/)
+[^fonte-11]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/url-structure)
+[^fonte-12]: [developers.google.com](https://developers.google.com/search/docs/appearance/structured-data/profile-page)
+[^fonte-13]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/url-structure)
+[^fonte-14]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes); [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/url-structure)
+[^fonte-15]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+[^fonte-16]: [developers.google.com](https://developers.google.com/search/docs/specialty/international/localized-versions)
+[^fonte-17]: [developers.google.com](https://developers.google.com/search/docs/appearance/structured-data/article); [developers.google.com](https://developers.google.com/search/docs/appearance/structured-data/profile-page); [schema.org](https://schema.org/Article); [schema.org](https://schema.org/BreadcrumbList)
+[^fonte-18]: [developers.google.com](https://developers.google.com/search/docs/appearance/core-web-vitals?hl=pt-br)
+[^fonte-19]: [contentful.com](https://contentful.com/developers/docs/sdks/javascript/sdks); [developer.wordpress.org](https://developer.wordpress.org/rest-api/); [strapi.io](https://strapi.io/); [sanity.io](https://www.sanity.io/docs/content-lake)
+[^fonte-20]: [docs.github.com](https://docs.github.com/en/code-security/concepts/supply-chain-security/best-practices-for-maintaining-dependencies); [docs.github.com](https://docs.github.com/en/code-security/concepts/supply-chain-security/best-practices-for-maintaining-dependencies?utm_source=chatgpt.com); [docs.github.com](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/automate-dependabot-with-actions); [docs.github.com](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/automate-dependabot-with-actions?utm_source=chatgpt.com)
+[^fonte-21]: [developers.cloudflare.com](https://developers.cloudflare.com/workers/); [docs.aws.amazon.com](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html); [docs.aws.amazon.com](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html?utm_source=chatgpt.com); [docs.netlify.com](https://docs.netlify.com/build/caching/caching-overview/); [docs.netlify.com](https://docs.netlify.com/build/caching/caching-overview/?utm_source=chatgpt.com); [docs.netlify.com](https://docs.netlify.com/build/edge-functions/overview/); [docs.netlify.com](https://docs.netlify.com/build/edge-functions/overview/?utm_source=chatgpt.com); [vercel.com](https://vercel.com/docs/caching/cache-control-headers); [vercel.com](https://vercel.com/docs/caching/cache-control-headers?utm_source=chatgpt.com); [vercel.com](https://vercel.com/docs/cdn); [vercel.com](https://vercel.com/docs/cdn?utm_source=chatgpt.com)
+[^fonte-22]: [openid.net](https://openid.net/specs/openid-connect-core-1_0.html); [rfc-editor.org](https://www.rfc-editor.org/info/rfc9700/)
+[^fonte-23]: [developers.google.com](https://developers.google.com/tag-platform/tag-manager/server-side); [developers.google.com](https://developers.google.com/tag-platform/tag-manager/server-side/custom-domain)
+[^fonte-24]: [support.google.com](https://support.google.com/analytics/answer/10917952?hl=en)
+[^fonte-25]: [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/L13709compilado.htm)
+[^fonte-26]: [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/L13709compilado.htm)
+[^fonte-27]: [gov.br](https://www.gov.br/anpd/pt-br/documentos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf)
+[^fonte-28]: [eur-lex.europa.eu](https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng)
+[^fonte-29]: [developers.google.com](https://developers.google.com/tag-platform/tag-manager/server-side); [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/L13709compilado.htm)
+[^fonte-30]: [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/L13709compilado.htm)
+[^fonte-31]: [rfc-editor.org](https://www.rfc-editor.org/info/rfc9700/)
+[^fonte-32]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-33]: [developers.google.com](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
+[^fonte-34]: [developers.google.com](https://developers.google.com/search/docs/specialty/international/localized-versions)
+[^fonte-35]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-36]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-37]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-38]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-39]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/301-redirects); [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-40]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-41]: [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes)
+[^fonte-42]: [developers.google.com](https://developers.google.com/search/docs/appearance/structured-data/profile-page); [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls); [developers.google.com](https://developers.google.com/search/docs/crawling-indexing/url-structure); [developers.google.com](https://developers.google.com/search/docs/fundamentals/creating-helpful-content)
