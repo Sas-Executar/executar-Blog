@@ -1,0 +1,110 @@
+---
+// Capa ilustrativa dos artigos, no padrão do EXECUTAR Showroom (Desyng System): cubo de marca
+// entre dois cubos neutros, com um selo de ícone por categoria. Decorativa (aria-hidden).
+import Icone from './Icone.astro';
+import type { Icone as NomeIcone } from '../lib/artigos';
+
+interface Props {
+	icone: NomeIcone;
+	grande?: boolean;
+}
+const { icone, grande = false } = Astro.props;
+---
+
+<div class:list={['ilustracao', { grande }]} aria-hidden="true">
+	<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet">
+		<line x1="70" y1="70" x2="170" y2="130" class="traco verde"></line>
+		<line x1="330" y1="70" x2="240" y2="125" class="traco azul"></line>
+		<g transform="translate(110 150)">
+			<path d="M0 -38 38 -16 0 6 -38 -16z" class="face topo-neutro"></path>
+			<path d="M-38 -16 0 6 0 50 -38 28z" class="face esq-neutro"></path>
+			<path d="M38 -16 0 6 0 50 38 28z" class="face dir-neutro"></path>
+		</g>
+		<g transform="translate(290 150)">
+			<path d="M0 -38 38 -16 0 6 -38 -16z" class="face topo-neutro"></path>
+			<path d="M-38 -16 0 6 0 50 -38 28z" class="face esq-neutro"></path>
+			<path d="M38 -16 0 6 0 50 38 28z" class="face dir-neutro"></path>
+		</g>
+		<g transform="translate(200 105)">
+			<path d="M0 -50 50 -21 0 8 -50 -21z" class="face topo-marca"></path>
+			<path d="M-50 -21 0 8 0 66 -50 37z" class="face esq-marca"></path>
+			<path d="M50 -21 0 8 0 66 50 37z" class="face dir-marca"></path>
+		</g>
+	</svg>
+	<span class="selo"><Icone nome={icone} tamanho={14} /></span>
+</div>
+
+<style>
+	.ilustracao {
+		position: relative;
+		aspect-ratio: 16 / 9;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		background: linear-gradient(160deg, var(--surface), var(--background));
+		overflow: hidden;
+	}
+	.ilustracao svg {
+		width: 100%;
+		height: 100%;
+	}
+	.traco {
+		stroke-width: 3;
+	}
+	.verde {
+		stroke: var(--color-green-4);
+	}
+	.azul {
+		stroke: var(--color-azure-4);
+	}
+	.face {
+		stroke: var(--color-neutral-6);
+		stroke-width: 1;
+		stroke-linejoin: round;
+	}
+	.topo-neutro {
+		fill: var(--color-neutral-1);
+	}
+	.esq-neutro {
+		fill: var(--color-neutral-3);
+	}
+	.dir-neutro {
+		fill: var(--color-neutral-4);
+	}
+	.topo-marca {
+		fill: var(--color-green-8);
+		stroke: var(--color-green-10);
+	}
+	.esq-marca {
+		fill: var(--color-green-9);
+		stroke: var(--color-green-10);
+	}
+	.dir-marca {
+		fill: var(--color-green-11);
+		stroke: var(--color-green-10);
+	}
+	.selo {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		display: grid;
+		place-items: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface);
+		color: var(--brand-text);
+	}
+	:global([data-theme='dark']) .face {
+		stroke: #3a3a3a;
+	}
+	:global([data-theme='dark']) .topo-neutro {
+		fill: #3a3a3a;
+	}
+	:global([data-theme='dark']) .esq-neutro {
+		fill: #2e2e2e;
+	}
+	:global([data-theme='dark']) .dir-neutro {
+		fill: #262626;
+	}
+</style>

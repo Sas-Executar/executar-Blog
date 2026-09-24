@@ -16,7 +16,8 @@
     "test:unit": "node --test \"tests/unit/*.test.mjs\"",
     "test:e2e": "playwright test",
     "content:sync": "npm run content:sync -w apps/blog",
-    "update:upstream": "npm update && npm run check && npm run build"
+    "update:upstream": "npm update && npm run check && npm run build",
+    "tokens:sync": "node scripts/sync-design-tokens.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

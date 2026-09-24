@@ -53,6 +53,13 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - Limitação: `content:sync` não roda nesta sessão, porque o Mermaid precisa do Chromium 1243 e só há o 1194. As páginas geradas receberam a mesma troca figure → chart aplicada ao vault; o próximo `content:sync` com Chromium gera o mesmo resultado. O tema lilás do Mermaid (opção A) fica para quando o sync rodar.
 - Fora do escopo: Explorar, Categoria, Salvos, Preferências e BottomNav.
 
+## Desyng System + blog completo (ADR-012) — 2026-09-24 — VERIFIED (local)
+
+- Tokens do Desyng System (`5b14182`) via `npm run tokens:sync`, com o shell do Showroom (sem barra lateral, cabeçalho com as seções, barra inferior no celular) e Geist e HIG mantidos.
+- Conteúdo: `/blog`, com 3 artigos com pilar e consciência (P1/C1, P1/C2, P3/C3) e 301 de `/artigos/*`.
+- Rotas: Hoje, Explorar, Categoria, Artigo, Buscar, Salvos e Preferências (HF01–HF05).
+- Evidência: `npm run check` (0 erros, 25 testes unitários, contraste 12 pares × 4 modos, guard ok), `npm run build` ok e `npm run test:e2e` 25/25. Os e2e cobrem Busca com e sem resultado, Explorar com filtros e estado vazio, Salvos (adicionar, remover e vazio), Preferências (tema e texto), Copiar link, redirecionamento, barra inferior de 44pt, axe em 10 páginas nos modos claro e escuro, e teclado.
+
 ## Nova conta Cloudflare (2026-09-24)
 
 - O usuário criou uma conta nova, `Sas_executar@outlook.com's Account` (`99b69…`), para um build e deploy do zero. A conta antiga (`92fdc…`, Worker `executar-blogg`) fica desativada para este fluxo.

@@ -1,6 +1,11 @@
 ---
 title: "Fatores de Riscos Cognitivos"
 description: "A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA"
+autor: "Equipe EXECUTAR"
+papel: "Editorial"
+pilar: "P1"
+consciencia: "C2"
+data: 2026-09-24
 ---
 
 > [!summary] Frase-síntese

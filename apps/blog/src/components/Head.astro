@@ -6,6 +6,14 @@ import Default from '@astrojs/starlight/components/Head.astro';
 ---
 
 <Default><slot /></Default>
+<script is:inline>
+	// Preferências (HF05) aplicadas antes da pintura: tamanho do texto e movimento. O tema já é
+	// aplicado pelo próprio Starlight (chave starlight-theme), antes deste script.
+	try {
+		document.documentElement.dataset.texto = localStorage.getItem('executar:texto') || 'padrao';
+		document.documentElement.dataset.movimento = localStorage.getItem('executar:movimento') || 'padrao';
+	} catch {}
+</script>
 <script>
 	// Carrega o ECharts só quando o gráfico entra na tela (custo zero em páginas sem gráficos).
 	// Reobserva em navegações client-side (astro:page-load) e cobre load normal (chamada direta).
@@ -28,9 +36,11 @@ import Default from '@astrojs/starlight/components/Head.astro';
 		const echarts = await import('echarts');
 		const escuro = document.documentElement.dataset.theme === 'dark';
 		const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
-		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.movimento === 'reduzido';
 		chart.setOption({
 			backgroundColor: 'transparent',
+			// Paleta do Desyng System (ADR-012): verde e azure de marca, depois neutros.
+			color: ['#00BF63', '#1F93FF', '#007A45', '#0B6FD3', '#7C7B7B'],
 			animation: !reduzir,
 			// HIG: a descrição acessível é o título + resumo do autor, não a gerada automaticamente.
 			aria: { enabled: true, label: { description: el.dataset.descricao } },
@@ -47,13 +57,14 @@ import Default from '@astrojs/starlight/components/Head.astro';
 		if (graficos.size === 0) return;
 		const echarts = await import('echarts');
 		const escuro = document.documentElement.dataset.theme === 'dark';
-		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.movimento === 'reduzido';
 		for (const [el, chartAntigo] of graficos) {
 			const opcoes = { ...JSON.parse(el.dataset.grafico!) };
 			chartAntigo.dispose();
 			const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
 			chart.setOption({
 				backgroundColor: 'transparent',
+				color: ['#00BF63', '#1F93FF', '#007A45', '#0B6FD3', '#7C7B7B'],
 				animation: !reduzir,
 				aria: { enabled: true, label: { description: el.dataset.descricao } },
 				...opcoes,

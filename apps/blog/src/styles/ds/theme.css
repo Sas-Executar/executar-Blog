@@ -1,0 +1,61 @@
+/* Desyng System @ 5b14182 — gerado por scripts/sync-design-tokens.mjs, não editar. */
+/* AUTO-GENERATED semantic theme layer. Consumes variables.css. */
+:root, [data-theme='light'] {
+  --semantic-background-canvas: var(--color-neutral-2);
+  --semantic-background-surface: var(--color-neutral-1);
+  --semantic-background-elevated: var(--color-neutral-1);
+  --semantic-text-primary: var(--color-neutral-12);
+  --semantic-text-secondary: var(--color-neutral-11);
+  --semantic-text-muted: var(--color-neutral-10);
+  --semantic-text-on_brand: var(--color-neutral-1);
+  --semantic-text-link: var(--color-azure-11);
+  --semantic-border-subtle: var(--color-neutral-4);
+  --semantic-border-default: var(--color-neutral-6);
+  --semantic-border-strong: var(--color-neutral-8);
+  --semantic-border-focus: var(--color-azure-8);
+  --semantic-action-primary: var(--color-green-9);
+  --semantic-action-primary_hover: var(--color-green-10);
+  --semantic-action-primary_text: var(--color-neutral-1);
+  --semantic-action-secondary: var(--color-azure-9);
+  --semantic-action-secondary_hover: var(--color-azure-10);
+  --semantic-state-success: var(--color-green-9);
+  --semantic-state-success_text: var(--color-green-11);
+  --semantic-state-info: var(--color-azure-9);
+  --semantic-state-info_text: var(--color-azure-11);
+  --semantic-state-warning: var(--color-warning-9);
+  --semantic-state-warning_text: var(--color-warning-11);
+  --semantic-state-error: var(--color-error-9);
+  --semantic-state-error_text: var(--color-error-11);
+  --semantic-focus-ring: var(--color-azure-8);
+}
+
+/* Dark theme: alias remap only — not yet accessibility-audited, see ACCESSIBILITY.md. */
+[data-theme='dark'] {
+  --semantic-background-canvas: var(--color-neutral-12);
+  --semantic-background-surface: var(--color-neutral-11);
+  --semantic-background-elevated: var(--color-neutral-10);
+  --semantic-text-primary: var(--color-neutral-1);
+  --semantic-text-secondary: var(--color-neutral-4);
+  --semantic-text-muted: var(--color-neutral-6);
+  --semantic-text-on_brand: var(--color-neutral-1);
+  --semantic-text-link: var(--color-azure-7);
+  --semantic-border-subtle: var(--color-neutral-10);
+  --semantic-border-default: var(--color-neutral-9);
+  --semantic-border-strong: var(--color-neutral-7);
+  --semantic-action-primary: var(--color-green-8);
+  --semantic-action-primary_hover: var(--color-green-7);
+  --semantic-action-secondary: var(--color-azure-8);
+  --semantic-state-success_text: var(--color-green-7);
+  --semantic-state-info_text: var(--color-azure-7);
+  --semantic-state-warning_text: var(--color-warning-7);
+  --semantic-state-error_text: var(--color-error-7);
+}
+
+/* High-contrast theme (WCAG AAA-leaning): reinforced pairs. RECOMMENDED — not audited yet. */
+[data-theme='high-contrast'] {
+  --semantic-text-primary: var(--color-neutral-12);
+  --semantic-background-canvas: var(--color-neutral-1);
+  --semantic-border-default: var(--color-neutral-12);
+  --semantic-action-primary: var(--color-green-11);
+  --semantic-action-secondary: var(--color-azure-11);
+}

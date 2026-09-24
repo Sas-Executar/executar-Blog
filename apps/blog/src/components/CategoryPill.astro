@@ -1,0 +1,27 @@
+---
+// Selo de categoria (Desyng System: overline em verde sobre verde-claro).
+interface Props {
+	nome: string;
+	href?: string;
+}
+const { nome, href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class="selo-categoria" href={href}>{nome}</Tag>
+
+<style>
+	.selo-categoria {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.1875rem 0.5rem;
+		border-radius: var(--radius-pill);
+		background: var(--brand-soft);
+		color: var(--brand-text);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		text-decoration: none;
+	}
+</style>

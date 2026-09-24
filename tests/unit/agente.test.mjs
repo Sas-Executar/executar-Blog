@@ -16,11 +16,11 @@ test('agente usa só ferramentas de leitura, sem settings locais, no vault', () 
 test('converte caminho do vault em URL publicada', () => {
 	assert.deepEqual(toArticle('Pessoa e cognição/Memória prospectiva.md'), {
 		titulo: 'Memória prospectiva',
-		url: '/artigos/pessoa-e-cognição/memória-prospectiva/',
+		url: '/blog/pessoa-e-cognição/memória-prospectiva/',
 	});
 	assert.deepEqual(toArticle('./Fatores de Riscos Cognitivos.md'), {
 		titulo: 'Fatores de Riscos Cognitivos',
-		url: '/artigos/fatores-de-riscos-cognitivos/',
+		url: '/blog/fatores-de-riscos-cognitivos/',
 	});
 });
 
@@ -38,7 +38,7 @@ test('devolve resposta estruturada com fontes deduplicadas', async () => {
 		]),
 	});
 	assert.equal(out.resposta, 'Agrupe tarefas.');
-	assert.deepEqual(out.fontes, [{ titulo: 'Troca de tarefas', url: '/artigos/tarefa-e-fluxo-de-execução/troca-de-tarefas/' }]);
+	assert.deepEqual(out.fontes, [{ titulo: 'Troca de tarefas', url: '/blog/tarefa-e-fluxo-de-execução/troca-de-tarefas/' }]);
 });
 
 test('erro quando o agente não conclui', async () => {

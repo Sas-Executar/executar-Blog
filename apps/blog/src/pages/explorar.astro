@@ -1,0 +1,129 @@
+---
+// Explorar (HF01): filtros independentes por categoria, pilar e nível de consciência (ADR-P04).
+// Tudo renderizado no build; o filtro só mostra/esconde cards e guarda o estado na URL.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import ListaArtigos from '../components/ListaArtigos.astro';
+import { CONSCIENCIA, PILARES, artigos, categorias } from '../lib/artigos';
+
+const lista = await artigos();
+const grupos = [
+	{ chave: 'categoria', rotulo: 'Categoria', opcoes: (await categorias()).map((c) => ({ valor: c.slug, nome: c.nome })) },
+	{ chave: 'pilar', rotulo: 'Pilar', opcoes: Object.entries(PILARES).map(([valor, nome]) => ({ valor, nome: `${valor} · ${nome}` })) },
+	{ chave: 'consciencia', rotulo: 'Nível de consciência', opcoes: Object.entries(CONSCIENCIA).map(([valor, nome]) => ({ valor, nome: `${valor} · ${nome}` })) },
+];
+---
+
+<StarlightPage frontmatter={{ title: 'Explorar', description: 'Explore os artigos por categoria, pilar editorial e nível de consciência.', template: 'splash' }}>
+	<div class="pagina-larga explorar not-content">
+		<p class="intro">Combine os filtros para encontrar o próximo artigo. O pilar diz sobre o que é o texto; a consciência diz em que momento da leitura ele ajuda.</p>
+		<div class="filtros" data-filtros>
+			{
+				grupos.map((g) => (
+					<fieldset>
+						<legend>{g.rotulo}</legend>
+						<div class="opcoes">
+							<button type="button" data-grupo={g.chave} data-valor="" aria-pressed="true">
+								Todos
+							</button>
+							{g.opcoes.map((o) => (
+								<button type="button" data-grupo={g.chave} data-valor={o.valor} aria-pressed="false">
+									{o.nome}
+								</button>
+							))}
+						</div>
+					</fieldset>
+				))
+			}
+		</div>
+		<p class="contagem" role="status" data-contagem>{lista.length} artigos</p>
+		<ListaArtigos lista={lista} vazio="Nenhum artigo combina com esses filtros. Tente tirar um deles." />
+	</div>
+</StarlightPage>
+
+<script>
+	function iniciar() {
+		const raiz = document.querySelector<HTMLElement>('.explorar');
+		if (!raiz || raiz.dataset.pronto) return;
+		raiz.dataset.pronto = 'true';
+		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('[data-grupo]')];
+		const cards = [...raiz.querySelectorAll<HTMLElement>('.post-card')];
+		const vazio = raiz.querySelector<HTMLElement>('[data-vazio]')!;
+		const contagem = raiz.querySelector<HTMLElement>('[data-contagem]')!;
+		const filtros = new URLSearchParams(location.search);
+
+		function aplicar() {
+			for (const b of botoes) b.setAttribute('aria-pressed', String((filtros.get(b.dataset.grupo!) ?? '') === b.dataset.valor));
+			let visiveis = 0;
+			for (const c of cards) {
+				const ok = ['categoria', 'pilar', 'consciencia'].every((g) => !filtros.get(g) || c.dataset[g] === filtros.get(g));
+				c.hidden = !ok;
+				if (ok) visiveis++;
+			}
+			vazio.hidden = visiveis > 0;
+			contagem.textContent = visiveis === 1 ? '1 artigo' : `${visiveis} artigos`;
+			const qs = filtros.toString();
+			history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+		}
+
+		for (const b of botoes) {
+			b.addEventListener('click', () => {
+				if (b.dataset.valor) filtros.set(b.dataset.grupo!, b.dataset.valor);
+				else filtros.delete(b.dataset.grupo!);
+				aplicar();
+			});
+		}
+		aplicar();
+	}
+	iniciar();
+	document.addEventListener('astro:page-load', iniciar);
+</script>
+
+<style>
+	.intro {
+		color: var(--muted);
+	}
+	.filtros {
+		display: grid;
+		gap: 1rem;
+		margin-block: 1.5rem 1rem;
+	}
+	fieldset {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+	legend {
+		margin-bottom: 0.5rem;
+		color: var(--muted);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.opcoes {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.opcoes button {
+		min-height: var(--hit-target);
+		padding-inline: 1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface);
+		color: var(--foreground);
+		font-size: 0.9375rem;
+	}
+	.opcoes button[aria-pressed='true'] {
+		border-color: var(--foreground);
+		background: var(--foreground);
+		color: var(--surface);
+	}
+	.contagem {
+		color: var(--muted);
+		font-size: 0.875rem;
+	}
+	.explorar :global(.post-card[hidden]) {
+		display: none;
+	}
+</style>

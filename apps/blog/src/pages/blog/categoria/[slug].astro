@@ -1,0 +1,37 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import ListaArtigos from '../../../components/ListaArtigos.astro';
+import { artigos, categorias } from '../../../lib/artigos';
+
+export async function getStaticPaths() {
+	return (await categorias()).map((c) => ({ params: { slug: c.slug }, props: { nome: c.nome } }));
+}
+
+const { slug } = Astro.params;
+const { nome } = Astro.props;
+const lista = (await artigos()).filter((a) => a.categoriaSlug === slug);
+---
+
+<StarlightPage frontmatter={{ title: nome, description: `Artigos da categoria ${nome}.`, template: 'splash' }}>
+	<div class="pagina-larga not-content">
+		<nav class="trilha" aria-label="Trilha"><a href="/blog/">Blog</a> <span aria-hidden="true">/</span> {nome}</nav>
+		<p class="intro">{lista.length} {lista.length === 1 ? 'artigo' : 'artigos'} nesta categoria.</p>
+		<ListaArtigos lista={lista} vazio="Esta categoria ainda não tem artigos." />
+	</div>
+</StarlightPage>
+
+<style>
+	.trilha {
+		color: var(--muted);
+		font-size: 0.875rem;
+	}
+	.trilha a {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-target);
+		color: var(--muted);
+	}
+	.intro {
+		color: var(--muted);
+	}
+</style>

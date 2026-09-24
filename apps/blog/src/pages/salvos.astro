@@ -1,0 +1,138 @@
+---
+// Salvos (HF04): lista local do navegador; remover exclui; lista vazia orienta a descoberta.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+---
+
+<StarlightPage frontmatter={{ title: 'Salvos', description: 'Artigos que você salvou para ler depois.', template: 'splash', pagefind: false }}>
+	<div class="pagina-larga salvos not-content">
+		<p class="intro">Os artigos salvos ficam guardados neste navegador, sem conta e sem prazo para expirar.</p>
+		<p class="sr-only" role="status" aria-live="polite" data-estado></p>
+		<ul class="lista" data-lista></ul>
+		<div class="vazio" data-vazio hidden>
+			<p><strong>Você ainda não salvou nenhum artigo.</strong></p>
+			<p>Use o botão Salvar no topo de qualquer artigo para guardá-lo aqui.</p>
+			<a href="/explorar/">Explorar artigos</a>
+		</div>
+	</div>
+</StarlightPage>
+
+<script>
+	import { lerSalvos, removerSalvo } from '../lib/salvos';
+
+	function render() {
+		const raiz = document.querySelector<HTMLElement>('.salvos');
+		if (!raiz) return;
+		const lista = raiz.querySelector<HTMLUListElement>('[data-lista]')!;
+		const vazio = raiz.querySelector<HTMLElement>('[data-vazio]')!;
+		const estado = raiz.querySelector<HTMLElement>('[data-estado]')!;
+		const salvos = lerSalvos();
+		lista.replaceChildren();
+		vazio.hidden = salvos.length > 0;
+		for (const s of salvos) {
+			const li = document.createElement('li');
+			li.innerHTML = `<div class="texto"><span class="cat"></span><a></a><p></p><span class="tempo"></span></div><button type="button">Remover</button>`;
+			li.querySelector('.cat')!.textContent = s.categoria;
+			const a = li.querySelector('a')!;
+			a.href = s.url;
+			a.textContent = s.titulo;
+			li.querySelector('p')!.textContent = s.resumo;
+			li.querySelector('.tempo')!.textContent = `${s.minutos} min de leitura`;
+			const botao = li.querySelector('button')!;
+			botao.setAttribute('aria-label', `Remover “${s.titulo}” dos salvos`);
+			botao.addEventListener('click', () => {
+				if (!removerSalvo(s.url)) {
+					estado.textContent = 'Não foi possível remover. Verifique se o armazenamento do navegador está bloqueado.';
+					return;
+				}
+				render();
+				estado.textContent = `“${s.titulo}” removido dos salvos.`;
+				(document.querySelector<HTMLElement>('.salvos li button') ?? document.querySelector<HTMLElement>('.salvos [data-vazio] a'))?.focus();
+			});
+			lista.append(li);
+		}
+	}
+	render();
+	document.addEventListener('astro:page-load', render);
+</script>
+
+<style>
+	.intro {
+		color: var(--muted);
+	}
+	.lista {
+		display: grid;
+		gap: 0.75rem;
+		margin: 1.5rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lista :global(li) {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-xl);
+		background: var(--surface);
+	}
+	.lista :global(.texto) {
+		display: grid;
+		gap: 0.25rem;
+	}
+	.lista :global(.cat) {
+		color: var(--brand-text);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+	.lista :global(a) {
+		color: var(--foreground);
+		font-size: 1.125rem;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.lista :global(a:hover) {
+		text-decoration: underline;
+	}
+	.lista :global(p),
+	.lista :global(.tempo) {
+		margin: 0;
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.lista :global(button) {
+		flex: none;
+		min-height: var(--hit-target);
+		padding-inline: 1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface);
+		color: var(--foreground);
+	}
+	.vazio {
+		display: grid;
+		gap: 0.25rem;
+		justify-items: start;
+		margin-top: 1.5rem;
+		padding: 2rem 1.5rem;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius-xl);
+		background: var(--surface);
+	}
+	.vazio[hidden] {
+		display: none;
+	}
+	.vazio p {
+		margin: 0;
+	}
+	.vazio a {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-target);
+		margin-top: 0.5rem;
+		color: var(--link);
+		font-weight: 600;
+	}
+</style>

@@ -1,0 +1,200 @@
+---
+// Busca (HF03): índice do Pagefind (gerado no build pelo Starlight), resultados em cards e estado
+// vazio que convida a reformular. A consulta fica na URL (?q=), então o resultado é compartilhável.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import Icone from '../components/Icone.astro';
+import { artigos } from '../lib/artigos';
+
+const sugestoes = (await artigos()).map((a) => a.titulo);
+---
+
+<StarlightPage frontmatter={{ title: 'Buscar', description: 'Busque nos artigos do EXECUTAR.', template: 'splash', pagefind: false }}>
+	<div class="pagina-larga buscar not-content">
+		<form class="campo" role="search" data-form>
+			<label class="sr-only" for="q">Buscar nos artigos</label>
+			<Icone nome="buscar" />
+			<input id="q" name="q" type="search" placeholder="Ex.: atenção, notificações, checklist…" autocomplete="off" />
+			<button type="submit">Buscar</button>
+		</form>
+		<p class="estado" role="status" aria-live="polite" data-estado>Digite um termo e pressione Buscar.</p>
+		<ol class="resultados" data-resultados></ol>
+		<div class="vazio" data-vazio hidden>
+			<p>Nenhum resultado para “<strong data-termo></strong>”.</p>
+			<p>Tente outras palavras, um termo mais amplo ou um destes artigos:</p>
+			<ul>
+				{sugestoes.map((s) => <li><button type="button" data-sugestao={s}>{s}</button></li>)}
+			</ul>
+		</div>
+	</div>
+</StarlightPage>
+
+<script>
+	interface ResultadoPagefind {
+		url: string;
+		excerpt: string;
+		meta: { title?: string };
+	}
+
+	async function carregarPagefind() {
+		const caminho = '/pagefind/pagefind.js';
+		return import(/* @vite-ignore */ caminho) as Promise<{ search: (q: string) => Promise<{ results: { data: () => Promise<ResultadoPagefind> }[] }> }>;
+	}
+
+	function iniciar() {
+		const raiz = document.querySelector<HTMLElement>('.buscar');
+		if (!raiz || raiz.dataset.pronto) return;
+		raiz.dataset.pronto = 'true';
+		const form = raiz.querySelector<HTMLFormElement>('[data-form]')!;
+		const campo = form.querySelector<HTMLInputElement>('input')!;
+		const estado = raiz.querySelector<HTMLElement>('[data-estado]')!;
+		const lista = raiz.querySelector<HTMLOListElement>('[data-resultados]')!;
+		const vazio = raiz.querySelector<HTMLElement>('[data-vazio]')!;
+
+		async function buscar(q: string) {
+			lista.replaceChildren();
+			vazio.hidden = true;
+			if (!q.trim()) {
+				estado.textContent = 'Digite um termo e pressione Buscar.';
+				return;
+			}
+			estado.textContent = 'Buscando…';
+			try {
+				const pagefind = await carregarPagefind();
+				const busca = await pagefind.search(q);
+				const dados = (await Promise.all(busca.results.slice(0, 20).map((r) => r.data()))).filter((d) => d.url.includes('/blog/'));
+				if (dados.length === 0) {
+					vazio.querySelector('[data-termo]')!.textContent = q;
+					vazio.hidden = false;
+					estado.textContent = `Nenhum resultado para “${q}”.`;
+					return;
+				}
+				estado.textContent = dados.length === 1 ? `1 resultado para “${q}”.` : `${dados.length} resultados para “${q}”.`;
+				for (const d of dados) {
+					const li = document.createElement('li');
+					const a = document.createElement('a');
+					a.href = d.url;
+					a.textContent = d.meta.title ?? d.url;
+					const p = document.createElement('p');
+					p.innerHTML = d.excerpt; // HTML do próprio índice do Pagefind (<mark> nos termos)
+					li.append(a, p);
+					lista.append(li);
+				}
+			} catch {
+				estado.textContent = 'A busca não está disponível agora. Tente de novo em instantes ou use Explorar.';
+			}
+		}
+
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const q = campo.value.trim();
+			history.replaceState(null, '', q ? `?q=${encodeURIComponent(q)}` : location.pathname);
+			void buscar(q);
+		});
+		vazio.addEventListener('click', (e) => {
+			const alvo = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-sugestao]');
+			if (!alvo) return;
+			campo.value = alvo.dataset.sugestao!;
+			form.requestSubmit();
+		});
+		const inicial = new URLSearchParams(location.search).get('q') ?? '';
+		campo.value = inicial;
+		if (inicial) void buscar(inicial);
+		else campo.focus();
+	}
+	iniciar();
+	document.addEventListener('astro:page-load', iniciar);
+</script>
+
+<style>
+	.campo {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		max-width: 40rem;
+		padding-inline: 1rem 0.375rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface);
+		color: var(--muted);
+	}
+	.campo:focus-within {
+		outline: 2px solid var(--semantic-focus-ring);
+		outline-offset: 2px;
+	}
+	.campo input {
+		flex: 1;
+		min-width: 0;
+		min-height: var(--hit-target);
+		border: 0;
+		background: transparent;
+		color: var(--foreground);
+		font: inherit;
+		outline: none;
+	}
+	.campo button,
+	.vazio button {
+		min-height: 2.25rem;
+		padding-inline: 1rem;
+		border: 0;
+		border-radius: var(--radius-pill);
+		background: var(--accent);
+		color: var(--on-accent);
+		font-weight: 600;
+	}
+	.estado {
+		color: var(--muted);
+	}
+	.resultados {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.resultados :global(li) {
+		padding: 1rem 1.25rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-xl);
+		background: var(--surface);
+	}
+	.resultados :global(a) {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-target);
+		color: var(--foreground);
+		font-size: 1.125rem;
+		font-weight: 600;
+	}
+	.resultados :global(p) {
+		margin: 0;
+		color: var(--muted);
+	}
+	.resultados :global(mark) {
+		background: var(--brand-soft);
+		color: var(--brand-text);
+	}
+	.vazio {
+		padding: 1.5rem;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius-xl);
+		background: var(--surface);
+	}
+	.vazio[hidden] {
+		display: none;
+	}
+	.vazio ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 0.5rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.vazio button {
+		min-height: var(--hit-target);
+		border: 1px solid var(--border);
+		background: var(--surface);
+		color: var(--foreground);
+		font-weight: 500;
+	}
+</style>

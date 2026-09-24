@@ -1,6 +1,11 @@
 ---
 title: "Externalização cognitiva"
 description: "O ambiente pode carregar parte do trabalho mental. — síntese a partir de Risko e Gilbert"
+autor: "Equipe EXECUTAR"
+papel: "Editorial"
+pilar: "P3"
+consciencia: "C3"
+data: 2026-09-24
 ---
 
 > [!summary] Frase-síntese
@@ -110,8 +115,3 @@ x: ["Memória", "Nota simples", "Checklist", "Sistema"]
 y: [40, 62, 81, 93]
 height: 320
 ```
-
-## Relacionados
-
-- [[Dependências e cadeia de valor]]
-- [[Memória prospectiva]]

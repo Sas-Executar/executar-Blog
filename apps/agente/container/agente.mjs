@@ -41,7 +41,7 @@ export function agentOptions() {
 	};
 }
 
-/** Caminho do vault → URL publicada pelo starlight-obsidian (output "artigos"). */
+/** Caminho do vault → URL publicada pelo starlight-obsidian (output "blog"). */
 export function toArticle(vaultPath) {
 	const clean = vaultPath.replace(/^\.?\//, '').replace(/\.md$/, '');
 	const titulo = clean.split('/').pop();
@@ -49,7 +49,7 @@ export function toArticle(vaultPath) {
 		.split('/')
 		.map((part) => part.toLowerCase().trim().replace(/\s+/g, '-'))
 		.join('/');
-	return { titulo, url: `/artigos/${slug}/` };
+	return { titulo, url: `/blog/${slug}/` };
 }
 
 export async function perguntar(pergunta, { queryFn = query } = {}) {

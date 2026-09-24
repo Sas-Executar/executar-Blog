@@ -1,0 +1,185 @@
+---
+// Preferências (HF05): cada opção mostra o estado atual e muda a experiência na hora, em todas as
+// páginas (aplicada cedo pelo script de Head.astro, para não piscar).
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+const opcoes = [
+	{
+		chave: 'tema',
+		rotulo: 'Tema',
+		ajuda: 'Automático segue o modo claro/escuro do seu sistema.',
+		valores: [
+			['auto', 'Automático'],
+			['light', 'Claro'],
+			['dark', 'Escuro'],
+		],
+	},
+	{
+		chave: 'texto',
+		rotulo: 'Tamanho do texto',
+		ajuda: 'Aumenta o texto dos artigos e da interface.',
+		valores: [
+			['padrao', 'Padrão'],
+			['grande', 'Grande'],
+			['maior', 'Maior'],
+		],
+	},
+	{
+		chave: 'movimento',
+		rotulo: 'Movimento',
+		ajuda: 'Reduzir desliga animações e transições.',
+		valores: [
+			['padrao', 'Padrão'],
+			['reduzido', 'Reduzido'],
+		],
+	},
+];
+---
+
+<StarlightPage frontmatter={{ title: 'Preferências', description: 'Ajuste tema, tamanho do texto e movimento.', template: 'splash', pagefind: false }}>
+	<div class="preferencias not-content">
+		<p class="intro">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
+		{
+			opcoes.map((o) => (
+				<fieldset data-preferencia={o.chave}>
+					<legend>{o.rotulo}</legend>
+					<p class="ajuda">{o.ajuda}</p>
+					<div class="segmentado">
+						{o.valores.map(([valor, nome]) => (
+							<label>
+								<input type="radio" name={o.chave} value={valor} />
+								<span>{nome}</span>
+							</label>
+						))}
+					</div>
+					<p class="atual" data-atual />
+				</fieldset>
+			))
+		}
+		<p class="sr-only" role="status" aria-live="polite" data-estado></p>
+	</div>
+</StarlightPage>
+
+<script>
+	import { anunciar } from '../lib/salvos';
+
+	const CHAVES = { tema: 'starlight-theme', texto: 'executar:texto', movimento: 'executar:movimento' } as const;
+	type Chave = keyof typeof CHAVES;
+
+	function ler(chave: Chave) {
+		try {
+			return localStorage.getItem(CHAVES[chave]) || (chave === 'tema' ? 'auto' : 'padrao');
+		} catch {
+			return chave === 'tema' ? 'auto' : 'padrao';
+		}
+	}
+
+	function aplicar(chave: Chave, valor: string) {
+		const html = document.documentElement;
+		try {
+			// O Starlight guarda '' para "automático".
+			localStorage.setItem(CHAVES[chave], chave === 'tema' && valor === 'auto' ? '' : valor);
+		} catch {
+			/* armazenamento bloqueado: a escolha vale só para esta página */
+		}
+		if (chave === 'tema') {
+			const escuro = valor === 'dark' || (valor === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+			html.dataset.theme = escuro ? 'dark' : 'light';
+		} else if (chave === 'texto') {
+			html.dataset.texto = valor;
+		} else {
+			html.dataset.movimento = valor;
+		}
+	}
+
+	function iniciar() {
+		document.querySelectorAll<HTMLFieldSetElement>('[data-preferencia]').forEach((grupo) => {
+			const chave = grupo.dataset.preferencia as Chave;
+			const atual = grupo.querySelector<HTMLElement>('[data-atual]')!;
+			const pintar = () => {
+				const valor = ler(chave);
+				const radio = grupo.querySelector<HTMLInputElement>(`input[value="${valor}"]`);
+				if (radio) radio.checked = true;
+				atual.textContent = `Atual: ${radio?.nextElementSibling?.textContent ?? valor}`;
+			};
+			pintar();
+			grupo.addEventListener('change', (e) => {
+				const valor = (e.target as HTMLInputElement).value;
+				aplicar(chave, valor);
+				pintar();
+				anunciar(`${grupo.querySelector('legend')!.textContent}: ${atual.textContent!.replace('Atual: ', '')}.`);
+			});
+		});
+	}
+	iniciar();
+	document.addEventListener('astro:page-load', iniciar);
+</script>
+
+<style>
+	.preferencias {
+		display: grid;
+		gap: 1.25rem;
+	}
+	.intro {
+		color: var(--muted);
+	}
+	fieldset {
+		margin: 0;
+		padding: 1.25rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-xl);
+		background: var(--surface);
+	}
+	legend {
+		padding: 0;
+		float: left;
+		width: 100%;
+		color: var(--foreground);
+		font-size: 1.125rem;
+		font-weight: 600;
+	}
+	.ajuda,
+	.atual {
+		clear: both;
+		margin: 0.25rem 0 0.75rem;
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.atual {
+		margin: 0.75rem 0 0;
+	}
+	.segmentado {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		padding: 0.25rem;
+		border-radius: var(--radius-pill);
+		background: var(--code-background);
+	}
+	.segmentado label {
+		position: relative;
+	}
+	.segmentado input {
+		position: absolute;
+		opacity: 0;
+		inset: 0;
+	}
+	.segmentado span {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-target);
+		padding-inline: 1rem;
+		border-radius: var(--radius-pill);
+		color: var(--foreground);
+		cursor: pointer;
+	}
+	.segmentado input:checked + span {
+		background: var(--surface);
+		box-shadow: var(--shadow-sm);
+		font-weight: 600;
+	}
+	.segmentado input:focus-visible + span {
+		outline: 2px solid var(--semantic-focus-ring);
+		outline-offset: 2px;
+	}
+</style>

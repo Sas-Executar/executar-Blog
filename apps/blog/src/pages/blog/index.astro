@@ -1,0 +1,20 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import ListaArtigos from '../../components/ListaArtigos.astro';
+import { artigos } from '../../lib/artigos';
+
+const lista = await artigos();
+---
+
+<StarlightPage frontmatter={{ title: 'Blog', description: 'Todos os artigos do EXECUTAR, na ordem de leitura recomendada.', template: 'splash' }}>
+	<div class="pagina-larga not-content">
+		<p class="intro">Todos os artigos, na ordem de leitura recomendada: do problema à decisão.</p>
+		<ListaArtigos lista={lista} />
+	</div>
+</StarlightPage>
+
+<style>
+	.intro {
+		color: var(--muted);
+	}
+</style>

@@ -1,0 +1,58 @@
+---
+// Override oficial da Pagination (ADR-012): nos artigos vira "Continue lendo" (próximo passo do
+// HF02) — os outros artigos na ordem editorial, a partir do seguinte — e o convite para perguntar.
+import PostCard from './PostCard.astro';
+import { artigos, eArtigo } from '../lib/artigos';
+
+const { entry } = Astro.locals.starlightRoute;
+const lista = eArtigo(entry.id) ? await artigos() : [];
+const i = lista.findIndex((a) => a.id === entry.id);
+const proximos = i < 0 ? [] : [...lista.slice(i + 1), ...lista.slice(0, i)].slice(0, 3);
+---
+
+{
+	proximos.length > 0 && (
+		<section class="continue not-content" aria-labelledby="continue-lendo">
+			<h2 id="continue-lendo">Continue lendo</h2>
+			<div class="grade">
+				{proximos.map((a) => (
+					<PostCard artigo={a} />
+				))}
+			</div>
+			<p class="perguntar">
+				Ficou com dúvida? <a href="/perguntar/">Pergunte aos artigos</a>.
+			</p>
+		</section>
+	)
+}
+
+<style>
+	.continue {
+		margin-top: 3rem;
+	}
+	h2 {
+		margin: 0 0 1rem;
+		color: var(--muted);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.grade {
+		display: grid;
+		gap: 1rem;
+	}
+	@media (min-width: 48rem) {
+		.grade {
+			grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+		}
+	}
+	.perguntar {
+		margin-top: 1.5rem;
+		color: var(--muted);
+	}
+	.perguntar a {
+		color: var(--link);
+		font-weight: 600;
+	}
+</style>

@@ -1,121 +1,211 @@
 ---
-// Página "Hoje" (ADR-010, tela de referência 02): artigo em destaque (LeadStory) e listas por
-// grupo (StoryRow), geradas da coleção de artigos. Sem dados escritos à mão.
-import { getCollection } from 'astro:content';
+// Página "Hoje" (HF01, EXECUTAR Showroom): hero com busca, categorias, destaque e artigos recentes.
+import CategoryPill from './CategoryPill.astro';
+import Icone from './Icone.astro';
+import Ilustracao from './Ilustracao.astro';
+import PostCard from './PostCard.astro';
+import { artigos, categorias } from '../lib/artigos';
 
-const artigos = await getCollection('docs', ({ id }) => id.startsWith('artigos/'));
-const rotulo = (slug: string) => slug.charAt(0).toUpperCase() + slug.slice(1).replaceAll('-', ' ');
-const minutos = (body = '') => Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 200));
-const href = (id: string) => `/${id}/`;
-
-const destaque = artigos.find(({ id }) => id.split('/').length === 2);
-const grupos = new Map<string, typeof artigos>();
-for (const a of artigos) {
-	const [, grupo, slug] = a.id.split('/');
-	if (!slug) continue;
-	grupos.set(grupo, [...(grupos.get(grupo) ?? []), a]);
-}
-const ordenados = [...grupos].sort(([a], [b]) => a.localeCompare(b, 'pt-BR'));
+const lista = await artigos();
+const cats = await categorias();
+const [destaque, ...recentes] = lista;
 ---
 
-<div class="hoje not-content">
+<div class="hoje pagina-larga not-content">
+	<section class="hero" aria-labelledby="hoje-titulo">
+		<div class="hero-texto">
+			<p class="overline">Conhecimento em prática</p>
+			<h1 id="hoje-titulo">Riscos cognitivos na execução, explicados com clareza.</h1>
+			<p class="hero-resumo">Artigos sobre atenção, processos e o sistema ao redor de quem executa — do problema ao que fazer a respeito.</p>
+			<form class="busca" action="/buscar/" method="get" role="search">
+				<label class="sr-only" for="hoje-busca">Buscar artigos</label>
+				<Icone nome="buscar" />
+				<input id="hoje-busca" name="q" type="search" placeholder="Buscar artigos, temas, conceitos…" autocomplete="off" />
+				<button type="submit">Buscar</button>
+			</form>
+		</div>
+		<div class="hero-arte">
+			<Ilustracao icone="grafico" grande />
+		</div>
+	</section>
+
+	<nav class="categorias" aria-label="Categorias">
+		<a href="/blog/" class="pilula ativa">Todos</a>
+		{cats.map((c) => <a href={`/blog/categoria/${c.slug}/`} class="pilula">{c.nome}</a>)}
+	</nav>
+
 	{
 		destaque && (
-			<a class="lead" href={href(destaque.id)}>
-				<span class="meta">Comece aqui · {minutos(destaque.body)} min de leitura</span>
-				<span class="lead-titulo">{destaque.data.title}</span>
-				<span class="lead-resumo">{destaque.data.description}</span>
-			</a>
+			<section aria-labelledby="em-destaque">
+				<h2 id="em-destaque" class="rotulo-secao">Em destaque</h2>
+				<div class="destaque-grade">
+					<PostCard artigo={destaque} destaque />
+					<aside class="convite" aria-labelledby="convite-titulo">
+						<CategoryPill nome="Pergunte aos artigos" />
+						<h3 id="convite-titulo">Tem uma situação concreta?</h3>
+						<p>Descreva o que acontece na sua execução e receba uma resposta baseada nos artigos, com as fontes.</p>
+						<a class="botao" href="/perguntar/">
+							Perguntar <Icone nome="seta" tamanho={16} />
+						</a>
+					</aside>
+				</div>
+			</section>
 		)
 	}
+
 	{
-		ordenados.map(([grupo, lista]) => (
-			<section aria-labelledby={`g-${grupo}`}>
-				<h2 id={`g-${grupo}`}>{rotulo(grupo)}</h2>
-				<ul>
-					{lista
-						.sort((a, b) => a.data.title.localeCompare(b.data.title, 'pt-BR'))
-						.map((a) => (
-							<li>
-								<a class="row" href={href(a.id)}>
-									<span class="row-titulo">{a.data.title}</span>
-									<span class="meta">{minutos(a.body)} min de leitura</span>
-								</a>
-							</li>
-						))}
-				</ul>
+		recentes.length > 0 && (
+			<section aria-labelledby="mais-recentes">
+				<h2 id="mais-recentes" class="rotulo-secao">Mais recentes</h2>
+				<div class="grade">
+					{recentes.map((a) => (
+						<PostCard artigo={a} />
+					))}
+				</div>
 			</section>
-		))
+		)
 	}
 </div>
 
 <style>
-	.hoje {
-		max-width: 45rem;
-		margin-inline: auto;
-	}
-	.lead {
+	.hero {
 		display: grid;
-		gap: 0.5rem;
-		padding: 1.5rem;
-		border-radius: var(--radius-lg);
-		background: var(--foreground);
-		color: var(--background);
-		text-decoration: none;
-		box-shadow: var(--shadow-sm);
+		gap: 2rem;
+		align-items: center;
+		padding-block: 1.5rem 2.5rem;
 	}
-	.lead .meta {
-		color: inherit;
-		opacity: 0.85;
+	.overline {
+		margin: 0 0 0.75rem;
+		color: var(--brand-text);
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
-	.lead-titulo {
-		font-size: 1.75rem;
+	h1 {
+		margin: 0;
+		color: var(--foreground);
+		font-size: clamp(2rem, 5vw, 2.75rem);
 		font-weight: 700;
-		line-height: 1.15;
+		line-height: 1.12;
 		letter-spacing: -0.02em;
 	}
-	.lead-resumo {
-		font-size: 1.0625rem;
-		line-height: 1.45;
+	.hero-resumo {
+		margin: 1rem 0 1.5rem;
+		color: var(--muted);
+		font-size: 1.125rem;
+		line-height: 1.5;
 	}
-	section {
-		margin-top: 2.5rem;
+	.busca {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		max-width: 28rem;
+		padding-inline: 1rem 0.375rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface);
+		color: var(--muted);
 	}
-	h2 {
-		margin: 0 0 0.5rem;
-		font-size: 1.375rem;
-		font-weight: 700;
-		color: var(--foreground);
+	.busca:focus-within {
+		outline: 2px solid var(--semantic-focus-ring);
+		outline-offset: 2px;
 	}
-	ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-	.row {
-		display: grid;
-		gap: 0.125rem;
+	.busca input {
+		flex: 1;
+		min-width: 0;
 		min-height: var(--hit-target);
-		padding-block: 0.875rem;
-		border-bottom: 1px solid var(--border);
+		border: 0;
+		background: transparent;
 		color: var(--foreground);
-		text-decoration: none;
+		font: inherit;
+		outline: none;
 	}
-	/* Sem o sublinhado dos links de texto (tokens.css): aqui a linha inteira é o alvo. */
-	.hoje a.row,
-	.hoje a.lead {
-		text-decoration: none;
-	}
-	.row:hover .row-titulo {
-		color: var(--link);
-	}
-	.row-titulo {
-		font-size: 1.0625rem;
+	.busca button,
+	.botao {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		min-height: 2.25rem;
+		padding-inline: 1rem;
+		border: 0;
+		border-radius: var(--radius-pill);
+		background: var(--accent);
+		color: var(--on-accent);
+		font-size: 0.9375rem;
 		font-weight: 600;
+		text-decoration: none;
 	}
-	.meta {
+	.botao {
+		min-height: var(--hit-target);
+		justify-self: start;
+	}
+	.categorias {
+		display: flex;
+		gap: 0.5rem;
+		overflow-x: auto;
+		padding-block: 0.25rem 0.5rem;
+		scrollbar-width: none;
+	}
+	.pilula {
+		display: inline-flex;
+		align-items: center;
+		flex: none;
+		min-height: var(--hit-target);
+		padding-inline: 1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--surface);
+		color: var(--foreground);
+		font-size: 0.9375rem;
+		text-decoration: none;
+	}
+	.pilula.ativa {
+		border-color: var(--foreground);
+		background: var(--foreground);
+		color: var(--surface);
+	}
+	.rotulo-secao {
+		margin: 2.5rem 0 1rem;
 		color: var(--muted);
 		font-size: 0.8125rem;
-		font-weight: 500;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.destaque-grade,
+	.grade {
+		display: grid;
+		gap: 1rem;
+	}
+	.convite {
+		display: grid;
+		gap: 0.75rem;
+		align-content: center;
+		justify-items: start;
+		padding: 1.5rem;
+		border: 1px solid var(--brand-line);
+		border-radius: var(--radius-xl);
+		background: var(--brand-soft);
+	}
+	.convite h3 {
+		margin: 0;
+		color: var(--foreground);
+		font-size: 1.375rem;
+	}
+	.convite p {
+		margin: 0;
+		color: var(--foreground);
+	}
+	@media (min-width: 48rem) {
+		.hero {
+			grid-template-columns: 1.1fr 1fr;
+		}
+		.destaque-grade {
+			grid-template-columns: 1.6fr 1fr;
+		}
+		.grade {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 </style>

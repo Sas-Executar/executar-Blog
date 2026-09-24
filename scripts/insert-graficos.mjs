@@ -1,5 +1,5 @@
 // Script pontual: insere um painel ilustrativo (Grafico.astro/ECharts, ADR-007) com dados
-// fictícios em cada artigo do vault e no correspondente já gerado em src/content/docs/artigos.
+// fictícios em cada artigo do vault e no correspondente já gerado em src/content/docs/blog.
 // Uso único (demonstração pedida pelo usuário); não faz parte do pipeline normal de sync.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +7,7 @@ import path from 'node:path';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const vaultDir = path.join(root, 'vault');
-const docsDir = path.join(root, 'apps/blog/src/content/docs/artigos');
+const docsDir = path.join(root, 'apps/blog/src/content/docs/blog');
 
 /** @type {Array<{file: string, titulo: string, resumo: string, tipo: 'bar'|'line', categorias: string[], valores: number[]}>} */
 const graficos = [

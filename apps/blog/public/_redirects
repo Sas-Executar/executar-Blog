@@ -1,0 +1,5 @@
+# Endereços antigos (/artigos) → /blog (decisão de Produto, 2026-09-24). Os 18 artigos removidos
+# caem em /blog/<slug>/, que responde 404 com caminho de volta.
+/artigos /blog/ 301
+/artigos/ /blog/ 301
+/artigos/* /blog/:splat 301

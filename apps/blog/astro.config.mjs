@@ -24,13 +24,15 @@ export default defineConfig({
 			plugins: [
 				starlightObsidian({
 					vault: '../../vault',
-					output: 'artigos',
-					copyFrontmatter: 'starlight',
+					output: 'blog',
+					copyFrontmatter: 'all',
 					// Páginas geradas são commitadas; o build na Cloudflare não gera (ADR-004).
 					skipGeneration: !process.env.OBSIDIAN_GENERATE,
 				}),
 			],
 			sidebar: [{ label: 'Artigos', items: [obsidianSidebarEntries] }],
+			// Shell do Showroom: sem barra lateral nem sumário (ADR-012).
+			routeMiddleware: './src/route-data.ts',
 			customCss: [
 				theme('styles/layers.css'),
 				theme('styles/theme.css'),
@@ -38,13 +40,17 @@ export default defineConfig({
 				theme('styles/common.css'),
 				'@fontsource-variable/geist',
 				'@fontsource-variable/geist-mono',
+				'./src/styles/ds/variables.css',
+				'./src/styles/ds/theme.css',
 				'./src/styles/github.css',
 				'./src/styles/tokens.css',
 			],
 			components: {
 				Sidebar: theme('overrides/Sidebar.astro'),
 				PageFrame: theme('overrides/PageFrame.astro'),
-				Pagination: theme('overrides/Pagination.astro'),
+				Pagination: './src/components/Pagination.astro',
+				Header: './src/components/Header.astro',
+				Footer: './src/components/Footer.astro',
 				ThemeSelect: theme('overrides/ThemeSelect.astro'),
 				PageTitle: './src/components/ArticleHero.astro',
 				MarkdownContent: './src/components/MarkdownContent.astro',

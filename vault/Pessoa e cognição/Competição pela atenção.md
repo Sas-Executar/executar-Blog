@@ -1,6 +1,11 @@
 ---
 title: "Competição pela atenção"
 description: "Quando tudo chama atenção nada orienta a ação. — síntese a partir de W3C WAI"
+autor: "Equipe EXECUTAR"
+papel: "Editorial"
+pilar: "P1"
+consciencia: "C1"
+data: 2026-09-24
 ---
 
 > [!summary] Frase-síntese
@@ -110,8 +115,3 @@ x: ["Notificação push", "E-mail", "Chat", "Reunião"]
 y: [24, 12, 31, 9]
 height: 320
 ```
-
-## Relacionados
-
-- [[Preparação antes da execução]]
-- [[Sobrecarga cognitiva sistêmica]]
