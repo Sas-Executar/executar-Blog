@@ -6,6 +6,16 @@ description: "Escolha útil exige opções compreensíveis e honestas. — sínt
 > [!summary] Frase-síntese
 > Escolha útil exige opções compreensíveis e honestas. — síntese a partir de W3C WAI
 
+```yaml title="fator.yaml"
+fator:
+  termo: Excesso de opções e padrões manipulativos
+  grupo: Informação e interface
+  referencia: W3C WAI
+  problema: Quantidade, assimetria e manipulação tornam a escolha mais trabalhosa
+  controle: Reduzir opções irrelevantes e apresentar consequências com simetria
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Excesso de opções e padrões manipulativos.  

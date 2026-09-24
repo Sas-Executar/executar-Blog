@@ -6,6 +6,16 @@ description: "Quando tudo chama atenção nada orienta a ação. — síntese a 
 > [!summary] Frase-síntese
 > Quando tudo chama atenção nada orienta a ação. — síntese a partir de W3C WAI
 
+```yaml title="fator.yaml"
+fator:
+  termo: Competição pela atenção
+  grupo: Pessoa e cognição
+  referencia: W3C WAI
+  problema: Sinais simultâneos tornam prioridade e relevância menos distinguíveis
+  controle: Remover alertas dispensáveis e reservar saliência para eventos acionáveis
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Competição pela atenção.  

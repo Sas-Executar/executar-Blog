@@ -9,6 +9,16 @@ description: A forma da informação também consome capacidade. — síntese a 
 A forma da informação também consome capacidade. — síntese a partir de Rosenholtz et al.
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Forma e visualização da informação
+  grupo: Informação e interface
+  referencia: Rosenholtz et al.
+  problema: Hierarquia ausente obriga o leitor a reconstruir a estrutura
+  controle: Aplicar hierarquia, agrupamento, rótulos consistentes e contraste funcional
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Forma e visualização da informação.\

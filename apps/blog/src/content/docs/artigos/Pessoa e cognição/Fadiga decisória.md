@@ -9,6 +9,16 @@ description: Decisões repetidas podem degradar a qualidade da escolha. — sín
 Decisões repetidas podem degradar a qualidade da escolha. — síntese a partir de Pignatiello et al.
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Fadiga decisória
+  grupo: Pessoa e cognição
+  referencia: Pignatiello et al.
+  problema: Muitas decisões recorrentes consomem tempo e controle executivo
+  controle: Padronizar escolhas repetitivas e reservar decisão para exceções reais
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Fadiga decisória.\

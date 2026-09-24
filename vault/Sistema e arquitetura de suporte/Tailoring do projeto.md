@@ -6,6 +6,16 @@ description: "Adaptar o método reduz esforço sem perder controle. — síntese
 > [!summary] Frase-síntese
 > Adaptar o método reduz esforço sem perder controle. — síntese a partir de ISO
 
+```yaml title="fator.yaml"
+fator:
+  termo: Tailoring do projeto
+  grupo: Sistema e arquitetura de suporte
+  referencia: ISO
+  problema: Processo padronizado sem ajuste ao porte, risco ou contexto
+  controle: Definir o mínimo necessário e ampliar controles apenas quando o risco exigir
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Tailoring do projeto.  

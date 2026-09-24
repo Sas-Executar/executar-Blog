@@ -9,6 +9,16 @@ description: Pequenas fricções podem formar um problema do sistema. — sínte
 Pequenas fricções podem formar um problema do sistema. — síntese a partir de ISO
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Sobrecarga cognitiva sistêmica
+  grupo: Sistema e arquitetura de suporte
+  referencia: ISO
+  problema: Fricções distribuídas se acumulam e escondem a causa operacional
+  controle: Mapear a cadeia inteira e remover demandas evitáveis em cada ponto
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Sobrecarga cognitiva sistêmica.\

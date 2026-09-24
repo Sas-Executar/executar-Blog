@@ -6,6 +6,16 @@ description: "A execução também depende do sistema ao redor. — síntese a p
 > [!summary] Frase-síntese
 > A execução também depende do sistema ao redor. — síntese a partir de ISO e W3C COGA
 
+```yaml title="fator.yaml"
+fator:
+  termo: Fatores de riscos cognitivos
+  grupo: Visão geral (todos os grupos)
+  referencia: ISO e W3C COGA
+  problema: A pessoa percebe sobrecarga, esquecimento, interrupções ou retrabalho sem localizar as condições que aumentam a demanda
+  controle: Cada sinal é ligado ao contexto, à demanda, ao controle e à evidência
+  sinais: [esforço, atraso, erro, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Fatores de riscos cognitivos.  

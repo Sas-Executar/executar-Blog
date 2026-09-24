@@ -6,6 +6,16 @@ description: "Agrupar bem transforma muitos itens em unidades navegáveis. — s
 > [!summary] Frase-síntese
 > Agrupar bem transforma muitos itens em unidades navegáveis. — síntese a partir de Luck e Vogel
 
+```yaml title="fator.yaml"
+fator:
+  termo: Agrupamento e segmentação
+  grupo: Informação e interface
+  referencia: Luck e Vogel
+  problema: Itens sem agrupamento competem como unidades equivalentes
+  controle: Agrupar por função, etapa ou decisão e nomear cada conjunto
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Agrupamento e segmentação.  

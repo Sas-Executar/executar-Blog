@@ -9,6 +9,16 @@ description: Mais informação disponível não significa mais informação
 Mais informação disponível não significa mais informação utilizável. — síntese a partir de W3C WAI
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Quantidade de informação
+  grupo: Informação e interface
+  referencia: W3C WAI
+  problema: Volume simultâneo aumenta busca, comparação e manutenção mental
+  controle: Exibir primeiro o essencial e revelar detalhes sob demanda
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Quantidade de informação.\

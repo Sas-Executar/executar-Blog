@@ -9,6 +9,16 @@ description: Digitalizar não garante reduzir trabalho cognitivo. — síntese a
 Digitalizar não garante reduzir trabalho cognitivo. — síntese a partir de W3C WAI
 :::
 
+```yaml title="fator.yaml"
+fator:
+  termo: Ambiente digital
+  grupo: Ambiente e contexto
+  referencia: W3C WAI
+  problema: Estados distribuídos, duplicação e notificações fragmentam a continuidade
+  controle: Criar ponto único de continuidade, integrar estados e limitar interrupções
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Ambiente digital.\

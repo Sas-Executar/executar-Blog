@@ -6,6 +6,16 @@ description: "O ambiente pode carregar parte do trabalho mental. — síntese a 
 > [!summary] Frase-síntese
 > O ambiente pode carregar parte do trabalho mental. — síntese a partir de Risko e Gilbert
 
+```yaml title="fator.yaml"
+fator:
+  termo: Externalização cognitiva
+  grupo: Sistema e arquitetura de suporte
+  referencia: Risko e Gilbert
+  problema: Estado, intenção e contexto ficam presos à memória individual
+  controle: Registrar decisões, próximos passos, gatilhos e pontos de retomada
+  sinais: [esforço, erro, espera, retrabalho]
+```
+
 ## 1. Origem
 
 **Termo.** Externalização cognitiva.  

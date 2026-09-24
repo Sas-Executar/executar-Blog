@@ -43,7 +43,9 @@ export default defineConfig({
 				MarkdownContent: './src/components/MarkdownContent.astro',
 				Head: './src/components/Head.astro',
 			},
-			expressiveCode: { themes: ['github-dark', 'github-light'] },
+			// wrap: linhas longas quebram em vez de rolar na horizontal (sem rolagem lateral no celular,
+			// e sem região rolável inalcançável por teclado — WCAG 2.1.1 / axe scrollable-region-focusable).
+			expressiveCode: { themes: ['github-dark', 'github-light'], defaultProps: { wrap: true } },
 		}),
 	],
 });
