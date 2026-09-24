@@ -1,8 +1,10 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import DashboardSinteseTdah from '../components/DashboardSinteseTdah.astro';
 import Hoje from '../components/Hoje.astro';
 ---
 
-<StarlightPage frontmatter={{ title: 'Hoje', description: 'Riscos cognitivos na execução — artigos sobre atenção, processos e o sistema ao redor de quem executa.', template: 'splash' }}>
+<StarlightPage frontmatter={{ title: 'Hoje', description: 'Síntese interativa de evidências TDAH adulto e artigos sobre riscos cognitivos na execução.', template: 'splash' }}>
+	<DashboardSinteseTdah />
 	<Hoje />
 </StarlightPage>
