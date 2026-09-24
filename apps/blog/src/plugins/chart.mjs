@@ -35,12 +35,15 @@ export function chartHtml(src) {
 	return `<figure class="grafico"><figcaption>${attr(spec.title)}</figcaption><div class="area" style="height:${Number(spec.height) || 320}px" data-grafico='${attr(JSON.stringify(opcoes(spec)))}' data-descricao="${descricao}" role="img" aria-label="${descricao}"></div><p class="resumo">${attr(spec.summary)}</p></figure>`;
 }
 
-/** Plugin mdast do Sätteri (processador Markdown padrão do Astro 7): troca o nó `code` do bloco chart. */
+/**
+ * Plugin mdast do Sätteri (processador Markdown padrão do Astro 7): troca o nó `code` do bloco chart.
+ * @returns {import('satteri').MdastPluginDefinition}
+ */
 export default function chartPlugin() {
 	return {
 		name: 'executar-chart',
 		code(node) {
-			if (node.lang === 'chart') return { type: 'html', value: chartHtml(node.value) };
+			if (node.lang === 'chart') return { type: /** @type {const} */ ('html'), value: chartHtml(node.value) };
 		},
 	};
 }

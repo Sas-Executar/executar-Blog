@@ -44,6 +44,15 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - Estratégia renomeada: "minimal code, max upstream".
 - Gate 4a: opção (d) — Starlight 0.42 estático + CSS/overrides do tema sem Graph View; `/api` via Worker de borda (ADR-002, ADR-003).
 
+## Design editorial (ADR-010) — 2026-09-24 — VERIFIED (local)
+
+- Decisão do usuário: opções **A+B** do `docs/03-design/plano-refatoracao-design.md`, **manter Astro** (o app Next.js do pacote de design não entra) e **Geist em tudo**.
+- Fonte da verdade visual: `docs/03-design/sot/` (telas 02/05/06 + referência editorial + `visual-contract.yml`).
+- Feito: Geist (`@fontsource-variable/geist*`), tokens do pacote em `tokens.css`, hero do artigo (`ArticleHero.astro`, override de `PageTitle`), callouts/citações/gráficos em cartões suaves, página Hoje (`Hoje.astro`), bloco ` ```chart ` (`src/plugins/chart.mjs`, plugin do Sätteri) e os 21 gráficos do vault migrados.
+- Evidência: `npm run check` (0 erros, 25 testes unitários, contraste 9 pares × 4 modos, guard ok), `npm run build` ok, `npm run test:e2e` 18/18.
+- Limitação: `content:sync` não roda nesta sessão, porque o Mermaid precisa do Chromium 1243 e só há o 1194. As páginas geradas receberam a mesma troca figure → chart aplicada ao vault; o próximo `content:sync` com Chromium gera o mesmo resultado. O tema lilás do Mermaid (opção A) fica para quando o sync rodar.
+- Fora do escopo: Explorar, Categoria, Salvos, Preferências e BottomNav.
+
 ## Bloqueios
 
 - Passo 9 depende de ações exclusivas do usuário (conta/segredos/painel Cloudflare) — ver Pendências.

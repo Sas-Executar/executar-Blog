@@ -5,23 +5,12 @@ template: splash
 hero:
   tagline: A execução também depende do sistema ao redor. Vinte fatores de risco cognitivo, explicados com contexto, processo e próximos passos.
   actions:
-    - text: Comece pelo artigo principal
-      link: /artigos/fatores-de-riscos-cognitivos/
-      icon: right-arrow
     - text: Pergunte aos artigos
       link: /perguntar/
       icon: comment
       variant: minimal
 ---
 
-import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+import Hoje from '../../components/Hoje.astro';
 
-## Explore por tema
-
-<CardGrid>
-	<LinkCard title="Pessoa e cognição" description="Perfil do executor, memória prospectiva, fadiga decisória e competição pela atenção." href="/artigos/pessoa-e-cognição/perfil-cognitivo-do-executor/" />
-	<LinkCard title="Tarefa e fluxo de execução" description="Troca, decomposição, clareza e dependências das tarefas; preparação antes de executar." href="/artigos/tarefa-e-fluxo-de-execução/clareza-e-escrita-da-tarefa/" />
-	<LinkCard title="Informação e interface" description="Quantidade, forma, agrupamento da informação e excesso de opções." href="/artigos/informação-e-interface/quantidade-de-informação/" />
-	<LinkCard title="Ambiente e contexto" description="Ambiente físico, ambiente digital, rotina e hábitos." href="/artigos/ambiente-e-contexto/ambiente-digital/" />
-	<LinkCard title="Sistema e arquitetura de suporte" description="Tailoring, externalização cognitiva, sobrecarga sistêmica e cadeia de valor." href="/artigos/sistema-e-arquitetura-de-suporte/tailoring-do-projeto/" />
-</CardGrid>
+<Hoje />

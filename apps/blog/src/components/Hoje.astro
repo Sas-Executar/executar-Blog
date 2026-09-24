@@ -1,0 +1,121 @@
+---
+// Página "Hoje" (ADR-010, tela de referência 02): artigo em destaque (LeadStory) e listas por
+// grupo (StoryRow), geradas da coleção de artigos. Sem dados escritos à mão.
+import { getCollection } from 'astro:content';
+
+const artigos = await getCollection('docs', ({ id }) => id.startsWith('artigos/'));
+const rotulo = (slug: string) => slug.charAt(0).toUpperCase() + slug.slice(1).replaceAll('-', ' ');
+const minutos = (body = '') => Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 200));
+const href = (id: string) => `/${id}/`;
+
+const destaque = artigos.find(({ id }) => id.split('/').length === 2);
+const grupos = new Map<string, typeof artigos>();
+for (const a of artigos) {
+	const [, grupo, slug] = a.id.split('/');
+	if (!slug) continue;
+	grupos.set(grupo, [...(grupos.get(grupo) ?? []), a]);
+}
+const ordenados = [...grupos].sort(([a], [b]) => a.localeCompare(b, 'pt-BR'));
+---
+
+<div class="hoje not-content">
+	{
+		destaque && (
+			<a class="lead" href={href(destaque.id)}>
+				<span class="meta">Comece aqui · {minutos(destaque.body)} min de leitura</span>
+				<span class="lead-titulo">{destaque.data.title}</span>
+				<span class="lead-resumo">{destaque.data.description}</span>
+			</a>
+		)
+	}
+	{
+		ordenados.map(([grupo, lista]) => (
+			<section aria-labelledby={`g-${grupo}`}>
+				<h2 id={`g-${grupo}`}>{rotulo(grupo)}</h2>
+				<ul>
+					{lista
+						.sort((a, b) => a.data.title.localeCompare(b.data.title, 'pt-BR'))
+						.map((a) => (
+							<li>
+								<a class="row" href={href(a.id)}>
+									<span class="row-titulo">{a.data.title}</span>
+									<span class="meta">{minutos(a.body)} min de leitura</span>
+								</a>
+							</li>
+						))}
+				</ul>
+			</section>
+		))
+	}
+</div>
+
+<style>
+	.hoje {
+		max-width: 45rem;
+		margin-inline: auto;
+	}
+	.lead {
+		display: grid;
+		gap: 0.5rem;
+		padding: 1.5rem;
+		border-radius: var(--radius-lg);
+		background: var(--foreground);
+		color: var(--background);
+		text-decoration: none;
+		box-shadow: var(--shadow-sm);
+	}
+	.lead .meta {
+		color: inherit;
+		opacity: 0.85;
+	}
+	.lead-titulo {
+		font-size: 1.75rem;
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+	}
+	.lead-resumo {
+		font-size: 1.0625rem;
+		line-height: 1.45;
+	}
+	section {
+		margin-top: 2.5rem;
+	}
+	h2 {
+		margin: 0 0 0.5rem;
+		font-size: 1.375rem;
+		font-weight: 700;
+		color: var(--foreground);
+	}
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.row {
+		display: grid;
+		gap: 0.125rem;
+		min-height: var(--hit-target);
+		padding-block: 0.875rem;
+		border-bottom: 1px solid var(--border);
+		color: var(--foreground);
+		text-decoration: none;
+	}
+	/* Sem o sublinhado dos links de texto (tokens.css): aqui a linha inteira é o alvo. */
+	.hoje a.row,
+	.hoje a.lead {
+		text-decoration: none;
+	}
+	.row:hover .row-titulo {
+		color: var(--link);
+	}
+	.row-titulo {
+		font-size: 1.0625rem;
+		font-weight: 600;
+	}
+	.meta {
+		color: var(--muted);
+		font-size: 0.8125rem;
+		font-weight: 500;
+	}
+</style>

@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | ID | DS-AUDIT-01 |
-| STATUS | PREPARED (aguarda escolha de opção) |
+| STATUS | A+B escolhida, executada (ADR-010) |
 | OWNER | usuário (decisão) · Claude (execução) |
 | AUTOMATION_LEVEL | A1 (plano) → A4 após aprovação |
 | EVIDENCE | PDF "Foto.pdf" (14 capturas), `astro.config.mjs`, `vault/**` |
@@ -84,5 +84,5 @@ Pacotes prontos: `starlight-theme-nova`, `starlight-theme-rapide`, `starlight-th
 | A5 | `npm run content:sync && npm run check && npm run test:e2e` | A1–A4 | tudo verde |
 | A6 | Atualizar `ESTADO.md` + ADR-010 | A5 | registro feito |
 
-## 6. Decisão pendente (USER_ACTION_REQUIRED)
-Escolher: **A**, **A+B**, **C** ou **D**. A escolha desbloqueia o nó A1.
+## 6. Decisão
+O usuário escolheu **A+B** e manter o Astro, com Geist (2026-09-24). Ver ADR-010 e `docs/07-execucao/ESTADO.md`.

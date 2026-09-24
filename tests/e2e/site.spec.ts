@@ -86,3 +86,13 @@ test('Pergunte aos artigos: erro amigável quando o agente falha', async ({ page
 	await page.getByRole('button', { name: 'Perguntar' }).click();
 	await expect(page.getByRole('status')).toContainText('indisponível');
 });
+
+test('design editorial (ADR-010): hero do artigo, página Hoje e fonte Geist', async ({ page }) => {
+	await page.goto(ARTIGO);
+	await expect(page.locator('.artigo-hero h1')).toBeVisible();
+	await expect(page.locator('.artigo-hero')).toContainText('min de leitura');
+	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain('Geist');
+	await page.goto('/');
+	await expect(page.locator('.hoje .lead')).toBeVisible();
+	expect(await page.locator('.hoje .row').count()).toBe(20);
+});
