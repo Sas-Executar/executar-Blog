@@ -14,7 +14,7 @@ const theme = (/** @type {string} */ file) => `starlight-theme-obsidian/${file}`
 export default defineConfig({
 	// Bloco ```chart em Markdown → gráfico ECharts (ADR-010).
 	markdown: { processor: satteri({ mdastPlugins: [chartPlugin()] }) },
-	site: process.env.SITE_URL ?? 'https://executar-blog.workers.dev',
+	site: process.env.SITE_URL ?? 'https://executar-blog.sas-executar.workers.dev',
 	integrations: [
 		starlight({
 			title: 'EXECUTAR',

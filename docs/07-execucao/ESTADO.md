@@ -53,6 +53,13 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - Limitação: `content:sync` não roda nesta sessão, porque o Mermaid precisa do Chromium 1243 e só há o 1194. As páginas geradas receberam a mesma troca figure → chart aplicada ao vault; o próximo `content:sync` com Chromium gera o mesmo resultado. O tema lilás do Mermaid (opção A) fica para quando o sync rodar.
 - Fora do escopo: Explorar, Categoria, Salvos, Preferências e BottomNav.
 
+## Nova conta Cloudflare (2026-09-24)
+
+- O usuário criou uma conta nova, `Sas_executar@outlook.com's Account` (`99b69…`), para um build e deploy do zero. A conta antiga (`92fdc…`, Worker `executar-blogg`) fica desativada para este fluxo.
+- Estado lido via MCP do plugin `cloudflare`: nenhum Worker e subdomínio `sas-executar`. URL prevista: `https://executar-blog.sas-executar.workers.dev` (padrão de `site` no `astro.config.mjs`).
+- `wrangler deploy` a partir da sessão continua inviável: o proxy troca o token pelo da conta antiga (ver Bloqueios). O MCP da Cloudflare não serve para subir os ~5 MB de assets, porque o conteúdo teria de passar pelo próprio código da chamada.
+- Caminho: Workers Builds na conta nova (conectar o GitHub uma vez no painel), com raiz `apps/blog`, build `npm ci && npm run build`, deploy `npx wrangler deploy`. Depois do primeiro deploy, eu cadastro `TURNSTILE_SECRET_KEY` via MCP.
+
 ## Bloqueios
 
 - Passo 9 depende de ações exclusivas do usuário (conta/segredos/painel Cloudflare) — ver Pendências.
