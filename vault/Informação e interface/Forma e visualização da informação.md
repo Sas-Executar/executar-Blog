@@ -102,11 +102,14 @@ flowchart TD
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Erros de leitura por formato (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Texto corrido","Tabela","Lista","Gráfico"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[30,18,12,9],"itemStyle":{"borderRadius":4}}]}' data-descricao="Erros de leitura por formato (dados fictícios). Taxa ilustrativa (%) de erro de interpretação por formato de apresentação. Dados fictícios." role="img" aria-label="Erros de leitura por formato (dados fictícios). Taxa ilustrativa (%) de erro de interpretação por formato de apresentação. Dados fictícios."></div>
-	<p class="resumo">Taxa ilustrativa (%) de erro de interpretação por formato de apresentação. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Erros de leitura por formato (dados fictícios)"
+summary: "Taxa ilustrativa (%) de erro de interpretação por formato de apresentação. Dados fictícios."
+x: ["Texto corrido", "Tabela", "Lista", "Gráfico"]
+y: [30, 18, 12, 9]
+height: 320
+```
 
 ## Relacionados
 

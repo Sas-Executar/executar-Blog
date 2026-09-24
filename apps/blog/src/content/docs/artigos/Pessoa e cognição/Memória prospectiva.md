@@ -91,11 +91,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Lembretes concluídos por tipo de apoio (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Sem apoio","Alerta único","Alerta + contexto","Checklist"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[38,55,74,86],"itemStyle":{"borderRadius":4}}]}' data-descricao="Lembretes concluídos por tipo de apoio (dados fictícios). Percentual ilustrativo de intenções futuras concluídas conforme o apoio disponível. Dados fictícios." role="img" aria-label="Lembretes concluídos por tipo de apoio (dados fictícios). Percentual ilustrativo de intenções futuras concluídas conforme o apoio disponível. Dados fictícios."></div>
-	<p class="resumo">Percentual ilustrativo de intenções futuras concluídas conforme o apoio disponível. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Lembretes concluídos por tipo de apoio (dados fictícios)"
+summary: "Percentual ilustrativo de intenções futuras concluídas conforme o apoio disponível. Dados fictícios."
+x: ["Sem apoio", "Alerta único", "Alerta + contexto", "Checklist"]
+y: [38, 55, 74, 86]
+height: 320
+```
 
 ## Relacionados
 

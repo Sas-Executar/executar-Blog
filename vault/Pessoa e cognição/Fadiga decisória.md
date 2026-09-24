@@ -102,11 +102,14 @@ flowchart TD
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Qualidade da decisão ao longo do dia (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["9h","12h","15h","18h"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"line","data":[88,74,58,41],"smooth":true,"symbolSize":8}]}' data-descricao="Qualidade da decisão ao longo do dia (dados fictícios). Escore ilustrativo (0–100) de qualidade percebida da decisão, por horário. Dados fictícios." role="img" aria-label="Qualidade da decisão ao longo do dia (dados fictícios). Escore ilustrativo (0–100) de qualidade percebida da decisão, por horário. Dados fictícios."></div>
-	<p class="resumo">Escore ilustrativo (0–100) de qualidade percebida da decisão, por horário. Dados fictícios.</p>
-</figure>
+```chart
+type: line
+title: "Qualidade da decisão ao longo do dia (dados fictícios)"
+summary: "Escore ilustrativo (0–100) de qualidade percebida da decisão, por horário. Dados fictícios."
+x: ["9h", "12h", "15h", "18h"]
+y: [88, 74, 58, 41]
+height: 320
+```
 
 ## Relacionados
 

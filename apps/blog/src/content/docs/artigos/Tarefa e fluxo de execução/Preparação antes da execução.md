@@ -91,11 +91,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Erros por nível de preparação (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Sem preparo","Checklist rápido","Preparo guiado","Preparo + revisão"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[44,27,15,9],"itemStyle":{"borderRadius":4}}]}' data-descricao="Erros por nível de preparação (dados fictícios). Percentual ilustrativo de erros conforme o nível de preparação antes de executar. Dados fictícios." role="img" aria-label="Erros por nível de preparação (dados fictícios). Percentual ilustrativo de erros conforme o nível de preparação antes de executar. Dados fictícios."></div>
-	<p class="resumo">Percentual ilustrativo de erros conforme o nível de preparação antes de executar. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Erros por nível de preparação (dados fictícios)"
+summary: "Percentual ilustrativo de erros conforme o nível de preparação antes de executar. Dados fictícios."
+x: ["Sem preparo", "Checklist rápido", "Preparo guiado", "Preparo + revisão"]
+y: [44, 27, 15, 9]
+height: 320
+```
 
 ## Relacionados
 

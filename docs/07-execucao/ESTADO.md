@@ -44,6 +44,24 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - Estratégia renomeada: "minimal code, max upstream".
 - Gate 4a: opção (d) — Starlight 0.42 estático + CSS/overrides do tema sem Graph View; `/api` via Worker de borda (ADR-002, ADR-003).
 
+## Design editorial (ADR-010) — 2026-09-24 — VERIFIED (local)
+
+- Decisão do usuário: opções **A+B** do `docs/03-design/plano-refatoracao-design.md`, **manter Astro** (o app Next.js do pacote de design não entra) e **Geist em tudo**.
+- Fonte da verdade visual: `docs/03-design/sot/` (telas 02/05/06 + referência editorial + `visual-contract.yml`).
+- Feito: Geist (`@fontsource-variable/geist*`), tokens do pacote em `tokens.css`, hero do artigo (`ArticleHero.astro`, override de `PageTitle`), callouts/citações/gráficos em cartões suaves, página Hoje (`Hoje.astro`), bloco ` ```chart ` (`src/plugins/chart.mjs`, plugin do Sätteri) e os 21 gráficos do vault migrados.
+- Evidência: `npm run check` (0 erros, 25 testes unitários, contraste 9 pares × 4 modos, guard ok), `npm run build` ok, `npm run test:e2e` 18/18.
+- Limitação: `content:sync` não roda nesta sessão, porque o Mermaid precisa do Chromium 1243 e só há o 1194. As páginas geradas receberam a mesma troca figure → chart aplicada ao vault; o próximo `content:sync` com Chromium gera o mesmo resultado. O tema lilás do Mermaid (opção A) fica para quando o sync rodar.
+- Fora do escopo: Explorar, Categoria, Salvos, Preferências e BottomNav.
+
+## Nova conta Cloudflare (2026-09-24)
+
+- O usuário criou uma conta nova, `Sas_executar@outlook.com's Account` (`99b69…`), para um build e deploy do zero. A conta antiga (`92fdc…`, Worker `executar-blogg`) fica desativada para este fluxo.
+- Estado lido via MCP do plugin `cloudflare`: nenhum Worker e subdomínio `sas-executar`. URL prevista: `https://executar-blog.sas-executar.workers.dev` (padrão de `site` no `astro.config.mjs`).
+- `wrangler deploy` a partir da sessão continua inviável: o proxy troca o token pelo da conta antiga (ver Bloqueios). O MCP da Cloudflare não serve para subir os ~5 MB de assets, porque o conteúdo teria de passar pelo próprio código da chamada.
+- **Deploy feito (2026-09-24 13:45 UTC):** o usuário importou o repositório (Worker `executar-blog`, branch `main`). O 1º build falhou porque `npx wrangler deploy` rodava na raiz do monorepo ("application detection logic has been run in the root of a workspace"). Corrigido via API no gatilho `4ab7c8d1…`: deploy com `--config apps/blog/wrangler.jsonc`. O build `79d41002…` terminou com sucesso: https://executar-blog.sas-executar.workers.dev (/, artigo e /perguntar respondem 200). `TURNSTILE_SECRET_KEY` cadastrado com a chave de teste oficial. O design novo entra no ar quando o PR #16 for para a `main`.
+- **Previews de branch:** o `wrangler preview` também rodava na raiz. Corrigido via API (`previews_base_config` e o preview da branch com `--config apps/blog/wrangler.jsonc`), e o `wrangler.jsonc` ganhou o bloco `previews` (rate limit `1002`, separado da produção). Build `72a5db32…` ok: https://claude-blog-design-system-audit-52wrka-executar-blog.sas-executar.workers.dev, com a página Hoje, o hero e o gráfico ` ```chart ` confirmados no HTML.
+- Caminho: Workers Builds na conta nova (conectar o GitHub uma vez no painel), com raiz `apps/blog`, build `npm ci && npm run build`, deploy `npx wrangler deploy`. Depois do primeiro deploy, eu cadastro `TURNSTILE_SECRET_KEY` via MCP.
+
 ## Bloqueios
 
 - Passo 9 depende de ações exclusivas do usuário (conta/segredos/painel Cloudflare) — ver Pendências.

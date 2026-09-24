@@ -91,11 +91,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Carga percebida por fonte (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Processos","Ferramentas","Comunicação","Decisões"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[45,38,52,41],"itemStyle":{"borderRadius":4}}]}' data-descricao="Carga percebida por fonte (dados fictícios). Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios." role="img" aria-label="Carga percebida por fonte (dados fictícios). Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios."></div>
-	<p class="resumo">Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Carga percebida por fonte (dados fictícios)"
+summary: "Escore ilustrativo (0–100) de carga percebida, por fonte de demanda. Dados fictícios."
+x: ["Processos", "Ferramentas", "Comunicação", "Decisões"]
+y: [45, 38, 52, 41]
+height: 320
+```
 
 ## Relacionados
 

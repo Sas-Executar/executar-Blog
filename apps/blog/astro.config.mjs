@@ -2,6 +2,8 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import { createStarlightObsidianPlugin } from 'starlight-obsidian';
+import { satteri } from '@astrojs/markdown-satteri';
+import chartPlugin from './src/plugins/chart.mjs';
 
 const [starlightObsidian, obsidianSidebarEntries] = createStarlightObsidianPlugin();
 
@@ -10,7 +12,9 @@ const [starlightObsidian, obsidianSidebarEntries] = createStarlightObsidianPlugi
 const theme = (/** @type {string} */ file) => `starlight-theme-obsidian/${file}`;
 
 export default defineConfig({
-	site: process.env.SITE_URL ?? 'https://executar-blog.workers.dev',
+	// Bloco ```chart em Markdown → gráfico ECharts (ADR-010).
+	markdown: { processor: satteri({ mdastPlugins: [chartPlugin()] }) },
+	site: process.env.SITE_URL ?? 'https://executar-blog.sas-executar.workers.dev',
 	integrations: [
 		starlight({
 			title: 'EXECUTAR',
@@ -32,6 +36,8 @@ export default defineConfig({
 				theme('styles/theme.css'),
 				theme('styles/centered-reading.css'),
 				theme('styles/common.css'),
+				'@fontsource-variable/geist',
+				'@fontsource-variable/geist-mono',
 				'./src/styles/github.css',
 				'./src/styles/tokens.css',
 			],
@@ -40,6 +46,7 @@ export default defineConfig({
 				PageFrame: theme('overrides/PageFrame.astro'),
 				Pagination: theme('overrides/Pagination.astro'),
 				ThemeSelect: theme('overrides/ThemeSelect.astro'),
+				PageTitle: './src/components/ArticleHero.astro',
 				MarkdownContent: './src/components/MarkdownContent.astro',
 				Head: './src/components/Head.astro',
 			},

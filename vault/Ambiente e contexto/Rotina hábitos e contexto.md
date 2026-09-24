@@ -102,11 +102,14 @@ flowchart TD
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Energia percebida ao longo do dia (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Manhã","Meio-dia","Tarde","Noite"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"line","data":[80,55,40,60],"smooth":true,"symbolSize":8}]}' data-descricao="Energia percebida ao longo do dia (dados fictícios). Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios." role="img" aria-label="Energia percebida ao longo do dia (dados fictícios). Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios."></div>
-	<p class="resumo">Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios.</p>
-</figure>
+```chart
+type: line
+title: "Energia percebida ao longo do dia (dados fictícios)"
+summary: "Variação ilustrativa de energia/disposição percebida em quatro janelas do dia. Dados fictícios."
+x: ["Manhã", "Meio-dia", "Tarde", "Noite"]
+y: [80, 55, 40, 60]
+height: 320
+```
 
 ## Relacionados
 

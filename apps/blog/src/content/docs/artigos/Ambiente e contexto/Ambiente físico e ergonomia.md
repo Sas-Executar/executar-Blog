@@ -90,11 +90,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Queixas por fator ergonômico (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Iluminação","Ruído","Postura","Temperatura"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[40,55,68,35],"itemStyle":{"borderRadius":4}}]}' data-descricao="Queixas por fator ergonômico (dados fictícios). Frequência relativa de queixas por fator do ambiente físico. Dados ilustrativos, não medidos." role="img" aria-label="Queixas por fator ergonômico (dados fictícios). Frequência relativa de queixas por fator do ambiente físico. Dados ilustrativos, não medidos."></div>
-	<p class="resumo">Frequência relativa de queixas por fator do ambiente físico. Dados ilustrativos, não medidos.</p>
-</figure>
+```chart
+type: bar
+title: "Queixas por fator ergonômico (dados fictícios)"
+summary: "Frequência relativa de queixas por fator do ambiente físico. Dados ilustrativos, não medidos."
+x: ["Iluminação", "Ruído", "Postura", "Temperatura"]
+y: [40, 55, 68, 35]
+height: 320
+```
 
 ## Relacionados
 

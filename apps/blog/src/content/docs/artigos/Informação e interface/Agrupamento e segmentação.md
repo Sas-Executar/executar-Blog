@@ -91,11 +91,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Tempo de busca por organização da lista (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Sem grupo","Grupo simples","Grupo + rótulo","Grupo + busca"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[42,30,18,10],"itemStyle":{"borderRadius":4}}]}' data-descricao="Tempo de busca por organização da lista (dados fictícios). Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios." role="img" aria-label="Tempo de busca por organização da lista (dados fictícios). Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios."></div>
-	<p class="resumo">Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Tempo de busca por organização da lista (dados fictícios)"
+summary: "Segundos ilustrativos até encontrar um item, conforme a lista ganha agrupamento. Dados fictícios."
+x: ["Sem grupo", "Grupo simples", "Grupo + rótulo", "Grupo + busca"]
+y: [42, 30, 18, 10]
+height: 320
+```
 
 ## Relacionados
 

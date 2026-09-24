@@ -91,11 +91,14 @@ Conteúdo educativo e operacional. Não diagnostica condição clínica nem tran
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Bloqueios por número de dependências (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["0 dependências","1–2","3–4","5+"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[5,18,34,57],"itemStyle":{"borderRadius":4}}]}' data-descricao="Bloqueios por número de dependências (dados fictícios). Percentual ilustrativo de bloqueios conforme o número de dependências da tarefa. Dados fictícios." role="img" aria-label="Bloqueios por número de dependências (dados fictícios). Percentual ilustrativo de bloqueios conforme o número de dependências da tarefa. Dados fictícios."></div>
-	<p class="resumo">Percentual ilustrativo de bloqueios conforme o número de dependências da tarefa. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Bloqueios por número de dependências (dados fictícios)"
+summary: "Percentual ilustrativo de bloqueios conforme o número de dependências da tarefa. Dados fictícios."
+x: ["0 dependências", "1–2", "3–4", "5+"]
+y: [5, 18, 34, 57]
+height: 320
+```
 
 ## Relacionados
 
