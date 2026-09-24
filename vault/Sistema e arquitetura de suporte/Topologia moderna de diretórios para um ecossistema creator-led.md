@@ -798,3 +798,303 @@ Por isso, o tracking plan precisa conter um **data-processing register**, não s
 | contém identificador? | sim/não |
 | exclusão/DSR | procedimento definido |
 
+A LGPD estabelece explicitamente o princípio da necessidade e obrigações de segurança; consequentemente, IDs e propriedades devem ser coletados somente quando necessários ao propósito declarado. [^fonte-26]
+
+A ANPD mantém guia específico de cookies e proteção de dados, cuja página oficial foi atualizada em janeiro de 2025. A implementação de CMP/banner deve ser alinhada a esse guia e à análise jurídica concreta das finalidades, não a uma suposição de que “todo cookie usa a mesma base legal”. [^fonte-27]
+
+Para usuários sujeitos ao GDPR, o desenho precisa também cumprir o Regulamento (UE) 2016/679 e os demais regimes europeus aplicáveis ao tracking. [^fonte-28]
+
+Uma CMP adequada ao ecossistema precisa controlar destinos, e não apenas esconder o banner:
+
+```text
+essential    → sempre conforme necessidade operacional
+preferences  → conforme decisão jurídica
+analytics    → policy gate
+advertising  → policy gate
+```
+
+Server-side tracking não é “cookieless compliance”: ele simplesmente move parte do processamento. Finalidade, transparência, base legal, minimização e direitos do titular permanecem aplicáveis. [^fonte-29]
+
+### Menores de idade
+
+Esse ponto é especialmente crítico para uma rede social creator-led. A LGPD determina que o tratamento de dados de crianças e adolescentes seja realizado em seu melhor interesse e estabelece exigências específicas para dados de crianças. [^fonte-30]
+
+Portanto, age assurance, parental consent quando aplicável, publicidade, perfilamento, creator monetization e mensagens privadas devem formar um **workstream jurídico/produto separado antes de abrir o ecossistema a menores**. Este relatório não substitui análise jurídica.
+
+### Segurança
+
+Baseline recomendado:
+
+```text
+TLS everywhere
++ HSTS
++ CSP
++ secure/HttpOnly/SameSite cookies
++ OIDC/OAuth BCP
++ least-privilege IAM
++ MFA para CMS/admin
++ secret manager
++ WAF/rate limiting
++ dependency scanning
++ audit logs
++ backup/restore testado
++ incident response
+```
+
+Para o plano de identidade, seguir a BCP atual do OAuth reduz dependência de padrões históricos já considerados menos seguros. [^fonte-31]
+
+Tenants de creators não devem compartilhar permissões por convençia. O componente que resolve:
+
+```text
+request → user → role → tenant → resource
+```
+
+deve autorizar cada operação no servidor.
+
+O CMS e previews privados também devem ficar fora do índice e atrás de autenticação. O site de produção, ao contrário, não pode herdar acidentalmente `noindex`/bloqueios de staging — esse é inclusive um erro destacado pelo Google em migrações. [^fonte-32]
+
+## Implementação, rollout e migração
+
+### Checklist de implementação
+
+| Área | Critério de aceite |
+|---|---|
+| **Domínio** | blog publicado em path do domínio público; `app.` separado quando necessário |
+| **URLs** | convenção documentada; lowercase; slugs estáveis; parâmetros não criam páginas canônicas |
+| **Taxonomia** | topics/personas/formats separados no content model |
+| **CMS** | content IDs imutáveis; drafts; preview; roles; webhook de publish |
+| **SEO** | canonical, title, meta, robots, sitemap e structured data testados |
+| **Autores** | página própria + `ProfilePage`; byline verificável |
+| **Creators** | perfil público conectado ao grafo editorial |
+| **Internal linking** | nenhum conteúdo estratégico órfão |
+| **Performance** | RUM e Core Web Vitals monitorados |
+| **Analytics** | event schema versionado + IDs estáveis + UTMs governadas |
+| **Consent** | policy gating antes de destinos não autorizados |
+| **Identity** | OIDC/SSO e `user_id` único |
+| **Syndication** | webhook → queue → adapter, com idempotência |
+| **CI/CD** | preview, testes SEO/schema/performance e smoke tests |
+| **Security** | MFA admin, secrets, dependency scans, logs e rate limiting |
+| **Legal** | privacy/cookie notices, data map, retention e processos de titulares |
+| **Observability** | frontend errors, API latency, CDN hit rate e publishing failures |
+| **Costs** | alerts e budgets de CDN/compute/CMS/data |
+
+### Rollout em fases
+
+Os períodos abaixo são estimativas de planejamento, não compromissos de prazo; dependem da stack existente e da equipe.
+
+```mermaid
+flowchart LR
+    A["Fundação\n~1–2 semanas\nURLs, taxonomy, data model"] -->
+    B["MVP editorial\n~2–4 semanas\nCMS + web + SEO"] -->
+    C["Aquisição mensurável\n~2–3 semanas\nanalytics + consent + identity"] -->
+    D["Distribuição\n~2–4 semanas\nsyndication + lifecycle"] -->
+    E["Escala\n~4–8 semanas\ncreator graph + automation"] -->
+    F["Expansão\ncontínua\nmulti-tenant + locales + custom domains"]
+```
+
+### Fundação
+
+Congelar antes do desenvolvimento:
+
+- namespace de URLs;
+- IDs de conteúdo/creator/user;
+- pilares editoriais;
+- schemas CMS;
+- event naming;
+- consent categories;
+- estratégia de domínio;
+- critérios de conversão/ativação.
+
+Mudar esses elementos depois de acumular conteúdo e eventos é muito mais caro do que alterar layout.
+
+### MVP editorial
+
+O MVP deve ter:
+
+```text
+home
+blog index
+article
+topic hub
+author
+creator public profile
+resource landing
+signup handoff
+sitemap
+robots
+canonical
+structured data
+Search Console
+preview CMS
+```
+
+Conteúdo deve expor autoria real e contexto sobre quem o produziu; o Google inclui autoria clara e informações sobre o autores entre os elementos de avaliação de conteúdo people-first. [^fonte-33]
+
+### Aquisição mensurável
+
+Só considerar essa fase concluída quando for possível reconstruir:
+
+```text
+campaign
+ → landing content
+ → CTA
+ → signup
+ → activation
+```
+
+sem depender exclusivamente de cookies publicitérios de terceiros.
+
+### Distribuição e escala
+
+Adicionar queue, syndication, creator/entity relations, newsletter/lifecycle e RUM. Automação de redes sociais entra **depois** de existir um source-of-truth editorial e tracking de variantes.
+
+### Internacionalização
+
+Somente entço criar locale graph:
+
+```text
+content_family_id: "cf_123"
+
+variants:
+  pt-BR → cnt_101
+  en    → cnt_102
+  es    → cnt_103
+```
+
+Assim, `hreflang` é gerado a partir de relações explícitas entre documentos equivalentes, evitando combinações incorretas. Os códigos devem seguir o formato aceito pelo Google e podem incluir `x-default` quando houver fallback. [^fonte-34]
+
+### Migração de blog legado
+
+Migração é um projeto de preservação de sinais, nao apenas importação de posts. A orientação oficial atual do Google recomenda inventariar URLs, preparar mapeamento old→new, implementar redirects permanentes server-side, atualizar canonicals/hreflang/links internos e monitorar ambos os lados após a mudança. [^fonte-35]
+
+**Inventário pré-migração**
+
+```text
+[ ] exportar todas as URLs do CMS
+[ ] coletar URLs de sitemap
+[ ] coletar landing pages de analytics
+[ ] coletar URLs e backlinks do Search Console
+[ ] inventariar imagens/PDFs indexados
+[ ] registrar title/meta/canonical/robots atuais
+[ ] registrar trófego, rankings e conversões baseline
+```
+
+Google recomenda combinar CMS, sitemaps, analytics/server logs e dados de links para formar o inventário de URLs e incluir também imagens e outros recursos relevantes. [^fonte-36]
+
+**Mapa de migração**
+
+```csv
+old_url,new_url,action,reason
+/blog/2023/post-a,/blog/post-a/,301,preserve
+/category/growth,/blog/topicos/crescer/,301,consolidate
+/tag/foo,,410,retire
+/post-b,/blog/post-b/,301,preserve
+```
+
+Não fazer:
+
+```text
+1000 URLs antigas → /
+```
+
+quando elas não têm equivalência real. O Google alerta que redirects em massa para um destino irrelevante podem ser interpretados como soft 404. [^fonte-37]
+
+**Antes do cutover**
+
+```text
+[ ] validar 100% do redirect map
+[ ] canonical novo autocanônico
+[ ] atualizar hreflang
+[ ] substituir links internos antigos
+[ ] gerar sitemap novo
+[ ] verificar robots.txt
+[ ] confirmar remoção futura de staging noindex
+[ ] instalar analytics/event schema
+[ ] testar structured data
+[ ] testar páginas de maior tráfego
+[ ] testar capacidade do origin/CDN
+```
+
+O Google observa que o novo site pode receber aumento temporário de crawling após a migração e recomenda garantir capacidade suficiente. [^fonte-38]
+
+**Cutover**
+
+```text
+old URL
+   │
+   └── 301/308 ──> final canonical URL
+```
+
+Evitar:
+
+```text
+old → intermediate → locale → https → www → final
+```
+
+Google recomenda redirects permanentes server-side e aconselha apontar diretamente ao destino final, evitando chains. [^fonte-39]
+
+**Pós-cutover**
+
+```text
+[ ] submeter sitemap novo
+[ ] verificar Search Console
+[ ] testar amostra de redirects diariamente no início
+[ ] monitorar 404/5xx
+[ ] monitorar Googlebot em logs
+[ ] comparar tráfego old/new
+[ ] monitorar páginas indexadas
+[ ] revisar canonicals selecionados pelo Google
+[ ] atualizar backlinks de maior valor quando viável
+[ ] atualizar links em perfis sociais/campanhas
+[ ] manter redirects >= 1 ano
+```
+
+A recomendação oficial é manter redirects pelo maior tempo possível, geralmente **ao menos um ano**, para permitir transferência e recrawling dos sinais; para usuários, mantê-los indefinidamente pode ser apropriado. [^fonte-40]
+
+Evite combinar, no mesmo dia, **mudança de domínio + mudança completa de CMS + redesign radical + taxonomia nova**. A documentação do Google recomenda alterar uma coisa por vez quando possível, justamente para reduzir risco e tornar problemas diagnosticáveis. [^fonte-41]
+
+## Decisão recomendada e critérios de aceite
+
+A arquitetura que melhor equilibra aquisição, SEO, produto, identidade, analytics e evolução para uma creator economy é:
+
+```text
+PUBLIC PLANE
+example.com
+├── /blog/
+├── /blog/topicos/
+├── /blog/autores/
+├── /criadores/
+├── /recursos/
+└── /planos/
+
+PRODUCT PLANE
+app.example.com
+
+IDENTITY PLANE
+auth.example.com
+ou IdP com custom domain equivalente
+
+CONTENT PLANE
+headless CMS
+└── IDs estruturados + references + webhooks
+
+DATA PLANE
+example.com/m/*
+└── event routing / CDP
+    ├── warehouse
+    ├── analytics
+    └── lifecycle/destinations
+
+DISTRIBUTION PLANE
+CMS → queue → adapters → social platforms
+
+OPTIONAL CREATOR PUBLISHING PLANE
+tenant-aware content
+├── example.com/criadores/{handle}
+├── {creator}.example.com
+└── creator custom domain
+```
+
+O modelo resolve a principal tensão do problema: **maximiza coesão na superfície pública sem obrigar blog, aplicação, CMS, identidade e pipelines de dados a compartilhar o mesmo runtime**.
+
+A decisão deve ser considerada tecnicamente aceita quando os seguintes invariantes forem verdadeiros:
