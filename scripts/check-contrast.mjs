@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const TOKENS = path.join(root, 'apps/blog/src/styles/tokens.css');
+export const TOKENS = path.join(root, 'packages/theme/src/cores.css');
 export const MIN = 4.5;
 export const PAIRS = [
 	['foreground', 'background'],

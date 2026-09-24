@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 const COMMIT = '5b1418221b37316f7b9ee8b738b2f4c09028de48';
 const BASE = `https://raw.githubusercontent.com/Sas-Executar/Desyng-System-ecossitema./${COMMIT}/design-system/tokens`;
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const out = path.join(root, 'apps/blog/src/styles/ds');
+const root = path.dirname(fileURLToPath(import.meta.url));
+const out = path.join(root, 'src/ds');
 
 fs.mkdirSync(out, { recursive: true });
 for (const file of ['variables.css', 'theme.css']) {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import chartPlugin, { chartHtml } from '../../apps/blog/src/plugins/chart.mjs';
+import chartPlugin, { chartHtml } from '../../packages/markdown-parser/src/chart.mjs';
 
 const bloco = 'type: bar\ntitle: Receita por canal\nsummary: Orgânico lidera.\nx: [Orgânico, Eventos]\ny: [180, 61]';
 

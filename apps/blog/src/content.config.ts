@@ -1,21 +1,21 @@
 import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { docsLoader } from '@astrojs/starlight/loaders';
 import { docsSchema } from '@astrojs/starlight/schema';
+import { esquemaEditorial } from '@executar/content-schema';
+import { idDoCaminho } from '@executar/markdown-parser';
 
-// Propriedades editoriais dos artigos (ADR-012, handoff de Produto ADR-P04):
-// pilar (P1–P3) e nível de consciência (C1–C3) são eixos independentes.
+// Vault como fonte única (ADR-013/ADR-014): o blog lê vault/**/*.md direto — sem cópia convertida.
+// Nos testes (E2E_FIXTURES=1) entram também as notas de tests/fixtures/vault.
+const bases = ['vault', ...(process.env.E2E_FIXTURES ? ['tests/fixtures/vault'] : [])];
+
 export const collections = {
 	docs: defineCollection({
-		loader: docsLoader(),
-		schema: docsSchema({
-			extend: z.object({
-				autor: z.string().optional(),
-				papel: z.string().optional(),
-				pilar: z.enum(['P1', 'P2', 'P3']).optional(),
-				consciencia: z.enum(['C1', 'C2', 'C3']).optional(),
-				data: z.coerce.date().optional(),
-			}),
+		loader: glob({
+			base: '../..',
+			pattern: bases.map((b) => `${b}/**/[!_]*.md`),
+			generateId: ({ entry }) => idDoCaminho(entry.replace(/^(tests\/fixtures\/)?vault\//, '')),
 		}),
+		schema: docsSchema({ extend: esquemaEditorial(z) }),
 	}),
 };

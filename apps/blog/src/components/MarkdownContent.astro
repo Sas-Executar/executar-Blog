@@ -1,6 +1,10 @@
 ---
-// Override oficial do Starlight: só adiciona o escopo do GitHub Markdown CSS (ADR-005).
+// Override oficial do Starlight: escopo do GitHub Markdown CSS (ADR-005) e as cssclasses do
+// frontmatter do Obsidian, normalizadas como classes do tema (ADR-013: img-grid, wide, cards...).
 import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+
+const { entry } = Astro.locals.starlightRoute;
+const cssclasses = ((entry.data as { cssclasses?: string[] }).cssclasses ?? []).map((c) => `cssclass-${String(c).replace(/[^a-z0-9-]/gi, '')}`);
 ---
 
-<div class="markdown-body"><Default><slot /></Default></div>
+<div class:list={['markdown-body', ...cssclasses]}><Default><slot /></Default></div>

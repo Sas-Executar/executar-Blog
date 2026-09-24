@@ -6,6 +6,7 @@ import Default from '@astrojs/starlight/components/PageTitle.astro';
 import CategoryPill from './CategoryPill.astro';
 import Ilustracao from './Ilustracao.astro';
 import MetaBar from './MetaBar.astro';
+import Propriedades from './Propriedades.astro';
 import { eArtigo, paraArtigo } from '../lib/artigos';
 
 const { entry } = Astro.locals.starlightRoute;
@@ -27,6 +28,7 @@ const subtitulo = entry.data.description && !(entry.body ?? '').includes(entry.d
 			<Default />
 			{subtitulo && <p class="artigo-subtitulo">{subtitulo}</p>}
 			<MetaBar artigo={artigo} />
+			<Propriedades dados={entry.data as Record<string, unknown>} />
 			<div class="capa">
 				<Ilustracao icone={artigo.icone} grande />
 			</div>
@@ -73,6 +75,9 @@ const subtitulo = entry.data.description && !(entry.body ?? '').includes(entry.d
 		color: var(--muted);
 		font-size: 1.1875rem;
 		line-height: 1.45;
+	}
+	.artigo-hero :global(.propriedades) {
+		width: 100%;
 	}
 	.capa {
 		width: 100%;

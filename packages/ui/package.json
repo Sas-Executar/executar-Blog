@@ -1,0 +1,13 @@
+{
+  "name": "@executar/ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "mermaid": "12.0.0"
+  }
+}

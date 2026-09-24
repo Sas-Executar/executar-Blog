@@ -1,0 +1,64 @@
+---
+// Propriedades tipadas do artigo (ADR-013 FRD): frontmatter do Obsidian + tipos no estilo Notion,
+// exibidos num painel recolhível. Fórmula e rollup são calculados no build.
+import { avaliarFormula, calcularRollup, propriedadesExibiveis } from '@executar/content-schema';
+import { indice } from '../vault.mjs';
+
+interface Props {
+	dados: Record<string, unknown>;
+}
+const { dados } = Astro.props;
+const itens = propriedadesExibiveis(dados).map((p) => {
+	if (p.tipo === 'formula') {
+		const f = typeof p.valor === 'string' ? p.valor : ((dados.propriedades as Record<string, { formula?: string }>)?.[p.nome]?.formula ?? '');
+		return { ...p, valor: avaliarFormula(f, dados) ?? '—' };
+	}
+	if (p.tipo === 'rollup' && p.valor && typeof p.valor === 'object') return { ...p, valor: calcularRollup(p.valor as never, indice.notas) ?? '—' };
+	return p;
+});
+const lista = (v: unknown) => (Array.isArray(v) ? v : [v]).map(String);
+const data = (v: unknown) => {
+	const d = v instanceof Date ? v : new Date(String(v));
+	return Number.isNaN(d.getTime()) ? String(v) : d.toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: 'short', year: 'numeric' });
+};
+const resolver = (nome: string) => indice.porNome.get(nome.replace(/^\[\[|\]\]$/g, '').toLowerCase());
+---
+
+{
+	itens.length > 0 && (
+		<details class="propriedades not-content">
+			<summary>Propriedades ({itens.length})</summary>
+			<dl>
+				{itens.map((p) => (
+					<>
+						<dt>{p.nome}</dt>
+						<dd data-tipo={p.tipo}>
+							{p.tipo === 'boolean' ? (
+								p.valor ? 'Sim' : 'Não'
+							) : p.tipo === 'url' ? (
+								<a href={String(p.valor)}>{String(p.valor).replace(/^https?:\/\//, '')}</a>
+							) : p.tipo === 'email' ? (
+								<a href={`mailto:${p.valor}`}>{String(p.valor)}</a>
+							) : p.tipo === 'phone' ? (
+								<a href={`tel:${String(p.valor).replace(/[^\d+]/g, '')}`}>{String(p.valor)}</a>
+							) : p.tipo === 'date' || p.tipo === 'datetime' ? (
+								data(p.valor)
+							) : p.tipo === 'status' || p.tipo === 'select' ? (
+								<span class:list={['selo', { 'selo--status': p.tipo === 'status' }]}>{String(p.valor)}</span>
+							) : p.tipo === 'relation' || p.tipo === 'links' ? (
+								lista(p.valor).map((n) => {
+									const nota = resolver(n);
+									return nota ? <a class="selo" href={nota.url}>{nota.titulo}</a> : <span class="selo">{n}</span>;
+								})
+							) : ['tags', 'list', 'multiSelect', 'person'].includes(p.tipo) ? (
+								lista(p.valor).map((v) => <span class="selo">{p.tipo === 'tags' ? `#${v}` : v}</span>)
+							) : (
+								String(p.valor)
+							)}
+						</dd>
+					</>
+				))}
+			</dl>
+		</details>
+	)
+}

@@ -1,0 +1,9 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import Perguntar from '../components/Perguntar.astro';
+---
+
+<StarlightPage frontmatter={{ title: 'Pergunte aos artigos', description: 'Faça uma pergunta e o assistente responde usando apenas os artigos do blog, com as fontes.' }}>
+	<p>O assistente lê os artigos do EXECUTAR e responde com base neles, sempre citando as fontes. Ele não usa informação externa e não guarda sua pergunta.</p>
+	<Perguntar />
+</StarlightPage>

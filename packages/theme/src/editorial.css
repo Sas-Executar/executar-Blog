@@ -1,0 +1,643 @@
+/*
+ * Componentes editoriais (ADR-013/ADR-014): tudo o que a gramática do vault produz. Mesmo CSS no
+ * blog e no Studio (paridade visual). Só usa tokens (cores.css + Desyng System); claro/escuro,
+ * contraste AA, impressão e movimento reduzido. O Minimal é referência de design, não dependência:
+ * seus helpers (cssclasses img-grid, wide, cards) estão normalizados aqui em tokens.
+ */
+
+/* ── Callouts ─────────────────────────────────────────────────────────────── */
+.callout {
+	--callout-cor: var(--brand-text);
+	--callout-fundo: var(--brand-soft);
+	--callout-borda: var(--brand-line);
+	margin-block: 1.25rem;
+	padding: 0.875rem 1.125rem;
+	border: 1px solid var(--callout-borda);
+	border-inline-start-width: 4px;
+	border-radius: var(--radius-lg);
+	background: var(--callout-fundo);
+	color: var(--foreground);
+}
+.callout--nota,
+.callout--exemplo,
+.callout--citacao {
+	--callout-cor: var(--color-azure-11);
+	--callout-fundo: var(--info-soft);
+	--callout-borda: var(--color-azure-5);
+}
+.callout--pergunta,
+.callout--atencao {
+	--callout-cor: var(--color-warning-11);
+	--callout-fundo: var(--warning-soft);
+	--callout-borda: var(--color-warning-5);
+}
+.callout--perigo {
+	--callout-cor: var(--color-error-11);
+	--callout-fundo: var(--error-soft);
+	--callout-borda: var(--color-error-5);
+}
+:root[data-theme='dark'] .callout {
+	--callout-cor: var(--brand-text);
+}
+:root[data-theme='dark'] :is(.callout--nota, .callout--exemplo, .callout--citacao) {
+	--callout-cor: var(--color-azure-7);
+	--callout-borda: var(--color-azure-10);
+}
+:root[data-theme='dark'] :is(.callout--pergunta, .callout--atencao) {
+	--callout-cor: var(--color-warning-7);
+	--callout-borda: var(--color-warning-10);
+}
+:root[data-theme='dark'] .callout--perigo {
+	--callout-cor: var(--color-error-7);
+	--callout-borda: var(--color-error-10);
+}
+.callout__titulo {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0;
+	color: var(--callout-cor);
+	font-weight: 600;
+}
+.callout__titulo::before {
+	content: '';
+	flex: none;
+	width: 1.125rem;
+	height: 1.125rem;
+	background: currentColor;
+	-webkit-mask: var(--callout-icone) center / contain no-repeat;
+	mask: var(--callout-icone) center / contain no-repeat;
+	--callout-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 8h.01M11 12h1v4h1'/%3E%3C/svg%3E");
+}
+.callout--dica .callout__titulo::before,
+.callout--sucesso .callout__titulo::before {
+	--callout-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z'/%3E%3C/svg%3E");
+}
+.callout--atencao .callout__titulo::before,
+.callout--perigo .callout__titulo::before,
+.callout--pergunta .callout__titulo::before {
+	--callout-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 3 2 21h20zM12 10v4M12 17h.01'/%3E%3C/svg%3E");
+}
+.callout__corpo > :first-child {
+	margin-top: 0.5rem;
+}
+.callout__corpo > :last-child {
+	margin-bottom: 0;
+}
+details.callout > summary,
+details.toggle > summary {
+	cursor: pointer;
+	min-height: var(--hit-target);
+	list-style-position: inside;
+}
+details.callout > summary {
+	display: flex;
+}
+details.callout > summary::after {
+	content: '▸';
+	margin-inline-start: auto;
+	transition: transform var(--motion-duration-default) var(--motion-easing-out);
+}
+details.callout[open] > summary::after {
+	transform: rotate(90deg);
+}
+details.callout > summary::-webkit-details-marker {
+	display: none;
+}
+
+/* ── Inline: destaque, tags, wikilinks ───────────────────────────────────── */
+mark {
+	padding-inline: 0.15em;
+	border-radius: var(--radius-sm);
+	background: var(--color-warning-3);
+	color: var(--foreground);
+}
+:root[data-theme='dark'] mark {
+	background: #5a3f10;
+}
+.tag {
+	display: inline-block;
+	padding: 0 0.4em;
+	border-radius: var(--radius-pill);
+	background: var(--brand-soft);
+	color: var(--brand-text);
+	font-size: 0.875em;
+	font-weight: 500;
+}
+.wikilink--quebrado {
+	color: var(--muted);
+	text-decoration: underline dashed;
+	text-underline-offset: 0.2em;
+	cursor: help;
+}
+.embed-nota {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	min-height: var(--hit-target);
+	padding-inline: 0.875rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+	font-weight: 600;
+	text-decoration: none !important;
+}
+.embed-nota::before {
+	content: '↗';
+	color: var(--brand-text);
+}
+.imagem-ausente {
+	color: var(--muted);
+	font-style: italic;
+}
+[id^='bloco-']:target {
+	outline: 2px solid var(--brand-line);
+	outline-offset: 4px;
+	border-radius: var(--radius-sm);
+}
+
+/* ── Tarefas (GFM + caixas estendidas do Minimal) ────────────────────────── */
+.task-list-item {
+	list-style: none;
+}
+.task-list-item .tarefa__marca {
+	display: inline-grid;
+	place-items: center;
+	width: 1.1em;
+	height: 1.1em;
+	margin-inline-end: 0.4em;
+	border: 1.5px solid var(--muted);
+	border-radius: 0.25em;
+	vertical-align: -0.15em;
+	font-size: 0.95em;
+	line-height: 1;
+}
+.task-list-item .tarefa__marca::after {
+	font-size: 0.8em;
+	font-weight: 700;
+}
+.task-list-item[data-task='/'] .tarefa__marca {
+	background: linear-gradient(135deg, var(--brand) 50%, transparent 50%);
+	border-color: var(--brand-text);
+}
+.task-list-item[data-task='-'] {
+	color: var(--muted);
+	text-decoration: line-through;
+}
+.task-list-item[data-task='-'] .tarefa__marca::after { content: '–'; }
+.task-list-item[data-task='>'] .tarefa__marca::after { content: '›'; }
+.task-list-item[data-task='<'] .tarefa__marca::after { content: '‹'; }
+.task-list-item[data-task='?'] .tarefa__marca { border-color: var(--color-warning-9); color: var(--color-warning-11); }
+.task-list-item[data-task='?'] .tarefa__marca::after { content: '?'; }
+.task-list-item[data-task='!'] .tarefa__marca { border-color: var(--color-error-9); color: var(--color-error-11); }
+.task-list-item[data-task='!'] .tarefa__marca::after { content: '!'; }
+.task-list-item[data-task='*'] .tarefa__marca::after { content: '★'; }
+.task-list-item[data-task='"'] .tarefa__marca::after { content: '“'; }
+.task-list-item[data-task='l'] .tarefa__marca::after { content: '⌖'; }
+.task-list-item[data-task='b'] .tarefa__marca::after { content: '🔖'; font-size: 0.6em; }
+.task-list-item[data-task='i'] .tarefa__marca::after { content: 'i'; }
+.task-list-item[data-task='S'] .tarefa__marca::after { content: '$'; }
+.task-list-item[data-task='I'] .tarefa__marca::after { content: '💡'; font-size: 0.6em; }
+.task-list-item[data-task='p'] .tarefa__marca { color: var(--brand-text); }
+.task-list-item[data-task='p'] .tarefa__marca::after { content: '+'; }
+.task-list-item[data-task='c'] .tarefa__marca { color: var(--color-error-11); }
+.task-list-item[data-task='c'] .tarefa__marca::after { content: '−'; }
+.task-list-item[data-task='f'] .tarefa__marca::after { content: '🔥'; font-size: 0.6em; }
+.task-list-item[data-task='k'] .tarefa__marca::after { content: '⚿'; }
+.task-list-item[data-task='w'] .tarefa__marca::after { content: '🏆'; font-size: 0.6em; }
+.task-list-item[data-task='u'] .tarefa__marca::after { content: '↑'; }
+.task-list-item[data-task='d'] .tarefa__marca::after { content: '↓'; }
+
+/* ── Math, diagramas, notas de rodapé ────────────────────────────────────── */
+.formula {
+	overflow-x: auto;
+	margin-block: 1rem;
+	padding-block: 0.5rem;
+}
+.diagrama {
+	margin: 1.25rem 0;
+	padding: 1rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+	text-align: center;
+}
+.diagrama pre.mermaid {
+	margin: 0;
+	background: transparent;
+	color: var(--foreground);
+	font-family: var(--font-mono);
+	text-align: start;
+	white-space: pre-wrap;
+}
+.diagrama pre.mermaid[data-desenhado] {
+	text-align: center;
+}
+.diagrama svg {
+	max-width: 100%;
+	height: auto;
+}
+.footnotes {
+	margin-top: 3rem;
+	border-top: 1px solid var(--border);
+	color: var(--muted);
+	font-size: 0.9375rem;
+}
+
+/* ── Diretivas ───────────────────────────────────────────────────────────── */
+.tabs {
+	margin-block: 1.25rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+.tabs__lista {
+	display: flex;
+	gap: 0.25rem;
+	overflow-x: auto;
+	padding: 0.25rem 0.5rem 0;
+	border-bottom: 1px solid var(--border);
+}
+.tabs__lista [role='tab'] {
+	min-height: var(--hit-target);
+	padding-inline: 1rem;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: transparent;
+	color: var(--muted);
+	font: inherit;
+	font-weight: 500;
+	cursor: pointer;
+}
+.tabs__lista [role='tab'][aria-selected='true'] {
+	border-bottom-color: var(--brand);
+	color: var(--foreground);
+	font-weight: 600;
+}
+.tabs [role='tabpanel'] {
+	padding: 0.25rem 1.25rem;
+}
+/* Painel inativo some por classe, não pelo atributo hidden: assim a impressão consegue mostrar todos. */
+.tabs [role='tabpanel']:not([data-ativo]) {
+	display: none;
+}
+.colunas,
+.grade-editorial {
+	display: grid;
+	gap: 1rem 1.5rem;
+	margin-block: 1.25rem;
+}
+@media (min-width: 48rem) {
+	.colunas,
+	.grade-editorial {
+		grid-template-columns: repeat(var(--colunas, 2), minmax(0, 1fr));
+	}
+}
+.grade-editorial > ul,
+.grade-editorial > ol {
+	display: contents;
+}
+.grade-editorial > ul > li,
+.grade-editorial > ol > li,
+.cartao {
+	margin: 0;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+	list-style: none;
+}
+.cartao {
+	margin-block: 1.25rem;
+	box-shadow: var(--shadow-sm);
+}
+.cartao__titulo {
+	margin-top: 0 !important;
+	border: 0 !important;
+	font-size: 1.125rem;
+}
+details.toggle {
+	margin-block: 1rem;
+	padding: 0.25rem 1rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+details.toggle > summary {
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+}
+.passos > ol {
+	counter-reset: passo;
+	padding: 0;
+}
+.passos > ol > li {
+	position: relative;
+	counter-increment: passo;
+	margin-block: 0.75rem;
+	padding-inline-start: 3rem;
+	list-style: none;
+}
+.passos > ol > li::before {
+	content: counter(passo);
+	position: absolute;
+	inset-inline-start: 0;
+	top: -0.1rem;
+	display: grid;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	border-radius: var(--radius-full);
+	background: var(--accent);
+	color: var(--on-accent);
+	font-weight: 600;
+}
+.linha-do-tempo > :is(ul, ol) {
+	margin: 1.25rem 0;
+	padding: 0 0 0 1.5rem;
+	border-inline-start: 2px solid var(--brand-line);
+}
+.linha-do-tempo li {
+	position: relative;
+	margin-block: 0.75rem;
+	list-style: none;
+}
+.linha-do-tempo li::before {
+	content: '';
+	position: absolute;
+	inset-inline-start: calc(-1.5rem - 6px);
+	top: 0.45em;
+	width: 10px;
+	height: 10px;
+	border-radius: var(--radius-full);
+	background: var(--brand);
+}
+.metrica {
+	display: inline-grid;
+	gap: 0.125rem;
+	min-width: 12rem;
+	margin: 0.5rem 0.75rem 0.5rem 0;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+.metrica p {
+	margin: 0;
+}
+.metrica__valor {
+	color: var(--foreground);
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 1.1;
+}
+.metrica__rotulo {
+	color: var(--muted);
+}
+.metrica__delta {
+	font-weight: 600;
+}
+.metrica[data-tendencia='alta'] .metrica__delta {
+	color: var(--brand-text);
+}
+.metrica[data-tendencia='baixa'] .metrica__delta {
+	color: var(--color-error-11);
+}
+:root[data-theme='dark'] .metrica[data-tendencia='baixa'] .metrica__delta {
+	color: var(--color-error-7);
+}
+.comparacao {
+	display: grid;
+	gap: 1rem;
+	margin-block: 1.25rem;
+}
+@media (min-width: 48rem) {
+	.comparacao {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+.comparacao__lado {
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+.comparacao__lado[data-lado='depois'] {
+	border-color: var(--brand-line);
+	background: var(--brand-soft);
+}
+.comparacao__lado h3 {
+	margin-top: 0 !important;
+	border: 0 !important;
+	color: var(--muted);
+	font-size: 0.8125rem !important;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.citacao {
+	margin: 1.5rem 0;
+}
+.citacao blockquote {
+	margin: 0;
+	padding: 0.25rem 0 0.25rem 1.25rem;
+	border-inline-start: 4px solid var(--brand) !important;
+	color: var(--foreground);
+	font-size: 1.25rem;
+	line-height: 1.5;
+}
+.citacao figcaption,
+.figura figcaption {
+	margin-top: 0.5rem;
+	color: var(--muted);
+	font-size: 0.9375rem;
+}
+.figura {
+	margin: 1.5rem 0;
+}
+.embed iframe {
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	border: 0;
+	border-radius: var(--radius-lg);
+}
+.toc {
+	margin-block: 1.5rem;
+	padding: 1rem 1.25rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+.toc__titulo {
+	margin: 0 0 0.5rem;
+	color: var(--muted);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.toc ol {
+	margin: 0;
+	padding-inline-start: 1.25rem;
+}
+.toc .toc__nivel-3 {
+	margin-inline-start: 1rem;
+}
+.toc a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2rem;
+}
+.database {
+	overflow-x: auto;
+	margin-block: 1.25rem;
+}
+.database table {
+	display: table !important;
+	width: 100%;
+}
+.database caption {
+	caption-side: top;
+	padding-bottom: 0.5rem;
+	color: var(--foreground);
+	font-weight: 600;
+	text-align: start;
+}
+
+/* ── Propriedades do artigo (Obsidian + Notion) ──────────────────────────── */
+.propriedades {
+	margin-block: 1rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	background: var(--surface);
+}
+.propriedades > summary {
+	display: flex;
+	align-items: center;
+	min-height: var(--hit-target);
+	padding-inline: 1rem;
+	color: var(--muted);
+	font-size: 0.875rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+.propriedades dl {
+	display: grid;
+	grid-template-columns: minmax(7rem, max-content) 1fr;
+	gap: 0.5rem 1rem;
+	margin: 0;
+	padding: 0 1rem 1rem;
+	font-size: 0.9375rem;
+}
+.propriedades dt {
+	color: var(--muted);
+}
+.propriedades dd {
+	margin: 0;
+	color: var(--foreground);
+}
+.propriedades .selo {
+	display: inline-block;
+	margin: 0 0.25rem 0.25rem 0;
+	padding: 0.0625rem 0.5rem;
+	border-radius: var(--radius-pill);
+	background: var(--code-background);
+	font-size: 0.8125rem;
+}
+.propriedades .selo--status {
+	background: var(--brand-soft);
+	color: var(--brand-text);
+	font-weight: 600;
+}
+
+/* ── Helpers do Minimal normalizados (cssclasses) ────────────────────────── */
+.cssclass-img-grid p:has(> img + img),
+.cssclass-img-grid p:has(> a > img) {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+	gap: 0.5rem;
+}
+.cssclass-img-grid img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: var(--radius-md);
+}
+.cssclass-cards table {
+	border: 0;
+}
+.cssclass-wide {
+	--content-width: 60rem;
+}
+
+/* ── Impressão (PDF pelo navegador) ──────────────────────────────────────── */
+@media print {
+	.tabs [role='tabpanel']:not([data-ativo]) {
+		display: block;
+	}
+	.tabs [role='tabpanel']::before {
+		content: attr(data-rotulo);
+		display: block;
+		margin-top: 0.75rem;
+		font-weight: 600;
+	}
+	.tabs__lista {
+		display: none;
+	}
+	details > :not(summary) {
+		display: block !important;
+	}
+	.callout,
+	.cartao,
+	.metrica,
+	.comparacao__lado,
+	.tabs,
+	.diagrama,
+	.grafico,
+	figure,
+	table {
+		break-inside: avoid;
+	}
+	.embed iframe {
+		display: none;
+	}
+	.embed::after {
+		content: 'Vídeo incorporado — veja na versão web.';
+	}
+	a[href^='http']::after {
+		content: ' (' attr(href) ')';
+		font-size: 0.8em;
+		word-break: break-all;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	details.callout > summary::after {
+		transition: none;
+	}
+}
+
+/* ── Ajustes de encaixe no shell do blog ─────────────────────────────────── */
+/* O Starlight dá margin-top a todo irmão dentro do conteúdo; nas peças em linha/grade isso desalinha. */
+.tabs__lista > *,
+.colunas > *,
+.grade-editorial > *,
+.grade-editorial > :is(ul, ol) > *,
+.comparacao > *,
+.metrica > *,
+.tabs > [role='tabpanel'] {
+	margin-top: 0 !important;
+}
+.colunas > .coluna > :first-child,
+.comparacao__lado > :first-child {
+	margin-top: 0 !important;
+}
+/* O tema de leitura estiliza <details> com uma barra lateral própria; os componentes definem a sua. */
+.markdown-body details.callout {
+	border: 1px solid var(--callout-borda);
+	border-inline-start-width: 4px;
+	padding: 0.875rem 1.125rem;
+}
+.markdown-body details.toggle {
+	border: 1px solid var(--border);
+	padding: 0.25rem 1rem;
+}
