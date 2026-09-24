@@ -58,6 +58,7 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - O usuário criou uma conta nova, `Sas_executar@outlook.com's Account` (`99b69…`), para um build e deploy do zero. A conta antiga (`92fdc…`, Worker `executar-blogg`) fica desativada para este fluxo.
 - Estado lido via MCP do plugin `cloudflare`: nenhum Worker e subdomínio `sas-executar`. URL prevista: `https://executar-blog.sas-executar.workers.dev` (padrão de `site` no `astro.config.mjs`).
 - `wrangler deploy` a partir da sessão continua inviável: o proxy troca o token pelo da conta antiga (ver Bloqueios). O MCP da Cloudflare não serve para subir os ~5 MB de assets, porque o conteúdo teria de passar pelo próprio código da chamada.
+- **Deploy feito (2026-09-24 13:45 UTC):** o usuário importou o repositório (Worker `executar-blog`, branch `main`). O 1º build falhou porque `npx wrangler deploy` rodava na raiz do monorepo ("application detection logic has been run in the root of a workspace"). Corrigido via API no gatilho `4ab7c8d1…`: deploy com `--config apps/blog/wrangler.jsonc`. O build `79d41002…` terminou com sucesso: https://executar-blog.sas-executar.workers.dev (/, artigo e /perguntar respondem 200). `TURNSTILE_SECRET_KEY` cadastrado com a chave de teste oficial. O design novo entra no ar quando o PR #16 for para a `main`.
 - Caminho: Workers Builds na conta nova (conectar o GitHub uma vez no painel), com raiz `apps/blog`, build `npm ci && npm run build`, deploy `npx wrangler deploy`. Depois do primeiro deploy, eu cadastro `TURNSTILE_SECRET_KEY` via MCP.
 
 ## Bloqueios
