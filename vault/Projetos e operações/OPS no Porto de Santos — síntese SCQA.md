@@ -2,6 +2,8 @@
 title: "OPS no Porto de Santos: síntese SCQA do projeto"
 description: "Síntese do projeto de Onshore Power Supply para eletrificação seletiva de berços no Porto de Santos, combinando infraestrutura OPS, BESS, microrede, governança e implantação por piloto."
 data: 2026-09-24
+pilar: "P3"
+consciencia: "C3"
 ---
 
 > [!note] Escopo da síntese

@@ -2,6 +2,8 @@
 title: "Topologia moderna de diretórios para um ecossistema creator-led com blog de aquisição — arquitetura recomendada para 2026"
 description: "Arquitetura para integrar blog, produto, creators, CMS, dados e SEO, mantendo o conteúdo público no domínio principal e fronteiras técnicas em runtimes separados."
 data: 2026-09-24
+pilar: "P2"
+consciencia: "C2"
 ---
 
 ## Resumo executivo
