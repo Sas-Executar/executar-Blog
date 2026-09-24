@@ -1,0 +1,17 @@
+# Contrato visual (adaptado do pacote VISUAL-CONTRACT-BLOG-001 para as rotas do Astro/Starlight)
+metadata: { id: VISUAL-CONTRACT-BLOG-001, version: 1.1.0, status: IN_EXECUTION, adr: ADR-010 }
+principles: [content_first, mobile_first, low_visual_noise, high_typographic_hierarchy, soft_surfaces, predictable_navigation]
+routes:
+  - id: ROUTE-HOJE
+    path: /
+    golden_screen: SOT-MOCKUP-02-rota-hoje.png
+    components: [LeadStory, StoryRow]
+  - id: ROUTE-ARTIGO
+    path: /artigos/<grupo>/<slug>/
+    golden_screen: SOT-MOCKUP-05-rota-artigo.png
+    components: [ArticleHero (PageTitle override)]
+  - id: ROUTE-LEITURA
+    path: /artigos/<grupo>/<slug>/#corpo
+    golden_screen: SOT-MOCKUP-06-leitura-do-artigo.png
+    components: [QuoteBlock (callout quote), TipCard (callout tip), Grafico (bloco chart), Próximos artigos (Pagination)]
+deferred: [ROUTE-EXPLORAR, ROUTE-CATEGORIA, ROUTE-SALVOS, ROUTE-PREFERENCIAS, BottomNav]
