@@ -112,7 +112,7 @@ test('Hoje e Artigo (HF01/HF02): destaque, autoria, referências e próximo pass
 
 test('Explorar (HF01): filtros por pilar e consciência, com estado vazio', async ({ page }) => {
 	await page.goto('/explorar/');
-	await expect(page.locator('.post-card:visible')).toHaveCount(4);
+	await expect(page.locator('.post-card:visible')).toHaveCount(6);
 	await page.getByRole('button', { name: /C1 · Descoberta/ }).click();
 	await expect(page.locator('.post-card:visible')).toHaveCount(1);
 	await page.getByRole('button', { name: /P3 · Aplicação e sistemas/ }).click();
