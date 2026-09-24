@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "executar-blog",
+  "description": "Marketplace de plugins do projeto executar-Blog.",
+  "owner": {
+    "name": "Sas-Executar"
+  },
+  "plugins": [
+    {
+      "name": "cloudflare",
+      "description": "Skills e MCP da Cloudflare para desenvolver, testar e publicar aplicações na Cloudflare.",
+      "source": {
+        "source": "github",
+        "repo": "Sas-Executar/skills-cloudflare",
+        "ref": "main"
+      }
+    }
+  ]
+}
