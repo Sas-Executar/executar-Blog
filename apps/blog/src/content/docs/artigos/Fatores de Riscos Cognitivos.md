@@ -93,8 +93,11 @@ Este framework é operacional e educativo. Não constitui diagnóstico, avaliaç
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Fatores mapeados por grupo (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Pessoa e cognição","Tarefa e fluxo","Informação e interface","Ambiente e contexto","Sistema e suporte"],"axisLabel":{"interval":0,"rotate":20}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[4,5,4,3,4],"itemStyle":{"borderRadius":4}}]}' data-descricao="Fatores mapeados por grupo (dados fictícios). Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios." role="img" aria-label="Fatores mapeados por grupo (dados fictícios). Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios."></div>
-	<p class="resumo">Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Fatores mapeados por grupo (dados fictícios)"
+summary: "Contagem ilustrativa de fatores por grupo temático, apenas para demonstrar o painel. Dados fictícios."
+x: ["Pessoa e cognição", "Tarefa e fluxo", "Informação e interface", "Ambiente e contexto", "Sistema e suporte"]
+y: [4, 5, 4, 3, 4]
+height: 320
+```

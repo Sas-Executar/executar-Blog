@@ -102,11 +102,14 @@ flowchart TD
 
 ## 13. Painel ilustrativo (dados fictícios)
 
-<figure class="grafico">
-	<figcaption>Retrabalho por etapa (dados fictícios)</figcaption>
-	<div class="area" style="height:320px" data-grafico='{"tooltip":{},"grid":{"left":8,"right":16,"top":24,"bottom":8,"containLabel":true},"xAxis":{"type":"category","data":["Entrada","Processo","Validação","Entrega"],"axisLabel":{"interval":0,"rotate":0}},"yAxis":{"type":"value"},"series":[{"type":"bar","data":[20,35,15,8],"itemStyle":{"borderRadius":4}}]}' data-descricao="Retrabalho por etapa (dados fictícios). Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios." role="img" aria-label="Retrabalho por etapa (dados fictícios). Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios."></div>
-	<p class="resumo">Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios.</p>
-</figure>
+```chart
+type: bar
+title: "Retrabalho por etapa (dados fictícios)"
+summary: "Percentual ilustrativo de retrabalho por etapa do processo. Dados fictícios."
+x: ["Entrada", "Processo", "Validação", "Entrega"]
+y: [20, 35, 15, 8]
+height: 320
+```
 
 ## Relacionados
 

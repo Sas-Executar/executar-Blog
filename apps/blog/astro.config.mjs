@@ -2,6 +2,8 @@
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 import { createStarlightObsidianPlugin } from 'starlight-obsidian';
+import { satteri } from '@astrojs/markdown-satteri';
+import chartPlugin from './src/plugins/chart.mjs';
 
 const [starlightObsidian, obsidianSidebarEntries] = createStarlightObsidianPlugin();
 
@@ -10,6 +12,8 @@ const [starlightObsidian, obsidianSidebarEntries] = createStarlightObsidianPlugi
 const theme = (/** @type {string} */ file) => `starlight-theme-obsidian/${file}`;
 
 export default defineConfig({
+	// Bloco ```chart em Markdown → gráfico ECharts (ADR-010).
+	markdown: { processor: satteri({ mdastPlugins: [chartPlugin()] }) },
 	site: process.env.SITE_URL ?? 'https://executar-blog.workers.dev',
 	integrations: [
 		starlight({
