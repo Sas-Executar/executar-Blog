@@ -7,7 +7,8 @@ import { z } from 'zod';
 import { validarLeve } from '@executar/content-schema';
 import { criarIndice, idDoCaminho, lerFrontmatter } from '@executar/markdown-parser';
 import type { GitHub } from './github.ts';
-import { MODOS, type EnvPublicar, ErroPedido, caminhoSeguro, publicar } from './publicar.ts';
+import { ErroPermissao } from './papeis.ts';
+import { MODOS, type EnvPublicar, ErroConflito, ErroPedido, caminhoSeguro, publicar } from './publicar.ts';
 
 export const VERSAO_PROTOCOLO = '2025-06-18';
 
@@ -23,7 +24,7 @@ const FERRAMENTAS = [
 		name: 'ler_artigo',
 		title: 'Ler artigo',
 		description: 'Lê o Markdown completo de um artigo do vault.',
-		inputSchema: { type: 'object', properties: { caminho: { type: 'string', description: 'Caminho no vault, ex.: "Pessoa e cognição/Fadiga decisória.md"' } }, required: ['caminho'], additionalProperties: false },
+		inputSchema: { type: 'object', properties: { caminho: { type: 'string', description: 'Caminho no vault, ex.: "Pessoa e cognição/Fadiga decisória.md"' }, versao: { type: 'string', description: 'sha de um commit do histórico (opcional)' } }, required: ['caminho'], additionalProperties: false },
 		annotations: { readOnlyHint: true },
 	},
 	{
@@ -52,6 +53,20 @@ const FERRAMENTAS = [
 		},
 		annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
 	},
+	{
+		name: 'historico_artigo',
+		title: 'Histórico do artigo',
+		description: 'Lista as versões publicadas de um artigo (commit, data, autor). Para restaurar, leia a versão com ler_artigo(caminho, versao) e publique.',
+		inputSchema: { type: 'object', properties: { caminho: { type: 'string' } }, required: ['caminho'], additionalProperties: false },
+		annotations: { readOnlyHint: true },
+	},
+	{
+		name: 'status_publicacao',
+		title: 'Status do build',
+		description: 'Estado do build/deploy de um commit devolvido por publicar: aguardando, em andamento, sucesso ou falha.',
+		inputSchema: { type: 'object', properties: { commit: { type: 'string' } }, required: ['commit'], additionalProperties: false },
+		annotations: { readOnlyHint: true },
+	},
 ];
 
 type Rpc = { jsonrpc: '2.0'; id?: string | number | null; method: string; params?: Record<string, unknown> };
@@ -72,7 +87,8 @@ async function chamar(nome: string, args: Record<string, unknown>, gh: GitHub, e
 			return texto({ artigos: arquivos.map((a) => ({ caminho: a.caminho, url: `${env.BLOG_URL}/${idDoCaminho(a.caminho)}/` })) });
 		}
 		case 'ler_artigo': {
-			const arq = await gh.lerArquivo(caminhoSeguro(str('caminho')));
+			const versao = typeof args.versao === 'string' && /^[0-9a-f]{7,40}$/.test(args.versao) ? args.versao : undefined;
+			const arq = await gh.lerArquivo(caminhoSeguro(str('caminho')), versao);
 			return arq ? texto(arq.conteudo) : texto('Artigo não encontrado.', true);
 		}
 		case 'validar_artigo': {
@@ -86,6 +102,13 @@ async function chamar(nome: string, args: Record<string, unknown>, gh: GitHub, e
 			const modo = str('modo');
 			const r = await publicar({ modo: modo as never, caminho: str('caminho'), markdown: str('markdown'), mensagem: typeof args.mensagem === 'string' ? args.mensagem : undefined }, gh, env, autor);
 			return texto(r, !r.ok);
+		}
+		case 'historico_artigo':
+			return texto({ versoes: await gh.historico(caminhoSeguro(str('caminho'))) });
+		case 'status_publicacao': {
+			const sha = str('commit');
+			if (!/^[0-9a-f]{7,40}$/.test(sha)) throw new ErroPedido('commit inválido');
+			return texto(await gh.statusDoCommit(sha));
 		}
 		default:
 			return null;
@@ -131,7 +154,7 @@ export async function tratarMcp(request: Request, gh: GitHub, env: EnvPublicar, 
 			}
 		} catch (e) {
 			const mensagem = e instanceof Error ? e.message : String(e);
-			respostas.push(e instanceof ErroPedido ? resultado(msg.id, texto(mensagem, true)) : erro(msg.id, -32603, mensagem));
+			respostas.push(e instanceof ErroPedido || e instanceof ErroPermissao || e instanceof ErroConflito ? resultado(msg.id, texto(mensagem, true)) : erro(msg.id, -32603, mensagem));
 		}
 	}
 	if (!respostas.length) return new Response(null, { status: 202 });

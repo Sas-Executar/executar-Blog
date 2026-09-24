@@ -7,12 +7,18 @@ const STUDIO = process.env.STUDIO_URL ?? 'http://localhost:4400';
 const ARTIGO = '---\ntitle: Um\ndescription: Resumo.\n---\n\n> [!tip] Dica\n> ok ==destaque== [[Outro]]\n\n:::toggle[Abrir]\ncorpo\n:::\n\n$x^2$\n';
 
 test.beforeEach(async ({ page }) => {
-	await page.route('**/api/eu', (r) => r.fulfill({ json: { email: 'eu@executar.dev' } }));
-	await page.route('**/api/artigos', (r) => r.fulfill({ json: { artigos: ['Lab/Um.md'] } }));
+	await page.route('**/api/eu', (r) => r.fulfill({ json: { email: 'eu@executar.dev', papel: 'editor', blog: 'https://blog.test' } }));
+	await page.route('**/api/artigos', (r) => r.fulfill({ json: { artigos: ['Lab/Um.md', 'Lab/Dois.md'] } }));
 	await page.route('**/api/indice', (r) => r.fulfill({ json: { arquivos: [{ caminho: 'Lab/Outro.md', conteudo: '---\ntitle: Outro\n---' }] } }));
-	await page.route('**/api/artigo?*', (r) => r.fulfill({ json: { caminho: 'Lab/Um.md', conteudo: ARTIGO } }));
+	await page.route('**/api/artigo?*', (r) => {
+		const dois = r.request().url().includes('Dois');
+		return r.fulfill({ json: { caminho: dois ? 'Lab/Dois.md' : 'Lab/Um.md', conteudo: dois ? ARTIGO.replace('title: Um', 'title: Dois') : ARTIGO, sha: 'aaa111' } });
+	});
 	await page.goto(STUDIO);
 	await page.evaluate(() => localStorage.clear());
+	// O Studio só fica pronto depois de carregar o parser em WebAssembly e a lista de artigos.
+	await expect(page.locator('#eu')).toContainText('@');
+	await expect(page.locator('#preview')).not.toBeEmpty();
 });
 
 test('abre artigo e o preview usa a gramática editorial (WebAssembly)', async ({ page }) => {
@@ -40,14 +46,16 @@ test('validação aponta erro e propriedades reescrevem o frontmatter', async ({
 
 test('publicar em rascunho envia o contrato da Publish API e mostra o resultado', async ({ page }) => {
 	let pedido: Record<string, unknown> = {};
+	await page.route('**/api/status?*', (r) => r.fulfill({ json: { estado: 'sucesso', runs: [] } }));
 	await page.route('**/api/publicar', async (r) => {
 		pedido = r.request().postDataJSON();
-		await r.fulfill({ json: { ok: true, modo: 'draft', ramo: 'rascunho/lab-um', nota: 'Rascunho guardado no GitHub (não aparece no site).', url: null } });
+		await r.fulfill({ json: { ok: true, modo: 'draft', ramo: 'rascunho/lab-um', commit: 'abc1234def', nota: 'Rascunho guardado no GitHub (não aparece no site).', url: null } });
 	});
 	await page.getByRole('button', { name: 'Lab/Um.md' }).click();
 	await page.getByRole('button', { name: 'Rascunho' }).click();
 	await expect(page.getByRole('status')).toContainText('Rascunho guardado');
-	expect(pedido).toMatchObject({ modo: 'draft', caminho: 'Lab/Um.md', markdown: ARTIGO, assets: [] });
+	await expect(page.getByRole('status')).toContainText('Commit abc1234 · build: sucesso');
+	expect(pedido).toMatchObject({ modo: 'draft', caminho: 'Lab/Um.md', markdown: ARTIGO, assets: [], shaOriginal: 'aaa111' });
 });
 
 test('rascunho local sobrevive ao recarregar', async ({ page }) => {
@@ -57,4 +65,60 @@ test('rascunho local sobrevive ao recarregar', async ({ page }) => {
 	await page.reload();
 	await page.getByRole('button', { name: 'Lab/Um.md' }).click();
 	await expect(page.locator('#markdown')).toHaveValue(/Parágrafo novo\./);
+});
+
+test('rota prevista, preview abaixo de 1 s e conflito explicado', async ({ page }) => {
+	await page.route('**/api/publicar', (r) => r.fulfill({ status: 409, json: { erro: 'Este artigo foi alterado por outra pessoa depois que você o abriu.', conflito: true } }));
+	await page.getByRole('button', { name: 'Lab/Um.md' }).click();
+	await expect(page.locator('#rota')).toHaveText('Endereço: https://blog.test/blog/lab/um/');
+	await expect(page.locator('#tempo-preview')).toHaveText(/preview em \d+ ms/);
+	const ms = Number((await page.locator('#tempo-preview').innerText()).match(/\d+/)![0]);
+	expect(ms).toBeLessThan(1000);
+	page.once('dialog', (d) => d.accept());
+	await page.getByRole('button', { name: 'Publicar', exact: true }).click();
+	await expect(page.getByRole('status')).toContainText('alterado por outra pessoa');
+});
+
+test('autor não vê o botão Publicar (RBAC)', async ({ page }) => {
+	await page.route('**/api/eu', (r) => r.fulfill({ json: { email: 'a@x', papel: 'autor', blog: 'https://blog.test' } }));
+	await page.reload();
+	await expect(page.locator('#eu')).toContainText('autor');
+	await expect(page.getByRole('button', { name: 'Abrir PR' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Publicar', exact: true })).toBeHidden();
+});
+
+test('comando "/" insere bloco pelo teclado', async ({ page }) => {
+	const editor = page.locator('#markdown');
+	await editor.fill('---\ntitle: x\ndescription: y\n---\n\n');
+	await editor.press('End');
+	await editor.pressSequentially('/aba');
+	await expect(page.getByRole('option', { name: 'Abas' })).toBeVisible();
+	await editor.press('Enter');
+	await expect(editor).toHaveValue(/::::tabs\n:::tab\[Primeira\]/);
+	await expect(page.locator('#preview [role="tablist"]')).toBeVisible();
+});
+
+test('histórico abre versão antiga para restaurar', async ({ page }) => {
+	await page.route('**/api/historico?*', (r) => r.fulfill({ json: { versoes: [{ sha: 'bbb2222', data: '2026-09-20T10:00:00Z', autor: 'eu@x', mensagem: 'conteúdo: publica', url: 'u' }] } }));
+	await page.route('**/api/versao?*', (r) => r.fulfill({ json: { conteudo: ARTIGO.replace('Resumo.', 'Resumo antigo.'), sha: 'x' } }));
+	await page.getByRole('button', { name: 'Lab/Um.md' }).click();
+	await page.getByRole('button', { name: 'Ver versões' }).click();
+	await page.getByRole('button', { name: 'Abrir esta versão' }).click();
+	await expect(page.locator('#markdown')).toHaveValue(/Resumo antigo\./);
+	await expect(page.getByRole('status')).toContainText('Publique para restaurá-la');
+});
+
+test('eBook: escolhe artigos, ordena capítulos e baixa EPUB', async ({ page }) => {
+	await page.getByRole('checkbox', { name: 'Incluir “Lab/Um.md” no eBook' }).check();
+	await page.getByRole('checkbox', { name: 'Incluir “Lab/Dois.md” no eBook' }).check();
+	await page.getByRole('button', { name: 'Subir: Dois' }).click();
+	await expect(page.locator('#livro li span')).toHaveText(['Dois', 'Um']);
+	const download = page.waitForEvent('download');
+	await page.getByRole('button', { name: 'EPUB', exact: true }).click();
+	const arquivo = await download;
+	expect(arquivo.suggestedFilename()).toBe('EXECUTAR.epub');
+	const bytes = await (await import('node:fs')).promises.readFile((await arquivo.path())!);
+	const texto = bytes.toString('utf8');
+	expect(texto.indexOf('>Dois</a>')).toBeLessThan(texto.indexOf('>Um</a>'));
+	expect(texto).toContain('OEBPS/capitulo-2.xhtml');
 });

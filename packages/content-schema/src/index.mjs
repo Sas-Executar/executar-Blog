@@ -104,7 +104,7 @@ export async function validarArtigo(markdown, { z, render }) {
 		if ((p.tipo === 'select' || p.tipo === 'status') && p.opcoes && !p.opcoes.includes(String(p.valor))) avisos.push(`“${p.nome}”: valor fora das opções (${p.opcoes.join(', ')}).`);
 	}
 	avisos.push(...resultado.avisos);
-	return { ok: erros.length === 0, erros, avisos };
+	return { ok: erros.length === 0, erros: localizar(markdown, erros), avisos: localizar(markdown, [...new Set(avisos)]) };
 }
 
 /** Fórmula aritmética segura sobre propriedades numéricas da própria nota (ex.: "horas * custo"). */
@@ -153,7 +153,7 @@ export function validarLeve(markdown, { z, lerFrontmatter, indice }) {
 	const r = esquemaEditorial(z).safeParse(dados);
 	if (!r.success) for (const i of r.error.issues) erros.push(`Propriedade “${i.path.join('.')}”: ${i.message}`);
 	for (const bloco of markdown.matchAll(/```chart\n([\s\S]*?)```/g)) {
-		if (!/^title:/m.test(bloco[1]) || !/^summary:/m.test(bloco[1])) erros.push('Gráfico sem title ou summary (obrigatórios para acessibilidade).');
+		if (!/^title:/m.test(bloco[1]) || !/^summary:/m.test(bloco[1])) erros.push(`Linha ${linhaDe(markdown, bloco.index)}: gráfico sem title ou summary (obrigatórios para acessibilidade).`);
 	}
 	if (indice) {
 		const semCodigo = markdown.replace(/```[\s\S]*?```/g, '');
@@ -163,5 +163,32 @@ export function validarLeve(markdown, { z, lerFrontmatter, indice }) {
 			if (!indice.porNome.has(alvo.toLowerCase())) avisos.push(`Link interno não encontrado: [[${alvo}]]`);
 		}
 	}
-	return { ok: erros.length === 0, erros, avisos: [...new Set(avisos)] };
+	return { ok: erros.length === 0, erros: localizar(markdown, erros), avisos: localizar(markdown, [...new Set(avisos)]) };
+}
+
+const linhaDe = (texto, indice) => texto.slice(0, indice).split('\n').length;
+
+/**
+ * Indica a linha exata de cada problema (critério do PRD: "indicar exatamente o bloco/propriedade").
+ * Procura no Markdown o trecho citado na mensagem: propriedade “x”, [[link]], :::diretiva, URL ou imagem.
+ * Mensagens que já começam com "Linha N" ficam como estão.
+ * @param {string} markdown
+ * @param {string[]} mensagens
+ */
+export function localizar(markdown, mensagens) {
+	const fm = /^---\r?\n[\s\S]*?\r?\n---/.exec(markdown)?.[0] ?? '';
+	return mensagens.map((m) => {
+		if (/^Linha \d+/.test(m)) return m;
+		let pos = -1;
+		const prop = /Propriedade “([^”.]+)|“([^”]+)”|\((title|description)\)/.exec(m);
+		const trecho = /(!?\[\[[^\]|#]+)|:::([\w-]+)|(https?:\/\/\S+)|imagem não encontrada no vault: (.+)$/.exec(m);
+		if (trecho) pos = markdown.indexOf(trecho[1] ?? (trecho[2] ? `:::${trecho[2]}` : trecho[3] ?? trecho[4]));
+		if (pos < 0 && prop) {
+			const chave = prop[1] ?? prop[2] ?? prop[3];
+			const achado = new RegExp(`^\\s*${chave.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*:`, 'm').exec(fm);
+			pos = achado ? achado.index : fm ? 0 : -1;
+		}
+		if (pos < 0 && /frontmatter/i.test(m)) pos = 0;
+		return pos < 0 ? m : `Linha ${linhaDe(markdown, pos)}: ${m}`;
+	});
 }

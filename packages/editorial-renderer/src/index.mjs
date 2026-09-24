@@ -28,4 +28,4 @@ export async function renderMarkdown(markdown, { indice = criarIndice([]), urlAs
 	const resultado = await markdownToHtml(corpo, { features: RECURSOS, mdastPlugins: [...plugins, restaurar], hastPlugins: [idsDeTitulo(), hastEditorial()] });
 	return { html: resultado.html ?? String(resultado), dados, avisos: [...new Set(avisos)] };
 }
-export { gerarEpub, zipArmazenado, paraXhtml } from './epub.mjs';
+export { gerarEpub, gerarLivroWeb, zipArmazenado, paraXhtml } from './epub.mjs';

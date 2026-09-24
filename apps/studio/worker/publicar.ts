@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { validarLeve } from '@executar/content-schema';
 import { criarIndice, idDoCaminho, lerFrontmatter } from '@executar/markdown-parser';
 import type { GitHub } from './github.ts';
+import { type EnvPapeis, autorizar, papelDe } from './papeis.ts';
 
 export const MODOS = ['draft', 'preview', 'pr', 'publish'] as const;
 export type Modo = (typeof MODOS)[number];
@@ -18,9 +19,10 @@ export interface PedidoPublicar {
 	markdown: string;
 	assets?: { nome: string; base64: string }[];
 	mensagem?: string;
+	shaOriginal?: string; // sha do arquivo quando foi aberto no editor (detecção de conflito)
 }
 
-export interface EnvPublicar {
+export interface EnvPublicar extends EnvPapeis {
 	BLOG_URL: string; // https://executar-blog.sas-executar.workers.dev
 }
 
@@ -30,6 +32,22 @@ const LIMITE_TOTAL = 10_000_000;
 const IMAGEM = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
 
 export class ErroPedido extends Error {}
+export class ErroConflito extends Error {}
+
+/** sha do blob Git (o mesmo que o GitHub guarda), para idempotência e conflitos. */
+export async function shaDoBlob(texto: string): Promise<string> {
+	const conteudo = new TextEncoder().encode(texto);
+	const cab = new TextEncoder().encode(`blob ${conteudo.length}\0`);
+	const tudo = new Uint8Array(cab.length + conteudo.length);
+	tudo.set(cab);
+	tudo.set(conteudo, cab.length);
+	return [...new Uint8Array(await crypto.subtle.digest('SHA-1', tudo))].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Registro de auditoria (Workers Logs): quem, o quê, onde e qual commit. */
+export function auditar(evento: Record<string, unknown>) {
+	console.log(JSON.stringify({ auditoria: 'studio', em: new Date().toISOString(), ...evento }));
+}
 
 export function base64Utf8(texto: string): string {
 	const bytes = new TextEncoder().encode(texto);
@@ -63,6 +81,7 @@ export const urlPrevia = (ramo: string, blogUrl: string) => {
 
 export async function publicar(p: PedidoPublicar, gh: GitHub, env: EnvPublicar, autor: string) {
 	if (!MODOS.includes(p.modo)) throw new ErroPedido(`Modo inválido. Use: ${MODOS.join(', ')}.`);
+	autorizar(papelDe(autor, env), p.modo);
 	if (typeof p.markdown !== 'string' || !p.markdown.trim()) throw new ErroPedido('O artigo está vazio.');
 	if (p.markdown.length > LIMITE_MD) throw new ErroPedido('O artigo passa de 1 MB.');
 	const caminho = caminhoSeguro(p.caminho);
@@ -72,6 +91,13 @@ export async function publicar(p: PedidoPublicar, gh: GitHub, env: EnvPublicar, 
 	const indice = criarIndice([...arquivosVault.map((a) => ({ caminho: a.caminho, conteudo: '' })), { caminho, conteudo: p.markdown }]);
 	const validacao = validarLeve(p.markdown, { z, lerFrontmatter, indice });
 	if (!validacao.ok) return { ok: false as const, erros: validacao.erros, avisos: validacao.avisos };
+
+	// Conflito: o arquivo mudou no GitHub depois que foi aberto no editor.
+	const atual = arquivosVault.find((a) => a.caminho === caminho);
+	const novoSha = await shaDoBlob(p.markdown);
+	if (p.shaOriginal && atual && atual.sha !== p.shaOriginal && atual.sha !== novoSha) {
+		throw new ErroConflito('Este artigo foi alterado por outra pessoa depois que você o abriu. Abra o histórico, compare e publique de novo.');
+	}
 
 	let total = p.markdown.length;
 	const arquivos = [{ caminho: `vault/${caminho}`, base64: base64Utf8(p.markdown) }];
@@ -91,17 +117,23 @@ export async function publicar(p: PedidoPublicar, gh: GitHub, env: EnvPublicar, 
 	const base = (await gh.shaDoRamo(gh.ramo))!;
 
 	if (p.modo === 'publish') {
+		// Idempotente: publicar o mesmo conteúdo de novo não cria commit.
+		if (atual?.sha === novoSha && !p.assets?.length) {
+			return { ok: true as const, modo: p.modo, commit: base, url: urlPublica, arquivo: novoSha, avisos: validacao.avisos, nota: 'Nada mudou: este conteúdo já está publicado.', idempotente: true };
+		}
 		const sha = await gh.commitar(base, arquivos, mensagem, autor);
 		await gh.moverRamo(gh.ramo, sha); // fast-forward; falha se a main andou (sem force)
-		return { ok: true as const, modo: p.modo, commit: sha, url: urlPublica, avisos: validacao.avisos, nota: 'Publicado na main. O site atualiza em cerca de 1 a 2 minutos.' };
+		auditar({ evento: 'publicar', autor, modo: p.modo, caminho, commit: sha, conteudo: novoSha });
+		return { ok: true as const, modo: p.modo, commit: sha, url: urlPublica, arquivo: novoSha, avisos: validacao.avisos, nota: 'Publicado na main. O site atualiza em cerca de 1 a 2 minutos.' };
 	}
 	const prefixo = { draft: 'rascunho', preview: 'preview', pr: 'artigo' }[p.modo];
 	const ramo = `${prefixo}/${slugRamo(caminho)}`;
 	const sha = await gh.commitar(base, arquivos, mensagem, autor);
 	await gh.moverRamo(ramo, sha, true);
+	auditar({ evento: 'publicar', autor, modo: p.modo, caminho, ramo, commit: sha, conteudo: novoSha });
 	if (p.modo === 'pr') {
 		const pr = await gh.abrirPR(ramo, `Artigo: ${titulo}`, `Enviado pelo EXECUTAR Studio por ${autor}.\n\nArquivo: \`vault/${caminho}\``);
-		return { ok: true as const, modo: p.modo, ramo, commit: sha, url: pr, previa: urlPrevia(ramo, env.BLOG_URL), avisos: validacao.avisos };
+		return { ok: true as const, modo: p.modo, ramo, commit: sha, url: pr, previa: urlPrevia(ramo, env.BLOG_URL), arquivo: novoSha, avisos: validacao.avisos };
 	}
 	return {
 		ok: true as const,
@@ -109,7 +141,7 @@ export async function publicar(p: PedidoPublicar, gh: GitHub, env: EnvPublicar, 
 		ramo,
 		commit: sha,
 		url: p.modo === 'preview' ? urlPrevia(ramo, env.BLOG_URL) : null,
-		avisos: validacao.avisos,
+		arquivo: novoSha, avisos: validacao.avisos,
 		nota: p.modo === 'preview' ? 'A prévia fica pronta em cerca de 1 a 2 minutos.' : 'Rascunho guardado no GitHub (não aparece no site).',
 	};
 }

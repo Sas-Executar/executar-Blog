@@ -46,3 +46,14 @@ test('fórmula segura e rollup', () => {
 	assert.equal(calcularRollup({ from: 'P', funcao: 'count' }, notas), 2);
 	assert.equal(calcularRollup({ from: 'P', campo: 'h', funcao: 'avg' }, notas), 3);
 });
+
+test('validação indica a linha exata do problema', async () => {
+	const { z } = await import('zod');
+	const { validarLeve } = await import('@executar/content-schema');
+	const { criarIndice, lerFrontmatter } = await import('@executar/markdown-parser');
+	const r = validarLeve('---\ntitle: x\npilar: P9\n---\n\ntexto\n\nver [[Nada]]\n\n```chart\ntype: bar\n```\n', { z, lerFrontmatter, indice: criarIndice([]) });
+	assert.ok(r.erros.some((e) => e.startsWith('Linha 3: Propriedade “pilar”')));
+	assert.ok(r.erros.some((e) => e.startsWith('Linha 10: gráfico')));
+	assert.ok(r.erros.some((e) => e.startsWith('Linha 1: Falta a descrição')));
+	assert.deepEqual(r.avisos, ['Linha 8: Link interno não encontrado: [[Nada]]']);
+});

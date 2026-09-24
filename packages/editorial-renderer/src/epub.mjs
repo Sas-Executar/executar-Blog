@@ -83,25 +83,24 @@ export function paraXhtml(html) {
 		.replace(/&nbsp;/g, '&#160;');
 }
 
+const xhtml = (idioma, titulo, corpo, css = true) => `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="${esc(idioma)}" lang="${esc(idioma)}">
+<head><meta charset="UTF-8" /><title>${esc(titulo)}</title>${css ? '<link rel="stylesheet" href="estilo.css" />' : ''}</head>
+<body>${corpo}</body></html>`;
+
 /**
- * @param {{ titulo: string, autor?: string, idioma?: string, id?: string, html: string, css?: string, data?: string }} livro
+ * EPUB 3 com um ou mais capítulos, na ordem dada (FR-13/FR-14).
+ * @param {{ titulo: string, autor?: string, idioma?: string, id?: string, html?: string,
+ *   capitulos?: { titulo: string, html: string }[], css?: string, data?: string }} livro
  * @returns {Uint8Array} bytes do arquivo .epub
  */
-export function gerarEpub({ titulo, autor = 'EXECUTAR', idioma = 'pt-BR', id, html, css = '', data }) {
+export function gerarEpub({ titulo, autor = 'EXECUTAR', idioma = 'pt-BR', id, html, capitulos, css = '', data }) {
+	const caps = capitulos?.length ? capitulos : [{ titulo, html: html ?? '' }];
 	const uid = id ?? `urn:executar:${titulo.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 	const modificado = (data ?? new Date().toISOString()).replace(/\.\d+Z$/, 'Z');
-	const capitulo = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="${esc(idioma)}" lang="${esc(idioma)}">
-<head><meta charset="UTF-8" /><title>${esc(titulo)}</title><link rel="stylesheet" href="estilo.css" /></head>
-<body><article class="markdown-body"><h1>${esc(titulo)}</h1>
-${paraXhtml(html)}
-</article></body></html>`;
-	const nav = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" xml:lang="${esc(idioma)}" lang="${esc(idioma)}">
-<head><meta charset="UTF-8" /><title>Sumário</title></head>
-<body><nav epub:type="toc" id="toc"><h1>Sumário</h1><ol><li><a href="capitulo.xhtml">${esc(titulo)}</a></li></ol></nav></body></html>`;
+	const arquivo = (i) => `capitulo-${i + 1}.xhtml`;
+	const nav = xhtml(idioma, 'Sumário', `<nav epub:type="toc" id="toc"><h1>${esc(titulo)}</h1><ol>${caps.map((c, i) => `<li><a href="${arquivo(i)}">${esc(c.titulo)}</a></li>`).join('')}</ol></nav>`, false);
 	const opf = `<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid" xml:lang="${esc(idioma)}">
 <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -113,10 +112,10 @@ ${paraXhtml(html)}
 </metadata>
 <manifest>
 <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav" />
-<item id="capitulo" href="capitulo.xhtml" media-type="application/xhtml+xml" />
+${caps.map((_, i) => `<item id="c${i + 1}" href="${arquivo(i)}" media-type="application/xhtml+xml" />`).join('\n')}
 <item id="estilo" href="estilo.css" media-type="text/css" />
 </manifest>
-<spine><itemref idref="capitulo" /></spine>
+<spine>${caps.map((_, i) => `<itemref idref="c${i + 1}" />`).join('')}</spine>
 </package>`;
 	const container = `<?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" /></rootfiles></container>`;
@@ -125,7 +124,23 @@ ${paraXhtml(html)}
 		{ nome: 'META-INF/container.xml', dados: container },
 		{ nome: 'OEBPS/content.opf', dados: opf },
 		{ nome: 'OEBPS/nav.xhtml', dados: nav },
-		{ nome: 'OEBPS/capitulo.xhtml', dados: capitulo },
+		...caps.map((c, i) => ({ nome: `OEBPS/${arquivo(i)}`, dados: xhtml(idioma, c.titulo, `<article class="markdown-body"><h1>${esc(c.titulo)}</h1>\n${paraXhtml(c.html)}\n</article>`) })),
 		{ nome: 'OEBPS/estilo.css', dados: css || 'body{font-family:serif;line-height:1.6}' },
 	]);
+}
+
+/**
+ * Web Book (FR-15): um HTML único, com sumário e capítulos na ordem dada. Imprimir essa página
+ * gera o PDF do livro (quebra de página por capítulo).
+ * @param {{ titulo: string, autor?: string, idioma?: string, capitulos: { titulo: string, html: string }[], css?: string }} livro
+ */
+export function gerarLivroWeb({ titulo, autor = 'EXECUTAR', idioma = 'pt-BR', capitulos, css = '' }) {
+	const sumario = capitulos.map((c, i) => `<li><a href="#capitulo-${i + 1}">${esc(c.titulo)}</a></li>`).join('');
+	const corpo = capitulos.map((c, i) => `<section class="capitulo" id="capitulo-${i + 1}"><h1>${esc(c.titulo)}</h1>\n${c.html}</section>`).join('\n');
+	return `<!doctype html>
+<html lang="${esc(idioma)}"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${esc(titulo)}</title>
+<style>${css}
+body{max-width:45rem;margin:0 auto;padding:1rem;line-height:1.6}.capitulo{break-before:page}a{text-decoration:underline}</style></head>
+<body class="markdown-body"><header><h1>${esc(titulo)}</h1><p>${esc(autor)}</p><nav aria-label="Sumário"><h2>Sumário</h2><ol>${sumario}</ol></nav></header>
+<main>${corpo}</main></body></html>`;
 }

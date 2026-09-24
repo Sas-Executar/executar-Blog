@@ -130,10 +130,21 @@ test('EPUB: zip válido com mimetype primeiro e XHTML bem formado', async () => 
 	assert.equal(txt.slice(0, 4), 'PK\u0003\u0004');
 	assert.equal(txt.slice(30, 38), 'mimetype');
 	assert.equal(txt.slice(38, 58), 'application/epub+zip');
-	for (const n of ['META-INF/container.xml', 'OEBPS/content.opf', 'OEBPS/nav.xhtml', 'OEBPS/capitulo.xhtml']) assert.ok(txt.includes(n), n);
+	for (const n of ['META-INF/container.xml', 'OEBPS/content.opf', 'OEBPS/nav.xhtml', 'OEBPS/capitulo-1.xhtml']) assert.ok(txt.includes(n), n);
 	const utf = Buffer.from(bytes).toString('utf8');
 	assert.match(utf, /<br \/>/);
 	assert.match(utf, /<input type="checkbox" checked="checked" disabled="disabled" \/>/);
 	assert.match(utf, /Título &amp; teste/);
 	assert.match(utf, /<meta property="dcterms:modified">2026-01-01T00:00:00Z<\/meta>/);
+});
+
+test('eBook: EPUB com capítulos na ordem e Web Book com sumário', async () => {
+	const { gerarEpub, gerarLivroWeb } = await import('@executar/editorial-renderer');
+	const caps = [{ titulo: 'Segundo', html: '<p>b</p>' }, { titulo: 'Primeiro', html: '<p>a</p>' }];
+	const txt = Buffer.from(gerarEpub({ titulo: 'Livro', capitulos: caps })).toString('utf8');
+	assert.match(txt, /<spine><itemref idref="c1" \/><itemref idref="c2" \/><\/spine>/);
+	assert.ok(txt.indexOf('>Segundo</a>') < txt.indexOf('>Primeiro</a>'));
+	const web = gerarLivroWeb({ titulo: 'Livro', capitulos: caps });
+	assert.match(web, /<li><a href="#capitulo-1">Segundo<\/a><\/li><li><a href="#capitulo-2">Primeiro<\/a>/);
+	assert.match(web, /break-before:page/);
 });

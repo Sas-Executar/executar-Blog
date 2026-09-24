@@ -1,11 +1,12 @@
 // Studio (ADR-014): autenticação, JWT do GitHub App, Publish API, MCP e utilitários do editor.
 // O GitHub é simulado em memória; nenhuma chamada sai da máquina.
 import assert from 'node:assert/strict';
-import { generateKeyPairSync, verify as verificar } from 'node:crypto';
+import { createHash, generateKeyPairSync, verify as verificar } from 'node:crypto';
 import { test } from 'node:test';
 import { identificar } from '../../apps/studio/worker/auth.ts';
 import { GitHub, jwtDoApp, limparCacheToken, pemParaPkcs8 } from '../../apps/studio/worker/github.ts';
-import { ErroPedido, caminhoSeguro, nomeAssetSeguro, publicar, urlPrevia } from '../../apps/studio/worker/publicar.ts';
+import { autorizar, papelDe, ErroPermissao } from '../../apps/studio/worker/papeis.ts';
+import { ErroConflito, ErroPedido, caminhoSeguro, shaDoBlob, nomeAssetSeguro, publicar, urlPrevia } from '../../apps/studio/worker/publicar.ts';
 import { tratarMcp } from '../../apps/studio/worker/mcp.ts';
 import { tratar } from '../../apps/studio/worker/index.ts';
 import { contarPalavras, definirPropriedade } from '../../apps/studio/src/scripts/frontmatter.ts';
@@ -22,10 +23,13 @@ function githubFalso() {
 		const rota = u.pathname.replace('/repos/o/r', '');
 		const corpo = init.body ? JSON.parse(init.body) : null;
 		const r = (dados, status = 200) => new Response(JSON.stringify(dados), { status, headers: { 'content-type': 'application/json' } });
-		if (rota.startsWith('/git/trees/') && !init.method) return r({ tree: Object.keys(estado.arquivos).map((path) => ({ path, type: 'blob', sha: 'x' })) });
+		const blob = (c) => createHash('sha1').update(`blob ${Buffer.byteLength(c)}\0`).update(c).digest('hex');
+		if (rota.startsWith('/git/trees/') && !init.method) return r({ tree: Object.entries(estado.arquivos).map(([path, c]) => ({ path, type: 'blob', sha: blob(c) })) });
+		if (rota === '/commits') return r([{ sha: 'abc1234', html_url: 'https://github.com/o/r/commit/abc1234', commit: { message: 'conteúdo: publica\n\nStudio-Autor: eu@x.com', author: { name: 'bot', date: '2026-09-24T10:00:00Z' } } }]);
+		if (/^\/commits\/[^/]+\/check-runs$/.test(rota)) return r({ check_runs: estado.checks ?? [] });
 		if (rota.startsWith('/contents/')) {
 			const c = estado.arquivos[decodeURI(rota.slice('/contents/'.length))];
-			return c ? r({ content: Buffer.from(c).toString('base64'), sha: 's' }) : r({}, 404);
+			return c ? r({ content: Buffer.from(c).toString('base64'), sha: blob(c) }) : r({}, 404);
 		}
 		if (rota.startsWith('/git/ref/heads/')) {
 			const ramo = decodeURIComponent(rota.slice('/git/ref/heads/'.length));
@@ -120,7 +124,7 @@ test('MCP: initialize, tools/list, validar e erro de ferramenta', async () => {
 	const init = await rpc({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} });
 	assert.equal(init.result.serverInfo.name, 'executar-studio');
 	const { result } = await rpc({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
-	assert.deepEqual(result.tools.map((t) => t.name), ['listar_artigos', 'ler_artigo', 'validar_artigo', 'pre_visualizar', 'publicar']);
+	assert.deepEqual(result.tools.map((t) => t.name), ['listar_artigos', 'ler_artigo', 'validar_artigo', 'pre_visualizar', 'publicar', 'historico_artigo', 'status_publicacao']);
 	const val = await rpc({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'validar_artigo', arguments: { markdown: '---\ntitle: x\n---\n' } } });
 	assert.match(val.result.content[0].text, /description/);
 	const lido = await rpc({ jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'ler_artigo', arguments: { caminho: 'Lab/Velho.md' } } });
@@ -142,4 +146,42 @@ test('Editor: contagem de palavras e propriedades no frontmatter preservando o r
 	assert.match(novo, /# comentário\ntitle: Novo\n---\n\nCorpo$/);
 	assert.match(definirPropriedade(novo, 'tags', ['a', 'b']), /tags:\n {2}- a\n {2}- b/);
 	assert.match(definirPropriedade('Corpo', 'title', 'X'), /^---\ntitle: X\n---\n\nCorpo$/);
+});
+
+test('RBAC: sem PAPEIS todos são editores; autor não publica; configuração inválida vira leitor', () => {
+	assert.equal(papelDe('a@x.com', {}), 'editor');
+	const env = { PAPEIS: JSON.stringify({ 'chefe@x.com': 'admin', '*': 'autor' }) };
+	assert.equal(papelDe('Chefe@x.com', env), 'admin');
+	assert.equal(papelDe('outro@x.com', env), 'autor');
+	assert.equal(papelDe('a@x.com', { PAPEIS: '{quebrado' }), 'leitor');
+	assert.throws(() => autorizar('autor', 'publish'), ErroPermissao);
+	assert.doesNotThrow(() => autorizar('autor', 'pr'));
+	assert.throws(() => autorizar('leitor', 'draft'), ErroPermissao);
+});
+
+test('Publish API: idempotente, conflito detectado e papel respeitado', async () => {
+	const { estado, buscar } = githubFalso();
+	const gh = new GitHub(ENV, buscar);
+	assert.equal(await shaDoBlob('abc'), createHash('sha1').update('blob 3\0abc').digest('hex'));
+	const igual = await publicar({ modo: 'publish', caminho: 'Lab/Velho.md', markdown: ARTIGO }, gh, ENV, 'eu');
+	assert.equal(igual.idempotente, true);
+	assert.equal(estado.commits.length, 0);
+	await assert.rejects(publicar({ modo: 'publish', caminho: 'Lab/Velho.md', markdown: `${ARTIGO}mais`, shaOriginal: 'deadbeef' }, gh, ENV, 'eu'), ErroConflito);
+	const semConflito = await publicar({ modo: 'publish', caminho: 'Lab/Velho.md', markdown: `${ARTIGO}mais`, shaOriginal: await shaDoBlob(ARTIGO) }, gh, ENV, 'eu');
+	assert.equal(semConflito.ok, true);
+	await assert.rejects(publicar({ modo: 'publish', caminho: 'Lab/N.md', markdown: ARTIGO }, gh, { ...ENV, PAPEIS: '{"*":"autor"}' }, 'eu'), ErroPermissao);
+});
+
+test('Histórico e status do build via GitHub', async () => {
+	const { estado, buscar } = githubFalso();
+	const gh = new GitHub(ENV, buscar);
+	const [v] = await gh.historico('Lab/Velho.md');
+	assert.deepEqual({ sha: v.sha, autor: v.autor, mensagem: v.mensagem }, { sha: 'abc1234', autor: 'eu@x.com', mensagem: 'conteúdo: publica' });
+	assert.equal((await gh.statusDoCommit('abc1234')).estado, 'aguardando');
+	estado.checks = [{ name: 'Workers Builds: executar-blog', status: 'in_progress', conclusion: null, details_url: 'u' }];
+	assert.equal((await gh.statusDoCommit('abc1234')).estado, 'em andamento');
+	estado.checks = [{ name: 'Workers Builds: executar-blog', status: 'completed', conclusion: 'success', details_url: 'u' }];
+	assert.equal((await gh.statusDoCommit('abc1234')).estado, 'sucesso');
+	estado.checks.push({ name: 'x', status: 'completed', conclusion: 'failure', details_url: 'u' });
+	assert.equal((await gh.statusDoCommit('abc1234')).estado, 'falha');
 });

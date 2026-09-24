@@ -125,7 +125,7 @@ export class GitHub {
 		const novaTree = await this.api<{ sha: string }>('/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree }) });
 		const commit = await this.api<{ sha: string }>('/git/commits', {
 			method: 'POST',
-			body: JSON.stringify({ message: `${mensagem}\n\nPublicado pelo EXECUTAR Studio por ${autor}.`, tree: novaTree.sha, parents: [base] }),
+			body: JSON.stringify({ message: `${mensagem}\n\nPublicado pelo EXECUTAR Studio por ${autor}.\n\nStudio-Autor: ${autor}`, tree: novaTree.sha, parents: [base] }),
 		});
 		return commit.sha;
 	}
@@ -134,6 +134,34 @@ export class GitHub {
 		const existe = await this.shaDoRamo(ramo);
 		if (existe) await this.api(`/git/refs/heads/${encodeURIComponent(ramo)}`, { method: 'PATCH', body: JSON.stringify({ sha, force: forcar }) });
 		else await this.api('/git/refs', { method: 'POST', body: JSON.stringify({ ref: `refs/heads/${ramo}`, sha }) });
+	}
+
+	/** Histórico de um artigo (commits que tocaram o arquivo), do mais novo ao mais antigo. */
+	async historico(caminhoVault: string, limite = 20) {
+		const commits = await this.api<{ sha: string; html_url: string; commit: { message: string; author: { name: string; date: string } } }[]>(
+			`/commits?path=${encodeURIComponent(`vault/${caminhoVault}`)}&sha=${encodeURIComponent(this.ramo)}&per_page=${limite}`,
+		);
+		return commits.map((c) => ({
+			sha: c.sha,
+			url: c.html_url,
+			data: c.commit.author.date,
+			mensagem: c.commit.message.split('\n')[0],
+			autor: /Studio-Autor: (.+)/.exec(c.commit.message)?.[1] ?? c.commit.author.name,
+		}));
+	}
+
+	/** Estado do build de um commit, a partir dos check runs (Workers Builds publica um por Worker). */
+	async statusDoCommit(sha: string) {
+		const r = await this.api<{ check_runs: { name: string; status: string; conclusion: string | null; html_url: string; details_url: string }[] }>(`/commits/${encodeURIComponent(sha)}/check-runs?per_page=50`);
+		const runs = r.check_runs.map((c) => ({ nome: c.name, status: c.status, conclusao: c.conclusion, url: c.details_url || c.html_url }));
+		const estado = !runs.length
+			? 'aguardando'
+			: runs.some((c) => c.conclusao && !['success', 'neutral', 'skipped'].includes(c.conclusao))
+				? 'falha'
+				: runs.every((c) => c.status === 'completed')
+					? 'sucesso'
+					: 'em andamento';
+		return { estado, runs };
 	}
 
 	async abrirPR(ramo: string, titulo: string, corpo: string): Promise<string> {

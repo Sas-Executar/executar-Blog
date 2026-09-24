@@ -8,7 +8,8 @@ import { criarIndice, lerFrontmatter } from '@executar/markdown-parser';
 import { type EnvAuth, identificar } from './auth.ts';
 import { type EnvGithub, ErroGithub, GitHub, tokenGithub } from './github.ts';
 import { tratarMcp } from './mcp.ts';
-import { type EnvPublicar, ErroPedido, type PedidoPublicar, caminhoSeguro, publicar } from './publicar.ts';
+import { ErroPermissao, papelDe } from './papeis.ts';
+import { type EnvPublicar, ErroConflito, ErroPedido, type PedidoPublicar, caminhoSeguro, publicar } from './publicar.ts';
 
 export interface EnvStudio extends EnvAuth, EnvGithub, EnvPublicar {
 	ASSETS: Fetcher;
@@ -31,7 +32,7 @@ export async function tratar(request: Request, env: EnvStudio, buscar: typeof fe
 	try {
 		if (url.pathname === '/mcp') return await tratarMcp(request, gh, env, eu.email);
 
-		if (url.pathname === '/api/eu') return json({ email: eu.email, repo: env.GITHUB_REPO, blog: env.BLOG_URL });
+		if (url.pathname === '/api/eu') return json({ email: eu.email, papel: papelDe(eu.email, env), repo: env.GITHUB_REPO, blog: env.BLOG_URL });
 
 		if (url.pathname === '/api/artigos' && request.method === 'GET') {
 			const arquivos = await gh.listarVault();
@@ -41,7 +42,7 @@ export async function tratar(request: Request, env: EnvStudio, buscar: typeof fe
 		if (url.pathname === '/api/artigo' && request.method === 'GET') {
 			const caminho = caminhoSeguro(url.searchParams.get('caminho') ?? '');
 			const arq = await gh.lerArquivo(caminho);
-			return arq ? json({ caminho, conteudo: arq.conteudo }) : json({ erro: 'artigo não encontrado' }, 404);
+			return arq ? json({ caminho, conteudo: arq.conteudo, sha: arq.sha }) : json({ erro: 'artigo não encontrado' }, 404);
 		}
 
 		// Índice para o preview resolver [[wikilinks]] e embeds: notas (só frontmatter) + imagens.
@@ -78,6 +79,23 @@ export async function tratar(request: Request, env: EnvStudio, buscar: typeof fe
 			return json(validarLeve(String(markdown ?? ''), { z, lerFrontmatter, indice: criarIndice(vault.map((a) => ({ caminho: a.caminho, conteudo: '' }))) }));
 		}
 
+		// Histórico e versões (FR-12): restaurar = abrir a versão antiga e publicar (novo commit rastreável).
+		if (url.pathname === '/api/historico' && request.method === 'GET') {
+			return json({ versoes: await gh.historico(caminhoSeguro(url.searchParams.get('caminho') ?? '')) });
+		}
+		if (url.pathname === '/api/versao' && request.method === 'GET') {
+			const sha = url.searchParams.get('sha') ?? '';
+			if (!/^[0-9a-f]{7,40}$/.test(sha)) return json({ erro: 'versão inválida' }, 400);
+			const arq = await gh.lerArquivo(caminhoSeguro(url.searchParams.get('caminho') ?? ''), sha);
+			return arq ? json({ conteudo: arq.conteudo, sha: arq.sha }) : json({ erro: 'versão não encontrada' }, 404);
+		}
+		// Status do build (FR-11): check runs do commit publicados pelo Workers Builds.
+		if (url.pathname === '/api/status' && request.method === 'GET') {
+			const sha = url.searchParams.get('commit') ?? '';
+			if (!/^[0-9a-f]{7,40}$/.test(sha)) return json({ erro: 'commit inválido' }, 400);
+			return json(await gh.statusDoCommit(sha));
+		}
+
 		if (url.pathname === '/api/publicar' && request.method === 'POST') {
 			const pedido = (await request.json()) as PedidoPublicar;
 			const r = await publicar(pedido, gh, env, eu.email);
@@ -87,6 +105,8 @@ export async function tratar(request: Request, env: EnvStudio, buscar: typeof fe
 		return json({ erro: 'rota não encontrada' }, 404);
 	} catch (e) {
 		if (e instanceof ErroPedido) return json({ erro: e.message }, 400);
+		if (e instanceof ErroPermissao) return json({ erro: e.message }, 403);
+		if (e instanceof ErroConflito) return json({ erro: e.message, conflito: true }, 409);
 		if (e instanceof ErroGithub) {
 			console.error(e.message);
 			const conflito = e.status === 422 || e.status === 409;

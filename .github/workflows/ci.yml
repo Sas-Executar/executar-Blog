@@ -20,18 +20,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Navegador para Mermaid e e2e
+      - name: Navegador para os testes e2e
         run: npx playwright install --with-deps chromium chromium-headless-shell
       - name: check (astro check, tsc, unit, contraste HIG, guard)
         run: npm run check
       - name: build
         run: npm run build
-      - name: Páginas geradas em dia com o vault
-        # rehype-mermaid (Chromium) passa do heap padrão de ~2 GB e derruba o Node (exit 134).
-        env:
-          NODE_OPTIONS: --max-old-space-size=6144
-        run: npm run content:sync && git diff --exit-code -- apps/blog/src/content/docs
-      - name: e2e (Playwright + axe + regras HIG)
+      - name: e2e (blog + Studio; Playwright + axe + regras HIG)
         run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

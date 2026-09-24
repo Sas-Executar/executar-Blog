@@ -32,14 +32,26 @@ import '../styles/studio.css';
 			<nav class="lista" aria-label="Artigos do vault">
 				<h2>Artigos</h2>
 				<ul id="artigos"><li>Carregando…</li></ul>
+				<h2>eBook</h2>
+				<p class="dica">Marque os artigos e ordene os capítulos.</p>
+				<label>Título do livro <input id="livro-titulo" value="EXECUTAR" /></label>
+				<ol id="livro"></ol>
+				<div class="acoes">
+					<button type="button" id="livro-epub">EPUB</button>
+					<button type="button" id="livro-web">Web Book</button>
+					<button type="button" id="livro-pdf">PDF</button>
+				</div>
 			</nav>
 			<section class="editor" aria-label="Editor">
 				<label class="rodape" for="caminho">Arquivo em vault/
 					<input id="caminho" name="caminho" style="flex:1;min-height:var(--hit-target)" placeholder="Pasta/Título.md" autocomplete="off" />
 				</label>
 				<textarea id="markdown" aria-label="Markdown do artigo" spellcheck="true"></textarea>
+				<p class="rodape" id="rota">Endereço: —</p>
+				<ul id="comandos" role="listbox" aria-label="Inserir bloco" hidden></ul>
 				<div class="rodape">
 					<span id="contagem" aria-live="polite">0 palavras</span>
+					<span id="tempo-preview"></span>
 					<label>Imagem <input type="file" id="imagem" accept="image/*" /></label>
 				</div>
 				<div class="lateral">
@@ -59,6 +71,9 @@ import '../styles/studio.css';
 						<button type="button" id="pdf">Baixar PDF</button>
 					</div>
 					<p id="status" role="status"></p>
+					<h2>Histórico</h2>
+					<button type="button" id="ver-historico">Ver versões</button>
+					<ol id="historico"></ol>
 				</div>
 			</section>
 			<section class="preview" aria-label="Pré-visualização">
