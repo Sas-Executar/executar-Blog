@@ -138,12 +138,16 @@ export function parseComando(linha: string, payloadLinhas: string[] = []): Coman
 			if (resto[1]) args.alvo = resto.slice(1).join(' ').replace(/"/g, '');
 			break;
 		case 'status-report': {
-			exigir(resto.length >= 1 && (TIPOS_REPORT as readonly string[]).includes(resto[0].toLowerCase()), `/status-report <${TIPOS_REPORT.join('|')}> [alvo] [html|pdf]`);
+			exigir(resto.length >= 1 && (TIPOS_REPORT as readonly string[]).includes(resto[0].toLowerCase()), `/status-report <${TIPOS_REPORT.join('|')}> [alvo] [html|pdf] [enviar]`);
 			args.tipo = resto[0].toLowerCase();
 			const fmt = resto.slice(1).find((t) => (FORMATOS_REPORT as readonly string[]).includes(t.toLowerCase()));
 			args.formato = (fmt ?? payload.formato ?? 'html').toLowerCase();
 			exigir((FORMATOS_REPORT as readonly string[]).includes(args.formato as string), 'formato: html | pdf');
-			const alvo = resto.slice(1).filter((t) => t !== fmt);
+			// "enviar" pede o e-mail de verdade (nunca é leitura pura — ver tipoDoComando abaixo).
+			const enviar = resto.slice(1).some((t) => t.toLowerCase() === 'enviar');
+			if (enviar) args.enviar = true;
+			if (payload.para) args.para = payload.para;
+			const alvo = resto.slice(1).filter((t) => t !== fmt && t.toLowerCase() !== 'enviar');
 			if (alvo.length) args.alvo = alvo.join(' ').replace(/"/g, '');
 			break;
 		}
@@ -181,7 +185,8 @@ export function tipoDoComando(c: Comando): 'leitura' | 'escrita' | 'geracao' | '
 	if (['hoje', 'amanha', '%', 'ajuda'].includes(c.verbo)) return 'leitura';
 	if (c.verbo === 'urgente') return c.args.refs || c.args.area ? 'escrita' : 'leitura';
 	if (c.verbo === 'campanha') return c.args.acao === 'estado' ? 'leitura' : 'escrita';
-	if (c.verbo === 'status-report') return 'geracao';
+	// "enviar" tem efeito externo (envia e-mail de verdade): nunca pode passar pela leitura pré-aprovada.
+	if (c.verbo === 'status-report') return c.args.enviar ? 'escrita' : 'geracao';
 	if (c.verbo.startsWith('criar-')) return 'proposta';
 	if (c.verbo === 'confirmar' || c.verbo === 'cancelar') return 'controle';
 	return 'escrita';
@@ -198,7 +203,7 @@ export const AJUDA: Record<Verbo, string> = {
 	amanha: '/amanha — tarefas de amanhã e dependências ainda não prontas',
 	fila: '/fila <area> <item> + "dod: ..." — cria tarefa na fila (BACKLOG_VALIDATED)',
 	'%': `/% <${ESCOPOS.join('|')}> [alvo] — completude derivada por peso`,
-	'status-report': `/status-report <${TIPOS_REPORT.join('|')}> [alvo] [html|pdf] — relatório por e-mail`,
+	'status-report': `/status-report <${TIPOS_REPORT.join('|')}> [alvo] [html|pdf] [enviar] — relatório por e-mail`,
 	feito: '/feito <#n|CHAVE|"título"> [url de evidência] — DONE só com DoD + evidência + verificação',
 	ideia: '/ideia <area> <texto> — registra ideia fora do backlog',
 	'criar-rotina': '/criar-rotina + YAML — abre PR em ops/routines/ (o merge aprova)',

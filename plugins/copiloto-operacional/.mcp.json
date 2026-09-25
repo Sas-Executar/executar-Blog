@@ -10,7 +10,10 @@
         "COPILOTO_PAPEL": "${user_config.papel}",
         "COPILOTO_OPERADOR": "${user_config.operador}",
         "COPILOTO_DADOS": "${CLAUDE_PLUGIN_DATA}",
-        "COPILOTO_PROJETO": "${CLAUDE_PROJECT_DIR}"
+        "COPILOTO_PROJETO": "${CLAUDE_PROJECT_DIR}",
+        "RESEND_API_KEY": "${user_config.resend_api_key}",
+        "EMAIL_DE": "${user_config.email_de}",
+        "EMAIL_PARA": "${user_config.email_para}"
       }
     }
   }

@@ -1,7 +1,8 @@
 # Copiloto Operacional — plugin do Claude Code
 
 Opera o programa EXECUTAR direto no Claude Code, com **o mesmo núcleo** do Worker do ADR-015
-(`apps/copiloto/worker`), sem e-mail nem Cloudflare. Decisão: `docs/02-adr/ADR-016.md`.
+(`apps/copiloto/worker`), sem Cloudflare — o único ponto onde envia e-mail de verdade é o
+`/status-report ... enviar`, opcional, via Resend. Decisão: `docs/02-adr/ADR-016.md`.
 
 ## Instalar
 No Claude Code (terminal):
@@ -9,6 +10,7 @@ No Claude Code (terminal):
 /plugin marketplace add Sas-Executar/executar-Blog
 /plugin install copiloto-operacional@executar-blog
 /plugin configure copiloto-operacional@executar-blog     # token do GitHub, repositórios, papel
+                                                          # resend_api_key/email_de, só se for usar "enviar"
 ```
 No claude.ai: Settings → Plugins → Add marketplace → `Sas-Executar/executar-Blog`.
 
@@ -24,7 +26,7 @@ Requisito: Node.js ≥ 22.13 no PATH (o servidor usa `node:sqlite` para o ledger
 | `:progresso <escopo> [alvo]` | o `/%` (por peso) |
 | `:feito <#n\|CHAVE\|"título"> [url]` | DONE só com DoD + evidência + verificação |
 | `:campanha <WF-ID> iniciar\|estado\|avancar instancia: X` | runbook com gates (`ops/workflows`) |
-| `:status-report <tipo> [alvo] [html\|pdf]` | relatório sobre os tokens da skill executar-relatorios, em `reports/AAAA/MM/` |
+| `:status-report <tipo> [alvo] [html\|pdf] [enviar]` | relatório sobre os tokens da skill executar-relatorios, em `reports/AAAA/MM/`; `enviar` manda por e-mail de verdade (Resend) |
 | `:criar-workflow` · `:criar-rotina` · `:criar-runbook` | PR em `ops/` — o merge humano aprova |
 | `:confirmar <token>` · `:cancelar <token>` | planos em lote |
 | `:reconciliar` | reverte transição ilegal feita na UI e promove desbloqueadas |
@@ -54,6 +56,13 @@ chamar cada ferramenta dentro do fluxo que conduzem — a separação leitura/es
   - `reconciliar` e `espelho`.
 - Ledger local (idempotência, tokens de confirmação e auditoria) em `${CLAUDE_PLUGIN_DATA}/ledger.db`, com a mesma migration do D1.
 - O relatório tem PDF quando há Chromium/Chrome local (`CHROME_PATH`). Sem ele, o status fica `partial` e o HTML A4 sai pronto para imprimir.
+- `/status-report ... enviar` manda o relatório por e-mail de verdade, reaproveitando a **mesma**
+  `enviarEmail()` do Worker (fetch puro para a API do Resend, sem nada exclusivo de Cloudflare), com o
+  PDF (ou o HTML A4) em anexo. Exige `resend_api_key` e `email_de` (um remetente de domínio verificado
+  na sua conta Resend) em `/plugin configure`; sem eles, a resposta é `unsupported` com a lacuna exata —
+  nunca finge que enviou. `email_para` define o destinatário padrão; `para: outro@dominio` na linha do
+  comando sobrescreve só naquela chamada. `enviar` sempre passa por `executar` (nunca por `consultar`),
+  então o Claude Code pede aprovação a cada envio, como qualquer outra escrita.
 - O hook `SessionStart` mostra o `/hoje` no início da sessão, só se `briefing` estiver ligado. É somente leitura.
 - Para agendar as rotinas ROT-001/002/003 (briefing, fechamento, report 72h), use as Routines do Claude Code apontando para estes comandos.
 

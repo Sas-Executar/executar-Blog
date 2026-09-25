@@ -142,6 +142,21 @@ function githubFalso() {
 	return new Promise((ok) => srv.listen(0, '127.0.0.1', () => ok({ issues, pedidos, url: `http://127.0.0.1:${srv.address().port}`, fechar: () => srv.close() })));
 }
 
+/** Resend simulado: guarda o corpo de cada POST /emails e responde com um id fixo. */
+function resendFalso() {
+	const pedidos = [];
+	const srv = http.createServer((req, res) => {
+		let corpo = '';
+		req.on('data', (c) => (corpo += c));
+		req.on('end', () => {
+			pedidos.push(JSON.parse(corpo));
+			res.writeHead(200, { 'content-type': 'application/json' });
+			res.end(JSON.stringify({ id: 're_teste_123' }));
+		});
+	});
+	return new Promise((ok) => srv.listen(0, '127.0.0.1', () => ok({ pedidos, url: `http://127.0.0.1:${srv.address().port}/emails`, fechar: () => srv.close() })));
+}
+
 /** Conversa JSON-RPC por stdio com o dist/servidor.mjs gerado, como o Claude Code faz. */
 async function sessao(env, mensagens) {
 	const filho = spawn(process.execPath, [path.join(plugin, 'dist/servidor.mjs')], { env: { PATH: process.env.PATH, ...env }, stdio: ['pipe', 'pipe', 'ignore'] });
@@ -218,6 +233,38 @@ test('fila → idempotente no reenvio (T06); campanha iniciar cria 34 encadeadas
 	const dados = JSON.parse(fs.readFileSync(path.join(dir, html.replace(/\.html$/, '.json')), 'utf8'));
 	assert.equal(fs.readFileSync(path.join(dir, html), 'utf8'), htmlImpressao(dados), 'mesmo renderer/tokens do Worker');
 	assert.deepEqual([dados.progress.cycle_current, dados.progress.cycle_total], [1, 6]);
+});
+
+test('/status-report ... enviar: consultar recusa (T05/T10), executar sem credencial dá unsupported, com Resend simulado envia de verdade', async () => {
+	const gh = await githubFalso();
+	const resend = await resendFalso();
+	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'plug-'));
+	const base = { GITHUB_TOKEN: 't', GITHUB_API: gh.url, OPS_REPO: 'o/ops', BLOG_REPO: 'o/blog', COPILOTO_PAPEL: 'OPERADOR', COPILOTO_DADOS: dir, COPILOTO_PROJETO: dir };
+	const linha = { linha: '/status-report 72h html enviar' };
+
+	// consultar recusa "enviar" antes de qualquer efeito — nem o GitHub nem o Resend simulado são chamados.
+	const [viaConsulta] = await sessao(base, [chamar('consultar', linha)]);
+	assert.equal(sc(viaConsulta).status, 'blocked');
+	assert.equal(sc(viaConsulta).codigo, 'E-110');
+	assert.equal(resend.pedidos.length, 0);
+
+	// executar sem resend_api_key/email_de → unsupported, com a lacuna exata; nunca finge que enviou.
+	const [semCredencial] = await sessao(base, [chamar('executar', linha)]);
+	assert.equal(sc(semCredencial).status, 'unsupported');
+	assert.match(sc(semCredencial).gaps.join(' '), /resend_api_key/);
+	assert.equal(resend.pedidos.length, 0);
+
+	// executar com credenciais reais (Resend simulado) → completed, e-mail com anexo e id do Resend.
+	const comCredencial = { ...base, RESEND_API_KEY: 'r_teste', RESEND_API_URL: resend.url, EMAIL_DE: 'Copiloto <c@dominio.com>', EMAIL_PARA: 'executar-rotina@outlook.com' };
+	const [enviado] = await sessao(comCredencial, [chamar('executar', linha)]);
+	gh.fechar();
+	resend.fechar();
+	assert.equal(sc(enviado).status, 'completed');
+	assert.deepEqual(sc(enviado).evidence_refs, ['resend:re_teste_123']);
+	assert.equal(resend.pedidos.length, 1);
+	assert.deepEqual(resend.pedidos[0].to, ['executar-rotina@outlook.com']);
+	assert.equal(resend.pedidos[0].from, 'Copiloto <c@dominio.com>');
+	assert.ok(resend.pedidos[0].attachments?.[0]?.content?.length > 0, 'anexo (HTML A4, sem PDF nesta chamada) presente e não vazio');
 });
 
 test('conteúdo de issue com instrução maliciosa é devolvido como dado, sem efeito (T08)', async () => {

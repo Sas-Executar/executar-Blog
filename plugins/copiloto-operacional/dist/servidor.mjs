@@ -7380,6 +7380,43 @@ import readline from "node:readline";
 // apps/copiloto/migrations/0001_ledger.sql
 var ledger_default = "-- Operational Ledger do Copiloto (ADR-015, DEC-03): infraestrutura, n\xE3o dom\xEDnio.\n-- Tarefas vivem no GitHub; task_index \xE9 read model reconstru\xEDvel a partir dele.\nCREATE TABLE IF NOT EXISTS inbound_event (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  source TEXT NOT NULL,\n  external_id TEXT NOT NULL,\n  payload TEXT,\n  received_at TEXT NOT NULL,\n  UNIQUE (source, external_id)\n);\nCREATE TABLE IF NOT EXISTS command (\n  command_id TEXT PRIMARY KEY,\n  dedupe_key TEXT NOT NULL UNIQUE,\n  source TEXT NOT NULL,\n  actor TEXT NOT NULL,\n  verb TEXT,\n  envelope TEXT NOT NULL,\n  status TEXT NOT NULL,\n  attempts INTEGER NOT NULL DEFAULT 0,\n  result TEXT,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL\n);\nCREATE TABLE IF NOT EXISTS execution_plan (\n  command_id TEXT PRIMARY KEY,\n  plan TEXT NOT NULL,\n  confirm_token_hash TEXT NOT NULL,\n  expires_at TEXT NOT NULL,\n  used_at TEXT\n);\nCREATE TABLE IF NOT EXISTS operation_log (\n  idempotency_key TEXT PRIMARY KEY,\n  command_id TEXT NOT NULL,\n  target TEXT NOT NULL,\n  result TEXT,\n  status TEXT NOT NULL,\n  at TEXT NOT NULL\n);\nCREATE TABLE IF NOT EXISTS domain_event (\n  event_id INTEGER PRIMARY KEY AUTOINCREMENT,\n  entity TEXT NOT NULL,\n  type TEXT NOT NULL,\n  before TEXT,\n  after TEXT,\n  command_id TEXT,\n  at TEXT NOT NULL\n);\nCREATE TABLE IF NOT EXISTS outbox (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  command_id TEXT,\n  destination TEXT NOT NULL,\n  payload TEXT NOT NULL,\n  status TEXT NOT NULL DEFAULT 'PENDENTE',\n  attempts INTEGER NOT NULL DEFAULT 0,\n  last_error TEXT,\n  created_at TEXT NOT NULL,\n  updated_at TEXT NOT NULL\n);\nCREATE TABLE IF NOT EXISTS dead_letter (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  origin TEXT NOT NULL,\n  ref TEXT NOT NULL,\n  error TEXT NOT NULL,\n  last_payload TEXT,\n  first_failed_at TEXT NOT NULL,\n  replayed_at TEXT\n);\nCREATE TABLE IF NOT EXISTS schedule_run (\n  routine_id TEXT NOT NULL,\n  scheduled_for TEXT NOT NULL,\n  command_id TEXT,\n  status TEXT NOT NULL,\n  PRIMARY KEY (routine_id, scheduled_for)\n);\nCREATE TABLE IF NOT EXISTS sync_state (\n  destination TEXT PRIMARY KEY,\n  last_hash TEXT,\n  last_synced_at TEXT,\n  drift INTEGER NOT NULL DEFAULT 0\n);\nCREATE TABLE IF NOT EXISTS audit_log (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  at TEXT NOT NULL,\n  actor TEXT NOT NULL,\n  action TEXT NOT NULL,\n  target TEXT,\n  command_id TEXT\n);\n-- audit_log \xE9 append-only: sem UPDATE/DELETE.\nCREATE TRIGGER IF NOT EXISTS audit_log_sem_update BEFORE UPDATE ON audit_log BEGIN SELECT RAISE(ABORT, 'audit_log \xE9 append-only'); END;\nCREATE TRIGGER IF NOT EXISTS audit_log_sem_delete BEFORE DELETE ON audit_log BEGIN SELECT RAISE(ABORT, 'audit_log \xE9 append-only'); END;\n";
 
+// apps/copiloto/worker/adaptadores.ts
+function base64(bytes) {
+  let s = "";
+  for (let i = 0; i < bytes.length; i += 32768) s += String.fromCharCode(...bytes.subarray(i, i + 32768));
+  return btoa(s);
+}
+var ErroEnvio = class extends Error {
+  definitivo;
+  constructor(mensagem, definitivo) {
+    super(mensagem);
+    this.definitivo = definitivo;
+  }
+};
+async function enviarEmail(env, m, buscar = fetch) {
+  if (env.EMAIL_ENVIO_ATIVO !== "1") return { id: null, simulado: true };
+  if (!env.RESEND_API_KEY) throw new ErroEnvio("RESEND_API_KEY n\xE3o configurada", true);
+  const res = await buscar(env.RESEND_API_URL ?? "https://api.resend.com/emails", {
+    method: "POST",
+    headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json", "idempotency-key": m.idempotencia.slice(0, 256) },
+    body: JSON.stringify({
+      from: env.EMAIL_FROM,
+      to: m.para,
+      subject: m.assunto,
+      html: m.html,
+      text: m.texto,
+      attachments: m.anexos?.map((a) => ({ filename: a.nome, content: a.base64, content_type: a.tipo })),
+      headers: m.responderA ? { "In-Reply-To": m.responderA, References: m.responderA } : void 0
+    })
+  });
+  if (!res.ok) {
+    const texto = (await res.text()).slice(0, 300);
+    throw new ErroEnvio(`Resend HTTP ${res.status}: ${texto}`, res.status >= 400 && res.status < 500 && res.status !== 429);
+  }
+  const { id } = await res.json();
+  return { id: id ?? null, simulado: false };
+}
+
 // apps/copiloto/worker/comandos.ts
 var VERBOS = [
   "urgente",
@@ -7477,12 +7514,15 @@ function parseComando(linha2, payloadLinhas = []) {
       if (resto[1]) args.alvo = resto.slice(1).join(" ").replace(/"/g, "");
       break;
     case "status-report": {
-      exigir(resto.length >= 1 && TIPOS_REPORT.includes(resto[0].toLowerCase()), `/status-report <${TIPOS_REPORT.join("|")}> [alvo] [html|pdf]`);
+      exigir(resto.length >= 1 && TIPOS_REPORT.includes(resto[0].toLowerCase()), `/status-report <${TIPOS_REPORT.join("|")}> [alvo] [html|pdf] [enviar]`);
       args.tipo = resto[0].toLowerCase();
       const fmt = resto.slice(1).find((t) => FORMATOS_REPORT.includes(t.toLowerCase()));
       args.formato = (fmt ?? payload.formato ?? "html").toLowerCase();
       exigir(FORMATOS_REPORT.includes(args.formato), "formato: html | pdf");
-      const alvo = resto.slice(1).filter((t) => t !== fmt);
+      const enviar = resto.slice(1).some((t) => t.toLowerCase() === "enviar");
+      if (enviar) args.enviar = true;
+      if (payload.para) args.para = payload.para;
+      const alvo = resto.slice(1).filter((t) => t !== fmt && t.toLowerCase() !== "enviar");
       if (alvo.length) args.alvo = alvo.join(" ").replace(/"/g, "");
       break;
     }
@@ -7518,7 +7558,7 @@ function tipoDoComando(c) {
   if (["hoje", "amanha", "%", "ajuda"].includes(c.verbo)) return "leitura";
   if (c.verbo === "urgente") return c.args.refs || c.args.area ? "escrita" : "leitura";
   if (c.verbo === "campanha") return c.args.acao === "estado" ? "leitura" : "escrita";
-  if (c.verbo === "status-report") return "geracao";
+  if (c.verbo === "status-report") return c.args.enviar ? "escrita" : "geracao";
   if (c.verbo.startsWith("criar-")) return "proposta";
   if (c.verbo === "confirmar" || c.verbo === "cancelar") return "controle";
   return "escrita";
@@ -7532,7 +7572,7 @@ var AJUDA = {
   amanha: "/amanha \u2014 tarefas de amanh\xE3 e depend\xEAncias ainda n\xE3o prontas",
   fila: '/fila <area> <item> + "dod: ..." \u2014 cria tarefa na fila (BACKLOG_VALIDATED)',
   "%": `/% <${ESCOPOS.join("|")}> [alvo] \u2014 completude derivada por peso`,
-  "status-report": `/status-report <${TIPOS_REPORT.join("|")}> [alvo] [html|pdf] \u2014 relat\xF3rio por e-mail`,
+  "status-report": `/status-report <${TIPOS_REPORT.join("|")}> [alvo] [html|pdf] [enviar] \u2014 relat\xF3rio por e-mail`,
   feito: '/feito <#n|CHAVE|"t\xEDtulo"> [url de evid\xEAncia] \u2014 DONE s\xF3 com DoD + evid\xEAncia + verifica\xE7\xE3o',
   ideia: "/ideia <area> <texto> \u2014 registra ideia fora do backlog",
   "criar-rotina": "/criar-rotina + YAML \u2014 abre PR em ops/routines/ (o merge aprova)",
@@ -7798,13 +7838,6 @@ var ErroGithub = class extends Error {
     this.status = status2;
   }
 };
-
-// apps/copiloto/worker/adaptadores.ts
-function base64(bytes) {
-  let s = "";
-  for (let i = 0; i < bytes.length; i += 32768) s += String.fromCharCode(...bytes.subarray(i, i + 32768));
-  return btoa(s);
-}
 
 // apps/copiloto/worker/dominio.ts
 var import_yaml = __toESM(require_dist(), 1);
@@ -28570,8 +28603,14 @@ function lerConfig(env = process.env) {
     operador: opcao(env, "COPILOTO_OPERADOR", "operador") || "operador@claude-code",
     dados: opcao(env, "COPILOTO_DADOS", "dados") || env.CLAUDE_PLUGIN_DATA || path.join(process.cwd(), ".copiloto"),
     projeto: opcao(env, "COPILOTO_PROJETO", "projeto") || env.CLAUDE_PROJECT_DIR || process.cwd(),
-    api: env.GITHUB_API || void 0
+    api: env.GITHUB_API || void 0,
     // só para testes (GitHub simulado)
+    // /status-report ... enviar (nunca pela ferramenta consultar — ver tipoDoComando em comandos.ts).
+    resendKey: opcao(env, "RESEND_API_KEY", "resend_api_key"),
+    emailDe: opcao(env, "EMAIL_DE", "email_de"),
+    emailPara: opcao(env, "EMAIL_PARA", "email_para") || "executar-rotina@outlook.com",
+    resendApiUrl: env.RESEND_API_URL || void 0
+    // só para testes (Resend simulado)
   };
 }
 var ledgerCache = null;
@@ -28633,6 +28672,34 @@ function gravarRelatorio(cfg, r) {
   }
   return { refs, gaps };
 }
+var SEM_RESEND = "e-mail: resend_api_key n\xE3o configurada \u2014 rode /plugin configure copiloto-operacional@executar-blog.";
+var SEM_REMETENTE = "e-mail: email_de n\xE3o configurado (precisa ser um endere\xE7o de um dom\xEDnio verificado na sua conta Resend).";
+async function enviarStatusReportPorEmail(cfg, comando, dados, refs, buscar = fetch) {
+  const destinatario = typeof comando.args.para === "string" && comando.args.para.trim() || cfg.emailPara;
+  const lacunas = [];
+  if (!cfg.resendKey) lacunas.push(SEM_RESEND);
+  if (!cfg.emailDe) lacunas.push(SEM_REMETENTE);
+  if (!destinatario) lacunas.push('e-mail: nenhum destinat\xE1rio (configure email_para ou informe "para: endereco@dominio").');
+  if (lacunas.length) return { status: "unsupported", gaps: lacunas, next_action: "/plugin configure copiloto-operacional@executar-blog" };
+  const anexoRef = refs.find((r) => r.endsWith(".pdf")) ?? refs.find((r) => r.endsWith(".html") && !r.endsWith(".email.html"));
+  const anexoAbs = anexoRef ? path.join(cfg.projeto, anexoRef) : null;
+  const anexos = anexoAbs ? [{ nome: path.basename(anexoAbs), base64: fs.readFileSync(anexoAbs).toString("base64"), tipo: anexoAbs.endsWith(".pdf") ? "application/pdf" : "text/html" }] : void 0;
+  const mensagem = {
+    para: [destinatario],
+    assunto: dados.meta.title || "Status report EXECUTAR",
+    html: htmlEmail(dados),
+    texto: textoPlano(dados),
+    anexos,
+    idempotencia: `claude-code:status-report:${dados.meta.date ?? "sem-data"}:${destinatario}`
+  };
+  try {
+    const r = await enviarEmail({ RESEND_API_KEY: cfg.resendKey, EMAIL_FROM: cfg.emailDe, EMAIL_ENVIO_ATIVO: "1", RESEND_API_URL: cfg.resendApiUrl }, mensagem, buscar);
+    return { status: "completed", evidence_refs: [`resend:${r.id ?? "sem-id"}`], next_action: null, texto: `E-mail enviado para ${destinatario}${anexoRef ? ` (anexo: ${path.basename(anexoRef)})` : ""}.` };
+  } catch (e) {
+    if (e instanceof ErroEnvio) return { status: e.definitivo ? "failed" : "partial", gaps: [`e-mail: ${e.message}`], texto: e.definitivo ? `Envio recusado: ${e.message}` : "Falha tempor\xE1ria no envio; repita o mesmo comando." };
+    throw e;
+  }
+}
 function criaRecurso(c) {
   if (["fila", "ideia", "criar-rotina", "criar-runbook", "criar-workflow"].includes(c.verbo)) return true;
   if (c.verbo === "urgente") return Boolean(c.args.area);
@@ -28690,6 +28757,10 @@ async function ferramentaExecutar(args, cfg = lerConfig(), buscar = fetch, somen
     if (r.relatorio) {
       const g = gravarRelatorio(cfg, r.relatorio);
       s = { ...s, status: g.gaps.length ? "partial" : "completed", texto: textoPlano(r.relatorio.dados), artifact_refs: g.refs, gaps: g.gaps, next_action: `Abra ${g.refs[0]}` };
+      if (comando.args.enviar) {
+        const envio = await enviarStatusReportPorEmail(cfg, comando, r.relatorio.dados, g.refs, buscar);
+        s = { ...s, ...envio, gaps: [...s.gaps, ...envio.gaps ?? []], evidence_refs: [...s.evidence_refs, ...envio.evidence_refs ?? []] };
+      }
     }
     if (r.assunto === "Confirma\xE7\xE3o necess\xE1ria") s = { ...s, status: "blocked", next_action: "Confirma\xE7\xE3o humana: responda com /copiloto-operacional:confirmar <token> ou /copiloto-operacional:cancelar <token>." };
     await ledger.statusComando(commandId, "APPLIED", s);
@@ -28846,6 +28917,7 @@ export {
   acharNavegador,
   briefing,
   criaRecurso,
+  enviarStatusReportPorEmail,
   ferramentaEspelho,
   ferramentaExecutar,
   ferramentaReconciliar,

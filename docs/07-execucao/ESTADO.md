@@ -102,6 +102,23 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - **Pendente (usuário):** depois do push, `claude plugin marketplace update executar-blog` (ou Sync no
   claude.ai) para os 5 agentes aparecerem no inventário do `copiloto-operacional@executar-blog`.
 
+### Extensão: `/status-report ... enviar` — envio real de e-mail — 2026-09-25 — VERIFIED (local)
+- **Pedido:** o usuário quis testar o pipeline completo, com o relatório chegando por e-mail em anexo.
+  Decisão: em vez de um passo manual, o plugin ganhou a capacidade de enviar de verdade.
+- **Achado:** `EMAIL_FROM` do Worker é `copiloto@executar.local` — domínio `.local`, não roteável; o
+  Resend nunca aceitaria como remetente. O envio real do programa EXECUTAR nunca foi ligado ponta a
+  ponta em produção. Não é um bug desta extensão: é um gap pré-existente, agora documentado.
+- **Entrega:** `apps/copiloto/worker/comandos.ts` reconhece `/status-report ... enviar` (e `para:`),
+  marcado como escrita (nunca passa por `consultar`); `plugins/copiloto-operacional` ganhou `userConfig`
+  (`resend_api_key`, `email_de`, `email_para`) e reaproveita a mesma `enviarEmail()` do Worker (fetch
+  puro), sem copiar nem depender de Cloudflare.
+- **Evidência:** `npm run check` 97/97 (novo teste cobre consultar-bloqueado, unsupported sem credencial,
+  e envio completo contra um Resend simulado, com o anexo e o `to`/`from` corretos); `plugin:check` sem
+  divergência; `claude plugin validate` passa com os novos campos de `userConfig`.
+- **Pendente (usuário):** para o teste real de ponta a ponta (sessão nova, e-mail chegando de verdade em
+  `executar-rotina@outlook.com`), falta uma `RESEND_API_KEY` de verdade e um `email_de` de domínio
+  realmente verificado no Resend do usuário — nenhum dos dois pode ser inventado aqui.
+
 ## Copiloto Operacional (ADR-015) — 2026-09-25 — VERIFIED (local)
 - **Pedido:** a partir da pasta "Comece aqui" (ADR-001 do copiloto) e dos 8 documentos IDX. Os IDX 01, 05 e 07 (runbook, painel e padrão de campanha) passam a ser controlados pelo agente. Os IDX 02, 03, 04, 06 e 08, junto com a skill `executar-relatorios`, alimentam os reports. Os reports saem por e-mail em HTML ou PDF.
 - **Decisões do usuário:**

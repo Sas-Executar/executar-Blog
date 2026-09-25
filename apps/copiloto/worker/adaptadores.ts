@@ -31,6 +31,7 @@ export interface EnvEmail {
 	RESEND_API_KEY?: string;
 	EMAIL_FROM: string; // "Copiloto EXECUTAR <copiloto@dominio>"
 	EMAIL_ENVIO_ATIVO?: string; // "1" liga o envio real; sem isso, fica só registrado (fail safe)
+	RESEND_API_URL?: string; // só para testes (Resend simulado); produção usa sempre o endpoint real
 }
 
 export interface Mensagem {
@@ -54,7 +55,7 @@ export class ErroEnvio extends Error {
 export async function enviarEmail(env: EnvEmail, m: Mensagem, buscar: typeof fetch = fetch): Promise<{ id: string | null; simulado: boolean }> {
 	if (env.EMAIL_ENVIO_ATIVO !== '1') return { id: null, simulado: true };
 	if (!env.RESEND_API_KEY) throw new ErroEnvio('RESEND_API_KEY não configurada', true);
-	const res = await buscar('https://api.resend.com/emails', {
+	const res = await buscar(env.RESEND_API_URL ?? 'https://api.resend.com/emails', {
 		method: 'POST',
 		headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json', 'idempotency-key': m.idempotencia.slice(0, 256) },
 		body: JSON.stringify({

@@ -3,7 +3,7 @@
   "name": "copiloto-operacional",
   "displayName": "Copiloto Operacional EXECUTAR",
   "version": "1.0.0",
-  "description": "Opera o programa EXECUTAR direto no Claude Code: /hoje, /fila, /feito, /progresso, /campanha, /status-report, /criar-* e reconciliação, sobre as issues do GitHub (fonte da verdade). Mesmo núcleo do Worker do ADR-015, sem e-mail nem Cloudflare.",
+  "description": "Opera o programa EXECUTAR direto no Claude Code: /hoje, /fila, /feito, /progresso, /campanha, /status-report (com envio opcional por e-mail via Resend), /criar-* e reconciliação, sobre as issues do GitHub (fonte da verdade). Mesmo núcleo do Worker do ADR-015, sem Cloudflare.",
   "author": { "name": "Sas-Executar", "url": "https://github.com/Sas-Executar" },
   "homepage": "https://github.com/Sas-Executar/executar-Blog/tree/main/plugins/copiloto-operacional",
   "repository": "https://github.com/Sas-Executar/executar-Blog",
@@ -46,6 +46,25 @@
       "title": "Briefing ao abrir a sessão",
       "description": "Mostra /hoje no início de cada sessão (somente leitura; equivale à rotina ROT-001).",
       "default": false
+    },
+    "resend_api_key": {
+      "type": "string",
+      "title": "Chave da API do Resend",
+      "description": "Só para /status-report ... enviar. Sem ela, enviar responde unsupported — o relatório continua sendo gravado como arquivo normalmente. Fica no keychain, nunca no plugin.",
+      "sensitive": true,
+      "required": false
+    },
+    "email_de": {
+      "type": "string",
+      "title": "Remetente do e-mail (From)",
+      "description": "Precisa ser um endereço de um domínio verificado na sua conta Resend, ex.: \"Copiloto EXECUTAR <copiloto@seu-dominio.com>\". Sem isso, o Resend recusa o envio.",
+      "default": ""
+    },
+    "email_para": {
+      "type": "string",
+      "title": "Destinatário padrão do /status-report ... enviar",
+      "description": "Usado quando o comando não traz \"para: outro@dominio\". Pode ser sobrescrito por chamada.",
+      "default": "executar-rotina@outlook.com"
     }
   }
 }

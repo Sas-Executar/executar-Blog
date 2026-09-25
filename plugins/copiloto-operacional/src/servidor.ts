@@ -14,10 +14,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 import migration from '../../../apps/copiloto/migrations/0001_ledger.sql';
+import { ErroEnvio, type Mensagem, enviarEmail } from '../../../apps/copiloto/worker/adaptadores.ts';
 import { type Comando, ErroComando, parseComando, tipoDoComando } from '../../../apps/copiloto/worker/comandos.ts';
 import { Ledger, sha256, ulid } from '../../../apps/copiloto/worker/ledger.ts';
 import { abasEspelho, csv, definicoesGithub, reconciliarTudo, verificarLink } from '../../../apps/copiloto/worker/portas.ts';
-import { caminhoRelatorio, htmlEmail, htmlImpressao, textoPlano } from '../../../apps/copiloto/worker/relatorio.ts';
+import { type RelatorioV1, caminhoRelatorio, htmlEmail, htmlImpressao, textoPlano } from '../../../apps/copiloto/worker/relatorio.ts';
 import { PAPEIS, type Papel, type Resposta, executar } from '../../../apps/copiloto/worker/servico.ts';
 import { Tarefas } from '../../../apps/copiloto/worker/tarefas.ts';
 import { d1Sqlite } from './d1-sqlite.ts';
@@ -44,6 +45,10 @@ export interface Config {
 	dados: string;
 	projeto: string;
 	api?: string;
+	resendKey: string;
+	emailDe: string;
+	emailPara: string;
+	resendApiUrl?: string;
 }
 
 export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -58,6 +63,11 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
 		dados: opcao(env, 'COPILOTO_DADOS', 'dados') || env.CLAUDE_PLUGIN_DATA || path.join(process.cwd(), '.copiloto'),
 		projeto: opcao(env, 'COPILOTO_PROJETO', 'projeto') || env.CLAUDE_PROJECT_DIR || process.cwd(),
 		api: env.GITHUB_API || undefined, // só para testes (GitHub simulado)
+		// /status-report ... enviar (nunca pela ferramenta consultar — ver tipoDoComando em comandos.ts).
+		resendKey: opcao(env, 'RESEND_API_KEY', 'resend_api_key'),
+		emailDe: opcao(env, 'EMAIL_DE', 'email_de'),
+		emailPara: opcao(env, 'EMAIL_PARA', 'email_para') || 'executar-rotina@outlook.com',
+		resendApiUrl: env.RESEND_API_URL || undefined, // só para testes (Resend simulado)
 	};
 }
 
@@ -140,6 +150,44 @@ function gravarRelatorio(cfg: Config, r: NonNullable<Resposta['relatorio']>): { 
 	return { refs, gaps };
 }
 
+const SEM_RESEND = 'e-mail: resend_api_key não configurada — rode /plugin configure copiloto-operacional@executar-blog.';
+const SEM_REMETENTE = 'e-mail: email_de não configurado (precisa ser um endereço de um domínio verificado na sua conta Resend).';
+
+/**
+ * `/status-report ... enviar`: reaproveita a MESMA `enviarEmail()` do Worker (fetch puro, sem API
+ * exclusiva de Cloudflare) — nenhuma cópia. Só roda depois de `gravarRelatorio`, e só chega aqui pela
+ * ferramenta `executar` (tipoDoComando marca "enviar" como escrita, então `consultar` já recusou antes).
+ */
+export async function enviarStatusReportPorEmail(cfg: Config, comando: Comando, dados: RelatorioV1, refs: string[], buscar: typeof fetch = fetch): Promise<Partial<Saida>> {
+	const destinatario = (typeof comando.args.para === 'string' && comando.args.para.trim()) || cfg.emailPara;
+	const lacunas: string[] = [];
+	if (!cfg.resendKey) lacunas.push(SEM_RESEND);
+	if (!cfg.emailDe) lacunas.push(SEM_REMETENTE);
+	if (!destinatario) lacunas.push('e-mail: nenhum destinatário (configure email_para ou informe "para: endereco@dominio").');
+	if (lacunas.length) return { status: 'unsupported', gaps: lacunas, next_action: '/plugin configure copiloto-operacional@executar-blog' };
+
+	// Anexo: o PDF gerado, senão o HTML A4 de impressão (nunca o .email.html, que é só o corpo do e-mail).
+	const anexoRef = refs.find((r) => r.endsWith('.pdf')) ?? refs.find((r) => r.endsWith('.html') && !r.endsWith('.email.html'));
+	const anexoAbs = anexoRef ? path.join(cfg.projeto, anexoRef) : null;
+	const anexos = anexoAbs ? [{ nome: path.basename(anexoAbs), base64: fs.readFileSync(anexoAbs).toString('base64'), tipo: anexoAbs.endsWith('.pdf') ? 'application/pdf' : 'text/html' }] : undefined;
+
+	const mensagem: Mensagem = {
+		para: [destinatario],
+		assunto: dados.meta.title || 'Status report EXECUTAR',
+		html: htmlEmail(dados),
+		texto: textoPlano(dados),
+		anexos,
+		idempotencia: `claude-code:status-report:${dados.meta.date ?? 'sem-data'}:${destinatario}`,
+	};
+	try {
+		const r = await enviarEmail({ RESEND_API_KEY: cfg.resendKey, EMAIL_FROM: cfg.emailDe, EMAIL_ENVIO_ATIVO: '1', RESEND_API_URL: cfg.resendApiUrl }, mensagem, buscar);
+		return { status: 'completed', evidence_refs: [`resend:${r.id ?? 'sem-id'}`], next_action: null, texto: `E-mail enviado para ${destinatario}${anexoRef ? ` (anexo: ${path.basename(anexoRef)})` : ''}.` };
+	} catch (e) {
+		if (e instanceof ErroEnvio) return { status: e.definitivo ? 'failed' : 'partial', gaps: [`e-mail: ${e.message}`], texto: e.definitivo ? `Envio recusado: ${e.message}` : 'Falha temporária no envio; repita o mesmo comando.' };
+		throw e;
+	}
+}
+
 /** Verbos que criam issue ou PR: são os que duplicariam se repetidos. */
 export function criaRecurso(c: Comando): boolean {
 	if (['fila', 'ideia', 'criar-rotina', 'criar-runbook', 'criar-workflow'].includes(c.verbo)) return true;
@@ -209,6 +257,10 @@ export async function ferramentaExecutar(args: { linha?: string; payload?: strin
 		if (r.relatorio) {
 			const g = gravarRelatorio(cfg, r.relatorio);
 			s = { ...s, status: g.gaps.length ? 'partial' : 'completed', texto: textoPlano(r.relatorio.dados), artifact_refs: g.refs, gaps: g.gaps, next_action: `Abra ${g.refs[0]}` };
+			if (comando.args.enviar) {
+				const envio = await enviarStatusReportPorEmail(cfg, comando, r.relatorio.dados, g.refs, buscar);
+				s = { ...s, ...envio, gaps: [...s.gaps, ...(envio.gaps ?? [])], evidence_refs: [...s.evidence_refs, ...(envio.evidence_refs ?? [])] };
+			}
 		}
 		// Sinal estrutural do serviço (assunto fixo), nunca o texto — o texto inclui títulos de issues (T08).
 		if (r.assunto === 'Confirmação necessária') s = { ...s, status: 'blocked', next_action: 'Confirmação humana: responda com /copiloto-operacional:confirmar <token> ou /copiloto-operacional:cancelar <token>.' };
