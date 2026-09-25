@@ -1,19 +1,23 @@
 ---
-// "Pergunte aos artigos" (ADR-008): Turnstile + POST /api/perguntar. Estilo via tokens (HIG).
+// "Pergunte aos artigos" (ADR-008): Turnstile + POST /api/perguntar. Campo e botão do design system (ADR-017).
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
-<form class="perguntar" data-perguntar>
-	<label for="pergunta">Sua pergunta sobre os artigos</label>
-	<textarea id="pergunta" name="pergunta" rows="3" minlength="3" maxlength="500" required
-		placeholder="Ex.: Como reduzir a troca de tarefas no dia a dia?"></textarea>
+<form class="perguntar grid gap-4" data-perguntar>
+	<div>
+		<label class="campo-rotulo" for="pergunta">Sua pergunta sobre os artigos</label>
+		<div class="campo items-start">
+			<textarea id="pergunta" name="pergunta" rows="3" minlength="3" maxlength="500" required
+				placeholder="Ex.: Como reduzir a troca de tarefas no dia a dia?"></textarea>
+		</div>
+	</div>
 	<div class="cf-turnstile" data-sitekey={siteKey} data-language="pt-BR"></div>
-	<button type="submit">Perguntar</button>
-	<p class="estado" role="status" aria-live="polite"></p>
-	<div class="resposta" hidden>
-		<div class="texto"></div>
-		<h3>Fontes</h3>
-		<ul class="fontes"></ul>
+	<button type="submit" class="botao justify-self-start">Perguntar</button>
+	<p class="estado m-0 text-small text-muted" role="status" aria-live="polite"></p>
+	<div class="resposta border-t border-rule pt-6" hidden>
+		<div class="texto whitespace-pre-wrap text-fg"></div>
+		<h3 class="rotulo mt-6">Fontes</h3>
+		<ul class="fontes lista-editorial"></ul>
 	</div>
 </form>
 
@@ -60,38 +64,3 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 		});
 	}
 </script>
-
-<style>
-	.perguntar {
-		display: grid;
-		gap: 0.75rem;
-	}
-	textarea {
-		font: inherit;
-		padding: 0.75rem;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: var(--background);
-		color: var(--foreground);
-		min-height: var(--hit-target);
-	}
-	button {
-		justify-self: start;
-		min-height: var(--hit-target);
-		min-width: var(--hit-target);
-		padding: 0 1.25rem;
-		border: 0;
-		border-radius: 8px;
-		background: var(--accent);
-		color: var(--on-accent);
-		font: inherit;
-		font-weight: 600;
-		cursor: pointer;
-	}
-	button:disabled {
-		opacity: 0.6;
-	}
-	.texto {
-		white-space: pre-wrap;
-	}
-</style>

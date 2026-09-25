@@ -148,3 +148,11 @@ test('eBook: EPUB com capítulos na ordem e Web Book com sumário', async () => 
 	assert.match(web, /<li><a href="#capitulo-1">Segundo<\/a><\/li><li><a href="#capitulo-2">Primeiro<\/a>/);
 	assert.match(web, /break-before:page/);
 });
+
+test('ADR-017: ponto de atenção, bloco de decisão e infográfico ASCII', async () => {
+	const h = await html('> [!attention]\n> Cuidado com o atalho.\n\n> [!decision] Antes de decidir\n> 1. **Qual é o risco?** O custo de errar.\n> 2. **Quem decide?** O dono do processo.\n\n```ascii title="Fluxo · infográfico"\nA ──▶ B\n    │\n    ▼\n    C\n```');
+	assert.match(h, /<aside class="callout callout--atencao" data-callout="attention" aria-label="Ponto de atenção">/);
+	assert.match(h, /<aside class="callout callout--decisao" data-callout="decision" aria-label="Antes de decidir">/);
+	assert.match(h, /<ol>\s*<li><strong>Qual é o risco\?<\/strong> O custo de errar\.<\/li>/);
+	assert.match(h, /<figure class="infografico"><figcaption>Fluxo · infográfico<\/figcaption><pre tabindex="0">A ──▶ B\n    │/);
+});

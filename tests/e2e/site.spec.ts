@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 
 const ARTIGO = '/blog/fatores-de-riscos-cognitivos/';
 const SINTAXE = '/blog/laboratório/sintaxe-completa/';
-const PAGINAS = ['/', ARTIGO, SINTAXE, '/blog/pessoa-e-cognição/competição-pela-atenção/', '/blog/', '/explorar/', '/buscar/', '/salvos/', '/preferencias/', '/perguntar/', '/teste-grafico/'];
+const PAGINAS = ['/', ARTIGO, SINTAXE, '/blog/pessoa-e-cognição/competição-pela-atenção/', '/blog/', '/explorar/', '/buscar/', '/salvos/', '/preferencias/', '/perguntar/', '/teste-grafico/', '/guia-de-estilo/'];
 
 for (const tema of ['light', 'dark'] as const) {
 	test(`acessibilidade (axe) sem violações sérias — ${tema}`, async ({ page }) => {
@@ -29,11 +29,11 @@ test('botão claro/escuro no celular: tema troca e diagrama acompanha', async ({
 	await toggle.click();
 	await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).not.toBe(antes);
 	const depois = await page.evaluate(() => document.documentElement.dataset.theme);
-	// Mermaid é redesenhado no navegador com a paleta do tema escolhido.
+	// Mermaid é redesenhado no navegador com a paleta do tema escolhido (--brand-soft, ADR-017).
 	const diagrama = page.locator('pre.mermaid[data-desenhado] svg').first();
 	await expect(diagrama).toBeVisible({ timeout: 15_000 });
 	const fundo = () => diagrama.locator('.node rect, .node polygon').first().evaluate((el) => getComputedStyle(el).fill);
-	await expect.poll(fundo).toBe(depois === 'dark' ? 'rgb(13, 42, 28)' : 'rgb(228, 246, 237)');
+	await expect.poll(fundo).toBe(depois === 'dark' ? 'rgb(31, 51, 71)' : 'rgb(238, 243, 248)');
 	await page.reload();
 	expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(depois);
 	await ctx.close();
@@ -107,7 +107,7 @@ test('Hoje e Artigo (HF01/HF02): destaque, autoria, referências e próximo pass
 	await expect(page.locator('.meta-bar')).toContainText('Equipe EXECUTAR');
 	await expect(page.locator('.markdown-body')).toContainText('Fontes e aprofundamento');
 	await expect(page.getByRole('heading', { name: 'Continue lendo' })).toBeVisible();
-	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain('Geist');
+	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain('Inter');
 });
 
 test('Explorar (HF01): filtros por pilar e consciência, com estado vazio', async ({ page }) => {
@@ -142,7 +142,7 @@ test('Preferências (HF05): tema e tamanho do texto mudam e mostram o estado atu
 	await page.getByRole('radio', { name: 'Maior' }).check();
 	await page.goto(ARTIGO);
 	expect(await page.evaluate(() => document.documentElement.dataset.texto)).toBe('maior');
-	const corpo = await page.locator('.markdown-body p').first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+	const corpo = await page.locator('.markdown-body p:not(.callout__titulo)').first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
 	expect(corpo).toBeGreaterThan(19);
 });
 
@@ -161,6 +161,34 @@ test('teclado (HF06): Tab alcança o cabeçalho e o conteúdo principal', async 
 });
 
 // ── Gramática editorial única (ADR-013), a partir de tests/fixtures/vault ──
+test('família editorial (ADR-017): ponto de atenção, decisão, infográfico e terminal', async ({ page }) => {
+	await page.goto(SINTAXE);
+	await expect(page.locator('aside.callout--atencao .callout__titulo').first()).toHaveText('Ponto de atenção');
+	const decisao = page.locator('aside.callout--decisao');
+	await expect(decisao.locator('.callout__titulo')).toHaveText('Antes de decidir');
+	await expect(decisao.locator('ol > li')).toHaveCount(2);
+	const infografico = page.locator('figure.infografico');
+	await expect(infografico.locator('figcaption')).toHaveText('Plain txt · infográfico');
+	// ASCII preserva espaços e não quebra linha: rola dentro do bloco, nunca a página.
+	expect(await infografico.locator('pre').evaluate((el) => getComputedStyle(el).whiteSpace)).toBe('pre');
+	await expect(infografico.locator('pre')).toHaveAttribute('tabindex', '0');
+	await expect(page.locator('.expressive-code .frame.is-terminal').first()).toBeVisible();
+});
+
+test('guia de estilo (ADR-017): fundações, componentes, mood board e storyboard', async ({ page }) => {
+	await page.goto('/guia-de-estilo/');
+	for (const secao of ['Logo', 'Cores', 'Tipografia', 'Botões', 'Controles de formulário', 'Navegação', 'Cartões e listas', 'Componentes editoriais', 'Mood board', 'Storyboard']) {
+		await expect(page.getByRole('heading', { name: secao, exact: true })).toBeVisible();
+	}
+	await expect(page.locator('.storyboard > li')).toHaveCount(7);
+	await expect(page.locator('.cabecalho').getByRole('link', { name: 'Risco Cognitivo, página inicial' })).toBeVisible();
+	await expect(page.locator('#logo .logo--g')).toHaveCount(2);
+	await expect(page.locator('#editorial .callout--decisao')).toBeVisible();
+	await expect(page.locator('#editorial figure.infografico')).toBeVisible();
+	await page.getByRole('switch', { name: 'Texto maior' }).check();
+	await expect(page.getByRole('switch', { name: 'Texto maior' })).toBeChecked();
+});
+
 test('sintaxe Obsidian: callouts, destaque, wikilinks, tarefas, math e rodapé', async ({ page }) => {
 	await page.goto(SINTAXE);
 	await expect(page.locator('aside.callout--dica').first()).toContainText('Frase-síntese');
@@ -207,7 +235,7 @@ test('diretivas: toggle, métrica, comparação, database, embed seguro e descon
 	await expect(page.locator('iframe[src^="https://www.youtube-nocookie.com/"]')).toHaveCount(1);
 	await expect(page.getByRole('link', { name: 'Site externo' })).toHaveAttribute('href', 'https://exemplo.com/pagina');
 	await expect(page.getByText('Conteúdo preservado de diretiva desconhecida.')).toBeVisible();
-	await expect(page.locator('.toc a')).toHaveCount(7);
+	await expect(page.locator('.toc a')).toHaveCount(8);
 });
 
 test('propriedades tipadas: painel com status, url, e-mail e booleano', async ({ page }) => {

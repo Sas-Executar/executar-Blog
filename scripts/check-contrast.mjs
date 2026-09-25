@@ -23,6 +23,18 @@ export const PAIRS = [
 	['foreground', 'brand-soft'],
 	['brand-text', 'brand-soft'],
 	['brand-text', 'surface'],
+	// ADR-017: tinta dos títulos, rótulos em azul sobre o papel e selos semânticos.
+	['ink', 'background'],
+	['ink', 'surface'],
+	['brand-text', 'background'],
+	['link', 'brand-soft'],
+	['muted', 'brand-soft'],
+	['success-text', 'success-soft'],
+	['warning-text', 'warning-soft'],
+	['error-text', 'error-soft'],
+	['ink', 'surface-raised'],
+	['muted', 'surface-raised'],
+	['link', 'surface-raised'],
 ];
 
 function luminance(hex) {

@@ -1,0 +1,14 @@
+---
+// Rótulo/overline do design system (ADR-017): caixa alta 11 pt, tracking largo, azul.
+import type { HTMLTag } from 'astro/types';
+
+interface Props {
+	como?: HTMLTag;
+	neutro?: boolean;
+	id?: string;
+	class?: string;
+}
+const { como: Tag = 'p', neutro = false, id, class: classe } = Astro.props;
+---
+
+<Tag id={id} class:list={['rotulo', { 'rotulo--neutro': neutro }, classe]}><slot /></Tag>

@@ -1,0 +1,798 @@
+---
+// Guia de estilo (ADR-017): documentação visual viva do design system. Tudo aqui usa os tokens e
+// componentes reais — as cores são lidas de @executar/theme/cores.css no build, o contraste vem do
+// mesmo verificador do HIG (scripts/check-contrast.mjs) e os blocos editoriais passam pelo mesmo
+// pipeline de Markdown do vault (@executar/editorial-renderer) e pelo Expressive Code do blog.
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { Code } from '@astrojs/starlight/components';
+import { renderMarkdown } from '@executar/editorial-renderer';
+import coresCss from '@executar/theme/cores.css?raw';
+import { PAIRS, contrast, parseModes } from '../../../../scripts/check-contrast.mjs';
+import CategoryPill from '../components/CategoryPill.astro';
+import Icone from '../components/Icone.astro';
+import PostCard from '../components/PostCard.astro';
+import Botao from '../components/ui/Botao.astro';
+import Campo from '../components/ui/Campo.astro';
+import Chip from '../components/ui/Chip.astro';
+import Marca from '../components/ui/Marca.astro';
+import Rotulo from '../components/ui/Rotulo.astro';
+import Selo from '../components/ui/Selo.astro';
+import { artigos } from '../lib/artigos';
+import { indice } from '../vault.mjs';
+
+const modos = parseModes(coresCss);
+const cores = [
+	{ token: 'background', nome: 'Papel', papel: 'Fundo da página: off-white neutro.' },
+	{ token: 'surface', nome: 'Superfície', papel: 'Callouts, blocos mono, campos.' },
+	{ token: 'ink', nome: 'Tinta', papel: 'Títulos e ênfase.' },
+	{ token: 'foreground', nome: 'Texto', papel: 'Texto corrido.' },
+	{ token: 'muted', nome: 'Secundário', papel: 'Resumos, metadados, ajuda.' },
+	{ token: 'border', nome: 'Filete', papel: 'Divisores fortes e bordas.' },
+	{ token: 'border-soft', nome: 'Filete suave', papel: 'Divisores entre itens.' },
+	{ token: 'code-background', nome: 'Código', papel: 'Fundo de controles e código.' },
+	{ token: 'accent', nome: 'Azul', papel: 'Único acento: ação, link, foco.' },
+	{ token: 'brand-text', nome: 'Azul escuro', papel: 'Rótulos e selos.' },
+	{ token: 'brand-soft', nome: 'Azul claro', papel: 'Destaques suaves e barras de título.' },
+	{ token: 'brand-line', nome: 'Filete azul', papel: 'Linhas decorativas.' },
+];
+const semanticas = [
+	{ fundo: 'success-soft', texto: 'success-text', nome: 'Sucesso' },
+	{ fundo: 'warning-soft', texto: 'warning-text', nome: 'Aviso' },
+	{ fundo: 'error-soft', texto: 'error-text', nome: 'Erro' },
+];
+const pares = PAIRS.map(([fg, bg]) => ({
+	fg,
+	bg,
+	claro: contrast(modos.claro[fg], modos.claro[bg]),
+	escuro: contrast(modos.escuro[fg], modos.escuro[bg]),
+}));
+
+const tipos = [
+	{ classe: 'text-display font-bold tracking-tighter', nome: 'Display', token: '--text-display', uso: 'Título da página e do artigo', exemplo: 'Execução com clareza' },
+	{ classe: 'text-headline font-bold tracking-tight', nome: 'Headline', token: '--text-headline', uso: 'Abertura de seção', exemplo: 'O custo da troca de tarefa' },
+	{ classe: 'text-title font-bold tracking-tight', nome: 'Title', token: '--text-title', uso: 'Título de card e de bloco', exemplo: 'Memória prospectiva' },
+	{ classe: 'text-lead', nome: 'Lead', token: '--text-lead', uso: 'Subtítulo, introdução', exemplo: 'Artigos sobre atenção, processos e o sistema ao redor de quem executa.' },
+	{ classe: 'text-body', nome: 'Body', token: '--text-body (17 pt)', uso: 'Texto corrido (HIG)', exemplo: 'O texto corrido usa 17 pt, entrelinha 1,7 e tinta quase preta sobre papel off-white.' },
+	{ classe: 'text-small', nome: 'Small', token: '--text-small', uso: 'Rodapé, ajuda', exemplo: 'Informação de apoio.' },
+	{ classe: 'text-label font-semibold', nome: 'Label', token: '--text-label', uso: 'Rótulo de campo', exemplo: 'Sua pergunta' },
+	{ classe: 'rotulo m-0', nome: 'Overline', token: '--text-overline (11 pt)', uso: 'Rótulo de seção', exemplo: 'Em destaque' },
+	{ classe: 'font-mono text-sm', nome: 'Mono', token: '--font-mono', uso: 'Números, código, metadados', exemplo: '07 min · 2026-09-25' },
+];
+const espacos = [1, 2, 3, 4, 6, 8, 12, 16, 24];
+const raios = [
+	{ nome: 'control', valor: '12px', uso: 'Botões, campos' },
+	{ nome: 'card', valor: '16px', uso: 'Blocos e superfícies' },
+	{ nome: 'full', valor: '9999px', uso: 'Selos, chips, avatar' },
+];
+
+const exemploArtigo = (await artigos())[0];
+
+const md = async (texto: string) => (await renderMarkdown(`---\ntitle: Guia\n---\n${texto}`, { indice })).html;
+const editorial = await md(`> [!note] Nota
+> Um aviso neutro, com ícone circular e rótulo em caixa alta.
+
+> [!summary] Frase-síntese
+> O resumo do artigo em uma frase, em azul claro.
+
+> [!attention]
+> **Ponto de atenção.** O callout de atenção ganha o título "Ponto de atenção" quando o autor não escreve um.
+
+> [!success] Aprovado
+> Critério atendido com evidência.
+
+> [!danger] Risco alto
+> Use com parcimônia: é o único callout com cor semântica de erro.
+
+> [!decision] Decisão
+> 1. **Qual é o problema real?** Separar sintoma de causa antes de agir.
+> 2. **Quem decide?** O dono do processo, com os dados na mesa.
+> 3. **Qual o próximo passo?** Uma ação pequena, verificável em uma semana.
+
+1. Listas numeradas usam marcador mono em azul.
+2. O ritmo entre itens é constante.
+3. Nada de caixa: só tipografia e espaço.
+
+> Citações e destaques viram pullquote: filete azul à esquerda, filetes finos em cima e embaixo.
+
+Texto com ==destaque== e uma #tag no meio da frase.
+
+\`\`\`ascii
+ENTRADA ──▶ EXPLORAÇÃO ──▶ LEITURA ──▶ DECISÃO
+                               │
+                               ▼
+                          PRÓXIMA AÇÃO
+\`\`\`
+
+:::steps
+1. Passos numerados usam o mesmo número mono do sumário.
+2. O contorno é fino; o preenchimento, nenhum.
+:::
+`);
+const decisaoStoryboard = await md(`> [!decision] Decisão
+> 1. **Vale aplicar agora?** Sim, se o custo da troca de tarefa aparece toda semana.
+> 2. **Qual o primeiro teste?** Um bloco de foco de 50 minutos por dia.`);
+
+const secoes = [
+	['logo', 'Logo'],
+	['cores', 'Cores'],
+	['tipografia', 'Tipografia'],
+	['espaco', 'Espaço, raio e linhas'],
+	['layout', 'Layout e breakpoints'],
+	['botoes', 'Botões'],
+	['controles', 'Controles de formulário'],
+	['navegacao', 'Navegação'],
+	['cartoes', 'Cartões e listas'],
+	['selos', 'Selos e status'],
+	['editorial', 'Componentes editoriais'],
+	['mood-board', 'Mood board'],
+	['storyboard', 'Storyboard'],
+];
+const quadros = [
+	['01', 'Entrada', 'O leitor chega pela Hoje: uma promessa clara e uma busca.'],
+	['02', 'Exploração', 'Filtros em chips estreitam o assunto sem trocar de página.'],
+	['03', 'Leitura', 'Trilha, categoria, título grande e lead: a tipografia conduz.'],
+	['04', 'Interação', 'Salvar e copiar link: ações secundárias, discretas.'],
+	['05', 'Decisão', 'O bloco de decisão transforma leitura em escolha.'],
+	['06', 'Feedback', 'O sistema confirma com um aviso curto e um selo.'],
+	['07', 'Próxima ação', 'Continue lendo ou pergunte aos artigos.'],
+];
+const h2 = 'm-0 mb-2 border-0 p-0 font-display text-headline font-bold tracking-tight text-balance text-ink';
+const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
+---
+
+<StarlightPage frontmatter={{ title: 'Guia de estilo', description: 'Design system editorial do EXECUTAR: fundações, componentes, mood board e storyboard.', template: 'splash', pagefind: false }}>
+	<div class="guia pagina-larga">
+		<header class="not-content grid gap-6 border-b border-rule pb-10 md:grid-cols-[1.4fr_1fr] md:items-end">
+			<div>
+				<Rotulo>Design system · ADR-017</Rotulo>
+				<p class="m-0 font-display text-display font-bold tracking-tighter text-balance text-ink">Tipografia primeiro. Azul como único acento.</p>
+				<p class="mt-5 mb-0 max-w-2xl text-lead text-pretty text-muted">
+					Documentação viva do sistema visual do EXECUTAR: papel off-white, tinta quase preta, cinzas discretos, linhas finas e muito espaço
+					negativo. Cada exemplo abaixo é o componente real, com os tokens reais — mude o tema no topo para ver o modo escuro.
+				</p>
+			</div>
+			<dl class="m-0 grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-xs text-muted">
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Fonte</dt><dd class="m-0 p-0 text-ink">Inter + mono do sistema</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Stack</dt><dd class="m-0 p-0 text-ink">Starlight + Tailwind v4</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Regras</dt><dd class="m-0 p-0 text-ink">Apple HIG (ADR-006)</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Contraste</dt><dd class="m-0 p-0 text-ink">≥ 4,5:1 em 4 modos</dd></div>
+			</dl>
+		</header>
+
+		<nav class="toc toc--colunas" aria-label="Seções do guia">
+			<p class="toc__titulo">Sumário</p>
+			<ol>{secoes.map(([id, nome]) => <li><a href={`#${id}`}>{nome}</a></li>)}</ol>
+		</nav>
+
+		<!-- 0. Logo -->
+		<section id="logo" class="secao not-content" aria-labelledby="logo-titulo">
+			<Rotulo>Marca</Rotulo>
+			<h2 id="logo-titulo" class={h2}>Logo</h2>
+			<p class="intro-secao">
+				"Risco Cognitivo" em grotesca pesada, caixa alta e duas linhas, com a barra azul de acento embaixo. É texto vivo, não imagem: nítido em
+				qualquer tamanho e com claro/escuro automáticos.
+			</p>
+			<div class="grid gap-px overflow-hidden rounded-card border border-rule bg-rule md:grid-cols-2">
+				<div class="grid min-h-72 place-items-center bg-paper p-10">
+					<Marca tamanho="g" />
+				</div>
+				<div class="grid min-h-72 place-items-center bg-ink p-10">
+					<Marca tamanho="g" class="text-paper" />
+				</div>
+			</div>
+			<div class="mt-10 grid gap-10 md:grid-cols-3">
+				<div>
+					<h3 class={h3}>Tamanhos</h3>
+					<ul class="lista-editorial">
+						<li class="flex items-center justify-between gap-4"><Marca tamanho="p" /><code class="font-mono text-xs text-muted">p · cabeçalho</code></li>
+						<li class="flex items-center justify-between gap-4"><Marca tamanho="m" /><code class="font-mono text-xs text-muted">m · rodapé</code></li>
+					</ul>
+				</div>
+				<div>
+					<h3 class={h3}>Construção</h3>
+					<ul class="lista-editorial text-small text-muted">
+						<li>Inter 800, caixa alta, entrelinha 0,92, tracking −0,035em</li>
+						<li>Barra: 1,35em × 0,13em, cantos arredondados, <code>--accent</code></li>
+						<li>Respiro entre texto e barra: 0,26em; área mínima de toque 44 pt</li>
+					</ul>
+				</div>
+				<div>
+					<h3 class={h3}>Ícone (favicon)</h3>
+					<div class="flex items-center gap-4">
+						<img src="/favicon.svg" alt="" width="64" height="64" class="rounded-control border border-rule" />
+						<p class="m-0 text-small text-muted">"RC" com a mesma barra azul, para aba do navegador e atalhos.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 1. Cores -->
+		<section id="cores" class="secao not-content" aria-labelledby="cores-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="cores-titulo" class={h2}>Cores</h2>
+			<p class="intro-secao">Neutros quentes e um único azul. As amostras usam a variável ao vivo; os valores vêm de <code>cores.css</code>.</p>
+			<ul class="m-0 grid list-none gap-x-6 gap-y-8 p-0 sm:grid-cols-2 lg:grid-cols-4">
+				{
+					cores.map((c) => (
+						<li class="m-0 grid gap-3">
+							<span class="block h-20 rounded-card border border-rule" style={`background: var(--${c.token})`} aria-hidden="true" />
+							<span class="grid gap-0.5">
+								<strong class="text-small text-ink">{c.nome}</strong>
+								<code class="font-mono text-xs text-muted">--{c.token}</code>
+								<span class="text-label text-muted">{c.papel}</span>
+								<span class="font-mono text-xs text-muted">
+									claro {modos.claro[c.token]} · escuro {modos.escuro[c.token]}
+								</span>
+							</span>
+						</li>
+					))
+				}
+			</ul>
+			<h3 class:list={[h3, 'mt-12']}>Cores semânticas</h3>
+			<ul class="m-0 flex list-none flex-wrap gap-3 p-0">
+				{
+					semanticas.map((s) => (
+						<li class="m-0 rounded-card px-4 py-3 font-semibold" style={`background: var(--${s.fundo}); color: var(--${s.texto})`}>
+							{s.nome} <span class="font-mono text-xs font-normal">--{s.texto} / --{s.fundo}</span>
+						</li>
+					))
+				}
+			</ul>
+			<h3 class:list={[h3, 'mt-12']}>Pares verificados (Apple HIG, ≥ 4,5:1)</h3>
+			<div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabela de contraste">
+				<table class="w-full border-collapse text-left text-small">
+					<thead>
+						<tr class="border-b border-rule">
+							<th scope="col" class="py-2 pr-4 font-semibold text-ink">Texto</th>
+							<th scope="col" class="py-2 pr-4 font-semibold text-ink">Fundo</th>
+							<th scope="col" class="py-2 pr-4 font-semibold text-ink">Claro</th>
+							<th scope="col" class="py-2 font-semibold text-ink">Escuro</th>
+						</tr>
+					</thead>
+					<tbody class="font-mono text-xs">
+						{
+							pares.map((p) => (
+								<tr class="border-b border-rule-soft">
+									<td class="py-2 pr-4">--{p.fg}</td>
+									<td class="py-2 pr-4">--{p.bg}</td>
+									<td class="py-2 pr-4">{p.claro.toFixed(1)}:1</td>
+									<td class="py-2">{p.escuro.toFixed(1)}:1</td>
+								</tr>
+							))
+						}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<!-- 2. Tipografia -->
+		<section id="tipografia" class="secao not-content" aria-labelledby="tipografia-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="tipografia-titulo" class={h2}>Tipografia</h2>
+			<p class="intro-secao">A tipografia é o principal elemento visual: Inter em pesos 400–800, tracking negativo nos títulos, mono para números.</p>
+			<ul class="lista-editorial">
+				{
+					tipos.map((t) => (
+						<li class="grid gap-2 md:grid-cols-[12rem_1fr] md:items-baseline md:gap-8">
+							<span class="grid gap-0.5">
+								<strong class="text-small text-ink">{t.nome}</strong>
+								<code class="font-mono text-xs text-muted">{t.token}</code>
+								<span class="text-label text-muted">{t.uso}</span>
+							</span>
+							<span class:list={['font-display text-ink', t.classe]}>{t.exemplo}</span>
+						</li>
+					))
+				}
+			</ul>
+		</section>
+
+		<!-- 3. Espaço, raio e linhas -->
+		<section id="espaco" class="secao not-content" aria-labelledby="espaco-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="espaco-titulo" class={h2}>Espaço, raio e linhas</h2>
+			<p class="intro-secao">Grade de 4px (a escala do Tailwind é a mesma do Desyng System: <code>p-4</code> = 16px). Poucas sombras: nenhuma.</p>
+			<ul class="m-0 grid list-none gap-2 p-0">
+				{
+					espacos.map((n) => (
+						<li class="m-0 grid grid-cols-[4.5rem_1fr] items-center gap-4 font-mono text-xs text-muted">
+							<span>{n * 4}px</span>
+							<span class="block h-3 rounded-sm bg-accent" style={`width: calc(var(--spacing) * ${n})`} aria-hidden="true" />
+						</li>
+					))
+				}
+			</ul>
+			<div class="mt-12 grid gap-8 md:grid-cols-3">
+				<div>
+					<h3 class={h3}>Raio</h3>
+					<ul class="m-0 grid list-none gap-4 p-0">
+						{
+							raios.map((r) => (
+								<li class="m-0 flex items-center gap-4">
+									<span class="block size-14 border border-rule bg-surface" style={`border-radius: var(--radius-${r.nome})`} aria-hidden="true" />
+									<span class="grid text-label text-muted">
+										<code class="font-mono text-xs text-ink">--radius-{r.nome}</code>
+										{r.valor} · {r.uso}
+									</span>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+				<div>
+					<h3 class={h3}>Linhas</h3>
+					<div class="grid gap-6 text-label text-muted">
+						<div><div class="border-t border-rule" /><code class="font-mono text-xs">--rule-strong</code> · separa blocos</div>
+						<div><div class="border-t border-rule-soft" /><code class="font-mono text-xs">--rule</code> · separa itens</div>
+						<div><div class="border-t-4 border-accent" /><code class="font-mono text-xs">4px azul</code> · pullquote, convite</div>
+					</div>
+				</div>
+				<div>
+					<h3 class={h3}>Foco</h3>
+					<p class="m-0 mb-4 text-label text-muted">Anel de 2px no azul, afastado 2px. Use Tab para ver.</p>
+					<span class="inline-flex min-h-11 items-center rounded-control px-4 outline-2 outline-offset-2 outline-(--focus-ring)">Elemento em foco</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- 4. Layout -->
+		<section id="layout" class="secao not-content" aria-labelledby="layout-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="layout-titulo" class={h2}>Layout e breakpoints</h2>
+			<p class="intro-secao">Duas larguras e quatro pontos de quebra. No celular, margem lateral fixa, alvos de 44 pt e a barra inferior de navegação.</p>
+			<div class="grid gap-8 md:grid-cols-2">
+				<ul class="lista-editorial text-small">
+					<li class="flex justify-between gap-4"><span class="text-ink">Coluna de leitura</span><code class="font-mono text-xs text-muted">max-w-read · 45rem</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">Página</span><code class="font-mono text-xs text-muted">max-w-page · 75rem</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">Alvo de toque</span><code class="font-mono text-xs text-muted">--hit-target · 44px</code></li>
+				</ul>
+				<ul class="lista-editorial text-small">
+					<li class="flex justify-between gap-4"><span class="text-ink">sm — celular grande</span><code class="font-mono text-xs text-muted">580px</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">md — tablet (barra superior)</span><code class="font-mono text-xs text-muted">850px</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">lg — notebook</span><code class="font-mono text-xs text-muted">1024px</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">xl — desktop</span><code class="font-mono text-xs text-muted">1280px</code></li>
+				</ul>
+			</div>
+		</section>
+
+		<!-- 5. Botões -->
+		<section id="botoes" class="secao not-content" aria-labelledby="botoes-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="botoes-titulo" class={h2}>Botões</h2>
+			<p class="intro-secao">Três variantes e três tamanhos, todos com 44 pt de altura mínima. <code>&lt;Botao variante tamanho href pressionado&gt;</code> ou a classe <code>.botao</code>.</p>
+			<div class="grid gap-6">
+				{
+					(['primario', 'secundario', 'quieto'] as const).map((v) => (
+						<div class="grid gap-3 border-t border-rule-soft pt-4 md:grid-cols-[10rem_1fr] md:items-center">
+							<code class="font-mono text-xs text-muted">{v}</code>
+							<div class="flex flex-wrap items-center gap-3">
+								<Botao variante={v} tamanho="p">Pequeno</Botao>
+								<Botao variante={v}>Médio</Botao>
+								<Botao variante={v} tamanho="g">Grande</Botao>
+								<Botao variante={v} pressionado={true}>Pressionado</Botao>
+								<Botao variante={v} disabled>Desativado</Botao>
+							</div>
+						</div>
+					))
+				}
+				<div class="grid gap-3 border-t border-rule-soft pt-4 md:grid-cols-[10rem_1fr] md:items-center">
+					<code class="font-mono text-xs text-muted">com ícone / link</code>
+					<div class="flex flex-wrap items-center gap-3">
+						<Botao href="#botoes">Perguntar <Icone nome="seta" tamanho={16} /></Botao>
+						<Botao variante="secundario" tamanho="p"><Icone nome="salvos" tamanho={16} />Salvar</Botao>
+						<Botao variante="secundario" tamanho="p"><Icone nome="link" tamanho={16} />Copiar link</Botao>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 6. Controles -->
+		<section id="controles" class="secao not-content" aria-labelledby="controles-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="controles-titulo" class={h2}>Controles de formulário</h2>
+			<p class="intro-secao">Controles nativos tingidos pelo acento: acessíveis por padrão, sem biblioteca extra.</p>
+			<form class="grid gap-x-10 gap-y-8 md:grid-cols-2" onsubmit="return false">
+				<div>
+					<Campo id="guia-nome" rotulo="Campo de texto" placeholder="Digite aqui" ajuda="Texto de ajuda abaixo do campo." />
+				</div>
+				<div>
+					<Campo id="guia-busca" rotulo="Busca" busca icone="buscar" type="search" placeholder="Buscar artigos…">
+						<button slot="acao" type="button" class="botao">Buscar</button>
+					</Campo>
+				</div>
+				<div>
+					<Campo id="guia-erro" rotulo="Campo obrigatório" required placeholder="Deixe vazio e saia do campo" />
+				</div>
+				<div>
+					<Campo id="guia-off" rotulo="Campo desativado" disabled value="Somente leitura" />
+				</div>
+				<div>
+					<label class="campo-rotulo" for="guia-select">Seleção</label>
+					<div class="campo">
+						<select id="guia-select">
+							<option>Pessoa e cognição</option>
+							<option>Projetos e operações</option>
+							<option>Sistema e arquitetura</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<label class="campo-rotulo" for="guia-data">Data (calendário nativo)</label>
+					<div class="campo">
+						<input id="guia-data" type="date" value="2026-09-25" />
+					</div>
+				</div>
+				<fieldset class="m-0 border-0 p-0">
+					<legend class="campo-rotulo">Caixas de seleção</legend>
+					<div class="grid">
+						<label class="escolha"><input type="checkbox" checked /> Receber novos artigos</label>
+						<label class="escolha"><input type="checkbox" /> Mostrar resumo</label>
+						<label class="escolha"><input type="checkbox" disabled /> Opção desativada</label>
+					</div>
+				</fieldset>
+				<fieldset class="m-0 border-0 p-0">
+					<legend class="campo-rotulo">Rádios</legend>
+					<div class="grid">
+						<label class="escolha"><input type="radio" name="guia-radio" checked /> Descoberta</label>
+						<label class="escolha"><input type="radio" name="guia-radio" /> Compreensão</label>
+						<label class="escolha"><input type="radio" name="guia-radio" /> Decisão</label>
+					</div>
+				</fieldset>
+				<fieldset class="m-0 border-0 p-0">
+					<legend class="campo-rotulo">Interruptores</legend>
+					<div class="grid">
+						<label class="interruptor"><input type="checkbox" role="switch" checked /> Movimento reduzido</label>
+						<label class="interruptor"><input type="checkbox" role="switch" /> Texto maior</label>
+						<label class="interruptor"><input type="checkbox" role="switch" disabled /> Indisponível</label>
+					</div>
+				</fieldset>
+				<div>
+					<label class="campo-rotulo" for="guia-range">Deslizante</label>
+					<input id="guia-range" class="deslizante" type="range" min="0" max="100" value="60" />
+					<p class="campo-ajuda">Tamanho do texto: 60%.</p>
+				</div>
+				<fieldset class="m-0 border-0 p-0 md:col-span-2">
+					<legend class="campo-rotulo">Controle segmentado</legend>
+					<div class="segmentado">
+						<label><input type="radio" name="guia-seg" checked /><span>Automático</span></label>
+						<label><input type="radio" name="guia-seg" /><span>Claro</span></label>
+						<label><input type="radio" name="guia-seg" /><span>Escuro</span></label>
+					</div>
+				</fieldset>
+			</form>
+		</section>
+
+		<!-- 7. Navegação -->
+		<section id="navegacao" class="secao not-content" aria-labelledby="navegacao-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="navegacao-titulo" class={h2}>Navegação</h2>
+			<p class="intro-secao">Marca, trilha, chips e barra inferior. No celular, as cinco seções ficam sempre visíveis embaixo.</p>
+			<div class="grid gap-10 md:grid-cols-2">
+				<div class="grid content-start gap-6">
+					<div><h3 class={h3}>Marca</h3><Marca /></div>
+					<div>
+						<h3 class={h3}>Trilha</h3>
+						<nav class="trilha" aria-label="Trilha de exemplo"><a href="#navegacao">Blog</a><span aria-hidden="true">/</span><a href="#navegacao">Pessoa e cognição</a></nav>
+					</div>
+					<div>
+						<h3 class={h3}>Chips de navegação</h3>
+						<nav class="flex flex-wrap gap-2" aria-label="Categorias de exemplo">
+							<Chip href="#navegacao" ativo>Todos</Chip>
+							<Chip href="#navegacao">Pessoa e cognição</Chip>
+							<Chip href="#navegacao">Projetos e operações</Chip>
+						</nav>
+					</div>
+					<div>
+						<h3 class={h3}>Chips de filtro</h3>
+						<div class="flex flex-wrap gap-2">
+							<Chip pressionado={true}>P1 · Problemas</Chip>
+							<Chip pressionado={false}>P2 · Métodos</Chip>
+							<Chip disabled>Indisponível</Chip>
+						</div>
+					</div>
+				</div>
+				<div>
+					<h3 class={h3}>Barra inferior (celular)</h3>
+					<div class="mx-auto max-w-sm overflow-hidden rounded-card border border-rule">
+						<div class="grid h-32 place-items-center bg-surface text-label text-muted">conteúdo</div>
+						<div class="grid grid-cols-5 border-t border-rule bg-paper" role="presentation">
+							{
+								(
+									[
+										['hoje', 'Hoje'],
+										['explorar', 'Explorar'],
+										['buscar', 'Buscar'],
+										['salvos', 'Salvos'],
+										['preferencias', 'Ajustes'],
+									] as const
+								).map(([icone, nome], i) => (
+									<span class:list={['grid min-h-14 content-center justify-items-center gap-0.5 text-overline font-medium', i === 1 ? 'font-semibold text-brand-text' : 'text-muted']}>
+										<Icone nome={icone} tamanho={22} />
+										{nome}
+									</span>
+								))
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 8. Cartões e listas -->
+		<section id="cartoes" class="secao not-content" aria-labelledby="cartoes-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="cartoes-titulo" class={h2}>Cartões e listas</h2>
+			<p class="intro-secao">Cartões editoriais preferem tipografia + espaço + divisor. A superfície com caixa fica para quando o bloco inteiro é um alvo.</p>
+			<div class="grid gap-x-8 gap-y-10 md:grid-cols-3">
+				<div>
+					<p class="rotulo rotulo--neutro">Cartão de artigo</p>
+					{exemploArtigo && <PostCard artigo={exemploArtigo} />}
+				</div>
+				<div>
+					<p class="rotulo rotulo--neutro">Cartão editorial</p>
+					<article class="cartao-editorial">
+						<CategoryPill nome="Método" />
+						<h3 class="m-0 font-display text-title font-bold tracking-tight text-ink">Blocos de foco de 50 minutos</h3>
+						<p class="m-0 text-muted">Sem fundo e sem sombra: o filete superior e o espaço fazem o trabalho da caixa.</p>
+						<span class="font-mono text-xs text-muted">06 min</span>
+					</article>
+				</div>
+				<div>
+					<p class="rotulo rotulo--neutro">Superfície</p>
+					<article class="cartao-superficie grid gap-2">
+						<h3 class="m-0 text-title font-bold tracking-tight text-ink">Resultado de busca</h3>
+						<p class="m-0 text-muted">Borda de 1px, raio de 16px, nenhuma sombra. O hover acende o filete em azul.</p>
+					</article>
+				</div>
+			</div>
+			<h3 class:list={[h3, 'mt-12']}>Lista editorial</h3>
+			<ul class="lista-editorial max-w-read">
+				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">01</span><span class="text-ink">Competição pela atenção</span></li>
+				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">02</span><span class="text-ink">Externalização cognitiva</span></li>
+				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">03</span><span class="text-ink">Fatores de riscos cognitivos</span></li>
+			</ul>
+			<h3 class:list={[h3, 'mt-12']}>Lista agrupada (padrão Ajustes)</h3>
+			<p class="m-0 mb-2 max-w-read text-small text-muted">
+				Grupos de cantos grandes na superfície elevada, rótulo de seção em sentence case, ícone, valor e chevron, divisor recuado até o texto.
+				Usada em Preferências.
+			</p>
+			<div class="max-w-read rounded-card bg-paper py-2">
+				<p class="grupo-rotulo mt-2" id="guia-grupo-conta">Conta</p>
+				<ul class="grupo" aria-labelledby="guia-grupo-conta">
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="pessoas" /></span><span>Perfil</span></a></li>
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="salvos" /></span><span>Salvos</span><span class="grupo__valor">3 artigos</span></a></li>
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="tema" /></span><span>Tema</span><span class="grupo__valor">Automático</span></a></li>
+				</ul>
+				<p class="grupo-rotulo" id="guia-grupo-app">App</p>
+				<ul class="grupo" aria-labelledby="guia-grupo-app">
+					<li><label class="grupo__linha"><span class="grupo__icone"><Icone nome="movimento" /></span><span>Movimento reduzido</span><span class="interruptor min-h-0"><input type="checkbox" role="switch" aria-label="Movimento reduzido" /></span></label></li>
+					<li><a class="grupo__linha grupo__linha--acento" href="#cartoes"><span class="grupo__icone"><Icone nome="estilo" /></span><span>Guia de estilo</span></a></li>
+				</ul>
+			</div>
+
+			<h3 class:list={[h3, 'mt-12']}>Estado vazio</h3>
+			<div class="vazio max-w-read">
+				<p class="text-ink"><strong>Você ainda não salvou nenhum artigo.</strong></p>
+				<p class="text-muted">Use o botão Salvar no topo de qualquer artigo.</p>
+				<Botao variante="secundario" href="#cartoes">Explorar artigos</Botao>
+			</div>
+		</section>
+
+		<!-- 9. Selos e status -->
+		<section id="selos" class="secao not-content" aria-labelledby="selos-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="selos-titulo" class={h2}>Selos e status</h2>
+			<p class="intro-secao">Selos marcam categoria e estado; o status confirma uma ação sem interromper.</p>
+			<div class="flex flex-wrap gap-2">
+				<Selo>Categoria</Selo>
+				<Selo variante="neutro">Rascunho</Selo>
+				<Selo variante="sucesso">Publicado</Selo>
+				<Selo variante="aviso">Em revisão</Selo>
+				<Selo variante="erro">Bloqueado</Selo>
+			</div>
+			<div class="mt-8 grid max-w-md gap-3">
+				<p class="status status--estatico m-0">Artigo salvo. Ele fica disponível em Salvos.</p>
+				<p class="status status--estatico m-0">Link copiado para a área de transferência.</p>
+			</div>
+		</section>
+
+		<!-- 10. Componentes editoriais -->
+		<section id="editorial" class="secao" aria-labelledby="editorial-titulo">
+			<div class="not-content">
+				<Rotulo>Conteúdo</Rotulo>
+				<h2 id="editorial-titulo" class={h2}>Componentes editoriais</h2>
+				<p class="intro-secao">
+					Tudo o que a gramática do vault produz, renderizado pelo mesmo pipeline dos artigos. Callouts, terminal, plain text, infográfico,
+					sumário, listas, decisão e citações são membros da mesma família.
+				</p>
+			</div>
+			<div class="max-w-read">
+				<Fragment set:html={editorial} />
+				<Code lang="sh" code={'npm run check    # astro check + tsc + unit + contraste HIG + guard\nnpm run build'} />
+				<Code lang="text" code={'Plain text preserva espaços:\n  - recuo de dois espaços\n  - colunas    alinhadas'} />
+			</div>
+		</section>
+
+		<!-- 11. Mood board -->
+		<section id="mood-board" class="secao not-content" aria-labelledby="mood-titulo">
+			<Rotulo>Direção</Rotulo>
+			<h2 id="mood-titulo" class={h2}>Mood board</h2>
+			<p class="intro-secao">Um caderno editorial, não um painel: calma, precisão e leitura longa.</p>
+
+			<div class="grid gap-px overflow-hidden rounded-card border border-rule bg-rule md:grid-cols-6 md:grid-rows-[auto_auto_auto]">
+				<div class="grid content-between gap-8 bg-paper p-6 md:col-span-3 md:row-span-2 md:p-8">
+					<p class="rotulo m-0">Princípios</p>
+					<ol class="m-0 grid list-none gap-4 p-0">
+						{
+							[
+								['Tipografia primeiro', 'Hierarquia por tamanho, peso e espaço, não por cor ou caixa.'],
+								['Um acento', 'O azul marca ação, link, foco e rótulo. Nada mais disputa.'],
+								['Linhas finas', 'Filetes de 1px separam; sombras quase não existem.'],
+								['Espaço negativo', 'Respiro generoso entre blocos; colunas estreitas para ler.'],
+								['Acessível por padrão', 'HIG: 17 pt, 44 pt, 4,5:1, movimento reduzido.'],
+							].map(([t, d], i) => (
+								<li class="m-0 grid grid-cols-[2rem_1fr] gap-3 border-t border-rule-soft pt-4">
+									<span class="font-mono text-xs font-bold text-link">{String(i + 1).padStart(2, '0')}</span>
+									<span>
+										<strong class="block text-ink">{t}</strong>
+										<span class="text-small text-muted">{d}</span>
+									</span>
+								</li>
+							))
+						}
+					</ol>
+				</div>
+				<div class="grid content-end bg-accent p-6 text-on-accent md:col-span-2">
+					<span class="font-mono text-xs">--accent</span>
+					<span class="font-display text-headline font-bold tracking-tight">Azul</span>
+				</div>
+				<div class="grid content-end bg-ink p-6 text-paper">
+					<span class="font-mono text-xs">--ink</span>
+					<span class="font-display text-title font-bold">Tinta</span>
+				</div>
+				<div class="grid content-end bg-surface p-6 md:col-span-2">
+					<span class="font-mono text-xs text-muted">--background / --surface</span>
+					<span class="font-display text-title font-bold text-ink">Papel</span>
+				</div>
+				<div class="grid content-end bg-brand-soft p-6">
+					<span class="font-mono text-xs text-brand-text">--brand-soft</span>
+					<span class="font-display text-title font-bold text-brand-text">Névoa</span>
+				</div>
+				<div class="grid gap-2 bg-paper p-6 md:col-span-3 md:p-8">
+					<p class="rotulo m-0">Tipografia</p>
+					<p class="m-0 font-display text-[clamp(3.5rem,2rem+6vw,6.5rem)] leading-none font-extrabold tracking-tighter text-ink" aria-hidden="true">Aa</p>
+					<p class="m-0 text-small text-muted">Inter 400–800 · tracking −0,035em nos títulos · mono do sistema para números.</p>
+				</div>
+				<div class="grid content-start gap-3 bg-paper p-6 md:col-span-3 md:p-8">
+					<p class="rotulo m-0">Composição e ritmo</p>
+					<div class="grid grid-cols-6 gap-2" aria-hidden="true">
+						<span class="col-span-4 h-3 rounded-full bg-ink" />
+						<span class="col-span-2" />
+						<span class="col-span-6 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-5 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-6 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-3 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-6 mt-3 border-t border-rule" />
+						<span class="col-span-1 h-1.5 rounded-full bg-accent" />
+						<span class="col-span-5 h-1.5 rounded-full bg-rule-soft" />
+					</div>
+					<p class="m-0 text-small text-muted">Coluna de 45rem, título forte, texto em blocos, divisor, próximo item. Ritmo de 32px entre blocos e 18px entre itens.</p>
+				</div>
+				<div class="grid content-start gap-4 bg-paper p-6 md:col-span-6 md:grid-cols-3 md:p-8">
+					<p class="rotulo m-0 md:col-span-3">Atmosfera e padrões</p>
+					<blockquote class="m-0 border-0 border-l-4 border-accent py-1 pl-4 font-display text-title leading-snug font-bold text-ink">
+						Clareza é uma forma de respeito pelo tempo de quem lê.
+					</blockquote>
+					<div class="grid content-start gap-2">
+						<div class="flex flex-wrap gap-2"><Selo>Editorial</Selo><Selo variante="neutro">Silencioso</Selo><Selo>Preciso</Selo></div>
+						<p class="m-0 text-small text-muted">Palavras-guia: editorial, silencioso, preciso, confiável, humano.</p>
+					</div>
+					<div class="flex flex-wrap content-start gap-3">
+						<Botao tamanho="p">Primário</Botao>
+						<Botao variante="secundario" tamanho="p">Secundário</Botao>
+						<Chip pressionado={true}>Filtro</Chip>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- 12. Storyboard -->
+		<section id="storyboard" class="secao" aria-labelledby="storyboard-titulo">
+			<div class="not-content">
+				<Rotulo>Experiência</Rotulo>
+				<h2 id="storyboard-titulo" class={h2}>Storyboard</h2>
+				<p class="intro-secao">O fluxo do leitor em sete quadros, montados com os componentes reais do sistema.</p>
+			</div>
+			<ol class="storyboard not-content m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+				{
+					quadros.map(([n, titulo, texto]) => (
+						<li class="@container m-0 grid content-start gap-4 rounded-card border border-rule bg-surface p-5">
+							<div class="flex items-baseline gap-3 border-b border-rule-soft pb-3">
+								<span class="font-mono text-xs font-bold text-link">{n}</span>
+								<strong class="text-ink">{titulo}</strong>
+							</div>
+							<div class="quadro grid min-h-40 content-center gap-3">
+								{n === '01' && (
+									<>
+										<p class="rotulo m-0">Conhecimento em prática</p>
+										<p class="m-0 font-display text-title leading-tight font-bold tracking-tight text-ink">Riscos cognitivos, com clareza.</p>
+										<div class="campo campo--busca" aria-hidden="true">
+											<Icone nome="buscar" />
+											<span class="flex-1 text-small text-muted">Buscar…</span>
+										</div>
+									</>
+								)}
+								{n === '02' && (
+									<div class="flex flex-wrap gap-2" aria-hidden="true">
+										<span class="chip ativa">Todos</span>
+										<span class="chip">P1 · Problemas</span>
+										<span class="chip">C3 · Decisão</span>
+									</div>
+								)}
+								{n === '03' && (
+									<>
+										<span class="trilha" aria-hidden="true">Blog / Pessoa e cognição</span>
+										<Selo>Pessoa e cognição</Selo>
+										<p class="m-0 font-display text-title leading-tight font-bold tracking-tight text-ink">Competição pela atenção</p>
+										<p class="m-0 text-small text-muted">Por que a troca de tarefa custa mais do que parece.</p>
+									</>
+								)}
+								{n === '04' && (
+									<div class="flex flex-wrap gap-2" aria-hidden="true">
+										<span class="botao botao--secundario botao--p"><Icone nome="link" tamanho={16} />Copiar link</span>
+										<span class="botao botao--p"><Icone nome="salvos" tamanho={16} />Salvo</span>
+									</div>
+								)}
+								{n === '05' && (
+									<div class="markdown-body text-small [&_.callout]:my-0 [&_.callout]:border-t-0 [&_.callout]:pt-0">
+										<Fragment set:html={decisaoStoryboard} />
+									</div>
+								)}
+								{n === '06' && (
+									<>
+										<p class="status status--estatico m-0">Artigo salvo.</p>
+										<Selo variante="sucesso">Em Salvos</Selo>
+									</>
+								)}
+								{n === '07' && (
+									<div class="cartao-editorial">
+										<p class="rotulo m-0">Continue lendo</p>
+										<p class="m-0 font-display text-title leading-tight font-bold tracking-tight text-ink">Externalização cognitiva</p>
+										<span class="botao botao--quieto botao--p -ml-3 justify-self-start" aria-hidden="true">Ler agora <Icone nome="seta" tamanho={16} /></span>
+									</div>
+								)}
+							</div>
+							<p class="m-0 text-label text-muted">{texto}</p>
+						</li>
+					))
+				}
+			</ol>
+		</section>
+	</div>
+</StarlightPage>
+
+<style>
+	.guia .secao {
+		margin-top: 0;
+		padding-block: 4rem 1rem;
+		scroll-margin-top: 5rem;
+	}
+	.guia .secao + .secao {
+		border-top: 1px solid var(--border);
+	}
+	.guia .intro-secao {
+		max-width: 42rem;
+		margin: 0 0 2.5rem;
+		color: var(--muted);
+		font-size: var(--text-lead);
+		line-height: 1.47;
+		text-wrap: pretty;
+	}
+	.guia code:not(pre code) {
+		font-family: var(--font-mono);
+		font-size: 0.85em;
+	}
+	.guia .not-content code:not(pre code) {
+		padding: 0;
+		background: transparent;
+	}
+</style>

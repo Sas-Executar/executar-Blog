@@ -10,45 +10,10 @@ interface Props {
 const { lista, vazio = 'Nenhum artigo por aqui ainda.' } = Astro.props;
 ---
 
-<div class="lista-artigos" data-lista>
+<div class="lista-artigos grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" data-lista>
 	{lista.map((a) => <PostCard artigo={a} nivel="h2" />)}
 </div>
 <div class="vazio" data-vazio hidden={lista.length > 0}>
 	<p>{vazio}</p>
-	<a href="/explorar/">Explorar todos os artigos</a>
+	<a href="/explorar/" class="botao botao--quieto -ml-3">Explorar todos os artigos</a>
 </div>
-
-<style>
-	.lista-artigos {
-		display: grid;
-		gap: 1rem;
-	}
-	@media (min-width: 48rem) {
-		.lista-artigos {
-			grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-		}
-	}
-	.vazio {
-		display: grid;
-		gap: 0.5rem;
-		justify-items: start;
-		padding: 2rem 1.5rem;
-		border: 1px dashed var(--border);
-		border-radius: var(--radius-xl);
-		background: var(--surface);
-	}
-	.vazio[hidden] {
-		display: none;
-	}
-	.vazio p {
-		margin: 0;
-		color: var(--foreground);
-	}
-	.vazio a {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--hit-target);
-		color: var(--link);
-		font-weight: 600;
-	}
-</style>

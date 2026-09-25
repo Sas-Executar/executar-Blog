@@ -1,56 +1,90 @@
 /*
- * Tokens de ponte (ADR-005/ADR-006/ADR-012). Cores, raios, sombras e espaços vêm do Desyng System
- * (styles/ds/*, sincronizado por scripts/sync-design-tokens.mjs). Apple HIG continua vencendo:
- * corpo 17 pt, alvo 44 pt e contraste ≥ 4,5:1. Por isso os pares abaixo são hex do próprio DS
- * (verificados por scripts/check-contrast.mjs) e o verde puro #00BF63 nunca é cor de texto.
- * A fonte continua Geist (decisão do usuário): --font-family-sans do DS (IBM Plex) não é usado.
+ * Fundações do design system editorial (ADR-017). Única fonte de cor do blog e do Studio:
+ * papel off-white, tinta quase preta, cinzas discretos e azul como único acento. Escalas de
+ * espaço, raio, tipo e movimento continuam vindo do Desyng System (ds/variables.css) e são
+ * expostas ao Tailwind em tailwind.css (@theme). Apple HIG vence qualquer conflito (ADR-006):
+ * corpo 17 pt, alvo 44 pt e contraste ≥ 4,5:1 — os pares abaixo são verificados por
+ * scripts/check-contrast.mjs nos modos claro, escuro e "Increase Contrast".
+ *
+ * Breakpoints (custom properties não funcionam em @media; os mesmos valores estão no @theme):
+ *   sm 36.25rem (580px) · md 53.125rem (850px) · lg 64rem (1024px) · xl 80rem (1280px)
  */
 :root {
-	--font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-	--font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+	--font-display: var(--font-sans);
+	--font-mono: ui-monospace, 'SF Mono', SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 	--font-size-body: 1.0625rem; /* HIG: texto padrão 17 pt (o DS usa 16px; HIG vence) */
-	--content-width: 45rem; /* DS: --container-reading 720px */
-	--page-width: 75rem; /* DS: --container-page 1200px */
+	--content-width: 45rem; /* coluna de leitura (DS --container-reading 720px) */
+	--page-width: 75rem; /* largura de página (DS --container-page 1200px) */
+	--container-read: var(--content-width);
+	--container-wide: var(--page-width);
 	--hit-target: 44px; /* HIG: controle mínimo 44×44 pt */
-	--brand: var(--color-green-9); /* verde de marca: superfícies e ícones, nunca texto */
-	--brand-azure: var(--color-azure-9);
+
+	/* Ritmo editorial: tipografia + espaço + divisor no lugar de caixas. */
+	--rhythm-block: 2rem; /* entre blocos editoriais */
+	--rhythm-item: 1.125rem; /* entre itens de uma lista editorial */
+	--radius-control: var(--radius-lg); /* 12px: botões, campos, segmentado */
+	--radius-card: var(--radius-xl); /* 16px: callouts, blocos mono, cartões de superfície */
+	--rule: 1px solid var(--border-soft);
+	--rule-strong: 1px solid var(--border);
+	--shadow-none: none;
+	--focus-ring: var(--accent);
+	--ease-standard: cubic-bezier(0.2, 0.75, 0.2, 1);
 }
 
 :root,
 :root[data-theme='light'] {
-	--background: #f6f6f6; /* DS neutral-2 (semantic.background.canvas) */
-	--surface: #ffffff; /* DS neutral-1 (semantic.background.surface) */
-	--foreground: #4b4a4a; /* DS neutral-12 (semantic.text.primary) */
-	--muted: #646363; /* DS neutral-11 (semantic.text.secondary) */
-	--border: #e4e4e4; /* DS neutral-5 */
-	--accent: #007a45; /* DS green-11 (ação primária com texto branco, AA) */
-	--link: #007a45; /* DS green-11 */
-	--code-background: #f0f0f0; /* DS neutral-3 */
+	color-scheme: light;
+	--background: #f7f7f3; /* papel off-white */
+	--surface: #fbfbf8; /* superfície: callouts, blocos mono, controles */
+	--surface-raised: #ffffff; /* grupos de lista e botões redondos (padrão Ajustes) */
+	--foreground: #26262a; /* texto corrido */
+	--ink: #0b0b0c; /* títulos e ênfase */
+	--muted: #5d605e; /* texto secundário */
+	--border: #d9d9d2; /* filete forte */
+	--border-soft: #e5e5df; /* filete suave (divisores de lista) */
+	--accent: #0a66c2; /* azul: ação primária com texto branco (AA) */
+	--link: #0a66c2;
+	--code-background: #f1f1ed;
 	--on-accent: #ffffff;
-	--brand-soft: #e4f6ed; /* DS green-3 */
-	--brand-line: #b4f4d5; /* DS green-5 */
-	--brand-text: #007a45; /* DS green-11 */
-	--info-soft: #e4edf6; /* DS azure-3 */
-	--warning-soft: #f5ede5; /* DS warning-3 */
-	--error-soft: #f3e8e8; /* DS error-3 */
+	--brand: #0a66c2; /* superfícies e ícones de marca */
+	--brand-soft: #eef3f8;
+	--brand-line: #b7cce4;
+	--brand-text: #004182; /* rótulos em azul (overline, selo) */
+	--info-soft: #eef3f8;
+	--success-soft: #e9f3ec;
+	--success-text: #1f6b3a;
+	--warning-soft: #f6efe3;
+	--warning-text: #7a4a00;
+	--error-soft: #f7ebe9;
+	--error-text: #a4262c;
 }
 
 :root[data-theme='dark'] {
-	--background: #1c1c1c; /* canvas escuro: o remap do DS (neutral-12) ainda não foi auditado (ACCESSIBILITY.md) */
-	--surface: #262626;
-	--foreground: #f6f6f6; /* DS neutral-2 */
-	--muted: #c5c5c5; /* DS neutral-7 */
-	--border: #3a3a3a;
-	--accent: #58fbad; /* DS green-7 */
-	--link: #58fbad; /* DS green-7 */
-	--code-background: #262626;
-	--on-accent: #064727; /* DS green-12 */
-	--brand-soft: #0d2a1c;
-	--brand-line: #064727; /* DS green-12 */
-	--brand-text: #58fbad; /* DS green-7 */
-	--info-soft: #0f1f33;
-	--warning-soft: #2a1f12;
-	--error-soft: #2c1616;
+	color-scheme: dark;
+	--background: #232527; /* grafite */
+	--surface: #2b2e31;
+	--surface-raised: #2f3236;
+	--foreground: #e9eae8;
+	--ink: #f3f4f2;
+	--muted: #a9adb2;
+	--border: #454a50;
+	--border-soft: #3b3f44;
+	--accent: #79b8f3;
+	--link: #79b8f3;
+	--code-background: #292c2f;
+	--on-accent: #0b0b0c;
+	--brand: #79b8f3;
+	--brand-soft: #1f3347;
+	--brand-line: #34597f;
+	--brand-text: #9ccaf6;
+	--info-soft: #1f3347;
+	--success-soft: #1d3326;
+	--success-text: #8fd6a6;
+	--warning-soft: #3a2f1c;
+	--warning-text: #f0c36b;
+	--error-soft: #3a2224;
+	--error-text: #ffa39e;
 }
 
 /* HIG "Increase Contrast" */
@@ -58,16 +92,22 @@
 	:root,
 	:root[data-theme='light'] {
 		--foreground: #000000;
-		--muted: #4b4a4a; /* DS neutral-12 */
-		--border: #7c7b7b; /* DS neutral-10 */
-		--link: #064727; /* DS green-12 */
-		--accent: #064727;
+		--ink: #000000;
+		--muted: #3d3f3e;
+		--border: #6f6f68;
+		--border-soft: #8a8a82;
+		--link: #004182;
+		--accent: #004182;
+		--brand-text: #002b57;
 	}
 	:root[data-theme='dark'] {
 		--foreground: #ffffff;
-		--muted: #eaeaea; /* DS neutral-4 */
-		--border: #959494; /* DS neutral-9 */
-		--link: #8bf6c2; /* DS green-6 */
-		--accent: #8bf6c2;
+		--ink: #ffffff;
+		--muted: #d5d8dc;
+		--border: #8a9097;
+		--border-soft: #767c83;
+		--link: #a8d1f7;
+		--accent: #a8d1f7;
+		--brand-text: #c4e0fa;
 	}
 }

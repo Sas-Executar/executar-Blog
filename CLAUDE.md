@@ -87,11 +87,12 @@ O agente não deve criar PR apenas por convenção quando possuir permissão par
 ## Ordem de reuso (UI)
 1. **Apple HIG** define as regras (ADR-006) — vence qualquer conflito visual.
 2. Starlight (shell: navegação, TOC, busca, dark/light).
-3. `starlight-theme-obsidian` (CSS/overrides referenciados do npm, ADR-003).
-4. `github-markdown-css` (tabelas, listas, blockquote, tipografia — ADR-005).
-5. Expressive Code (código, tema GitHub).
-6. `apps/blog/src/styles/tokens.css` (ponte mínima).
-7. CSS próprio só em último caso. **Tailwind nunca reconstrói o shell.**
+3. **Design system EXECUTAR (ADR-017)**: tokens em `packages/theme/src/cores.css`, Tailwind v4 via `packages/theme/src/tailwind.css` (`@theme` + `@layer components`) e componentes em `apps/blog/src/components/ui/`. Guia vivo em `/guia-de-estilo/`.
+4. `starlight-theme-obsidian` (CSS/overrides referenciados do npm, ADR-003).
+5. `github-markdown-css` (tabelas, listas, blockquote, tipografia — ADR-005).
+6. Expressive Code (código, tema GitHub, moldura via `styleOverrides`).
+7. `packages/theme/src/editorial.css` (blocos que a gramática do vault produz).
+8. CSS próprio só em último caso. Utilitários do Tailwind podem estilizar o shell (ADR-017); nunca crie uma segunda paleta ou escala fora dos tokens.
 
 ## Regras invioláveis
 1. `app.css` do Obsidian **nunca** entra no Git nem em produção (licença).
@@ -99,7 +100,7 @@ O agente não deve criar PR apenas por convenção quando possuir permissão par
 3. `.env` nasce por `scripts/setup-env.mjs`; só `.env.example` é versionado.
 4. Chave Anthropic **nunca** no cliente nem dentro do container (injetada pelo proxy do Worker).
 5. Conteúdo publicado sem IDs internos (`FRC-xx`, `TP001`, `RC-KNW`, `ARTICLE-MASTER`).
-6. Não crie pacote de design tokens, cópia de CSS upstream ou abstração equivalente ao tema.
+6. Não crie pacote de design tokens, cópia de CSS upstream ou abstração equivalente ao tema (os tokens vivem em `packages/theme`, exceção dos ADR-013/ADR-017).
 7. Rótulos de UI em sentence case; nada de autoplay de mídia; todo gráfico com título e resumo.
 
 ## Antes de agir

@@ -1,38 +1,48 @@
 ---
-// Override oficial do Footer (ADR-012): mantém o rodapé do Starlight (inclui "Continue lendo",
+// Override oficial do Footer (ADR-012/ADR-017): mantém o rodapé do Starlight (inclui "Continue lendo",
 // via Pagination) e acrescenta o rodapé do site e a barra inferior do celular.
 import Default from '@astrojs/starlight/components/Footer.astro';
 import Icone from './Icone.astro';
+import Marca from './ui/Marca.astro';
 import { SECOES, secaoAtual } from '../lib/navegacao';
 
 const atual = secaoAtual(Astro.url.pathname);
+const links = [...SECOES.map((s) => ({ href: s.href, rotulo: s.rotulo })), { href: '/perguntar/', rotulo: 'Pergunte aos artigos' }, { href: '/guia-de-estilo/', rotulo: 'Guia de estilo' }];
 ---
 
 <Default />
 
-<div class="rodape-site not-content">
-	<div class="rodape-marca">
-		<p class="rodape-nome"><span aria-hidden="true">E</span> EXECUTAR</p>
-		<p>Riscos cognitivos na execução: conceitos, processos e controles.</p>
+<div class="rodape-site not-content mt-16 grid gap-6 border-t border-rule pt-8 text-small text-muted md:grid-cols-[1fr_auto] md:items-start">
+	<div>
+		<Marca href="/" tamanho="m" />
+		<p class="m-0 mt-3">Riscos cognitivos na execução: conceitos, processos e controles. Um projeto EXECUTAR.</p>
 	</div>
-	<nav class="rodape-links" aria-label="Rodapé">
-		<ul>
+	<nav aria-label="Rodapé">
+		<ul class="m-0 flex list-none flex-wrap gap-x-4 p-0">
 			{
-				SECOES.map((s) => (
-					<li>
-						<a href={s.href}>{s.rotulo}</a>
+				links.map((l) => (
+					<li class="m-0">
+						<a href={l.href} class="inline-flex min-h-11 items-center text-muted no-underline hover:text-ink">
+							{l.rotulo}
+						</a>
 					</li>
 				))
 			}
-			<li><a href="/perguntar/">Pergunte aos artigos</a></li>
 		</ul>
 	</nav>
 </div>
 
-<nav class="barra-inferior" aria-label="Navegação principal">
+<nav
+	class="barra-inferior fixed inset-x-0 bottom-0 z-(--sl-z-index-navbar) grid grid-cols-5 border-t border-rule bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+	aria-label="Navegação principal"
+>
 	{
 		SECOES.map((s) => (
-			<a href={s.href} aria-current={atual === s.href ? 'page' : undefined}>
+			<a
+				href={s.href}
+				aria-current={atual === s.href ? 'page' : undefined}
+				class="grid min-h-14 content-center justify-items-center gap-0.5 text-overline font-medium tracking-normal text-muted no-underline aria-[current=page]:font-semibold aria-[current=page]:text-brand-text"
+			>
 				<Icone nome={s.icone} tamanho={22} />
 				<span>{s.rotulo}</span>
 			</a>
@@ -45,93 +55,12 @@ const atual = secaoAtual(Astro.url.pathname);
 <script src="../scripts/cliente.ts"></script>
 
 <style>
-	.rodape-site {
-		display: grid;
-		gap: 1.5rem;
-		margin-top: 4rem;
-		padding-top: 2rem;
-		border-top: 1px solid var(--border);
-		color: var(--muted);
-		font-size: 0.9375rem;
-	}
-	.rodape-site p {
-		margin: 0.25rem 0;
-	}
-	.rodape-nome {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: var(--foreground);
-		font-weight: 700;
-	}
-	.rodape-nome span {
-		display: grid;
-		place-items: center;
-		width: 1.5rem;
-		height: 1.5rem;
-		border-radius: var(--radius-md);
-		background: var(--accent);
-		color: var(--on-accent);
-		font-size: 0.75rem;
-	}
-	.rodape-links ul {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0 1rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.rodape-links a {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--hit-target);
-		color: var(--muted);
-		text-decoration: none;
-	}
-	.rodape-links a:hover {
-		color: var(--foreground);
-	}
-
-	/* Barra inferior (celular): 5 seções sempre visíveis, alvo ≥ 44 pt, respeita a safe area. */
-	.barra-inferior {
-		position: fixed;
-		inset: auto 0 0 0;
-		z-index: var(--sl-z-index-navbar);
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		padding-bottom: env(safe-area-inset-bottom);
-		border-top: 1px solid var(--border);
-		background: var(--surface);
-	}
-	.barra-inferior a {
-		display: grid;
-		justify-items: center;
-		align-content: center;
-		gap: 0.125rem;
-		min-height: 3.5rem;
-		color: var(--muted);
-		font-size: 0.6875rem;
-		font-weight: 500;
-		text-decoration: none;
-	}
-	.barra-inferior a[aria-current='page'] {
-		color: var(--brand-text);
-		font-weight: 600;
-	}
 	:global(body) {
 		padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
 	}
-	@media (min-width: 48rem) {
-		.barra-inferior {
-			display: none;
-		}
+	@media (min-width: 53.125rem) {
 		:global(body) {
 			padding-bottom: 0;
-		}
-		.rodape-site {
-			grid-template-columns: 1fr auto;
-			align-items: start;
 		}
 	}
 </style>

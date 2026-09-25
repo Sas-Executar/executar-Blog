@@ -1,91 +1,29 @@
 ---
-// Override oficial do Header (ADR-012): marca, seções principais e tema, no padrão do Showroom.
+// Override oficial do Header (ADR-012/ADR-017): marca, seções principais e tema.
 // No celular as seções vão para a barra inferior (Footer.astro); aqui ficam marca e tema.
 import ThemeSelect from 'starlight-theme-obsidian/overrides/ThemeSelect.astro';
+import Marca from './ui/Marca.astro';
 import { SECOES, secaoAtual } from '../lib/navegacao';
 
 const atual = secaoAtual(Astro.url.pathname);
 ---
 
-<div class="cabecalho">
-	<a class="marca" href="/" aria-label="EXECUTAR, página inicial">
-		<span class="marca-simbolo" aria-hidden="true">E</span>
-		<span class="marca-nome">EXECUTAR</span>
-	</a>
-	<nav class="secoes" aria-label="Seções">
+<div class="cabecalho mx-auto flex h-full max-w-page items-center justify-between gap-4">
+	<Marca href="/" />
+	<nav class="hidden gap-1 md:flex" aria-label="Seções">
 		{
 			SECOES.map((s) => (
-				<a href={s.href} aria-current={atual === s.href ? 'page' : undefined}>
+				<a
+					href={s.href}
+					aria-current={atual === s.href ? 'page' : undefined}
+					class="inline-flex min-h-11 items-center px-3 text-small font-medium text-muted no-underline transition-colors hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink aria-[current=page]:shadow-[inset_0_-2px_0_var(--accent)]"
+				>
 					{s.rotulo}
 				</a>
 			))
 		}
 	</nav>
-	<div class="acoes">
+	<div class="flex items-center gap-1">
 		<ThemeSelect />
 	</div>
 </div>
-
-<style>
-	.cabecalho {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		max-width: var(--page-width);
-		height: 100%;
-		margin-inline: auto;
-	}
-	.marca {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		min-height: var(--hit-target);
-		color: var(--foreground);
-		font-weight: 700;
-		text-decoration: none;
-	}
-	.marca-simbolo {
-		display: grid;
-		place-items: center;
-		width: 1.75rem;
-		height: 1.75rem;
-		border-radius: var(--radius-md);
-		background: var(--accent);
-		color: var(--on-accent);
-		font-size: 0.875rem;
-	}
-	.secoes {
-		display: none;
-		gap: 0.25rem;
-	}
-	.secoes a {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--hit-target);
-		padding-inline: 0.75rem;
-		border-radius: var(--radius-md);
-		color: var(--muted);
-		font-size: 0.9375rem;
-		font-weight: 500;
-		text-decoration: none;
-	}
-	.secoes a:hover {
-		color: var(--foreground);
-		background: var(--code-background);
-	}
-	.secoes a[aria-current='page'] {
-		color: var(--foreground);
-		font-weight: 600;
-		box-shadow: inset 0 -2px 0 var(--brand);
-	}
-	.acoes {
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
-	}
-	@media (min-width: 48rem) {
-		.secoes {
-			display: flex;
-		}
-	</style>

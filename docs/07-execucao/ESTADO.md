@@ -2,7 +2,7 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-25 (plugin do Claude Code, ADR-016)
+**Última atualização:** 2026-09-25 (design system editorial, ADR-017)
 **Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
@@ -146,6 +146,46 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
   - `npm run test:e2e` 40/40;
   - `wrangler dev` local: webhook do GitHub assinado → `inbound_event` (dedupe ok), assinatura inválida → 401, handshake do Graph ok, notificação → fila → retry sem credencial.
 - **Pendente (usuário), bloqueia só o deploy:** ver ADR-015, seção "Pendências". São elas: Workers Paid, D1 e filas, GitHub App nos 2 repositórios + webhook, app do M365 com certificado, domínio e chave do Resend, service account do Sheets, `RBAC`. Por fim, `EMAIL_ENVIO_ATIVO=1`.
+
+## Design system editorial (ADR-017) — 2026-09-25 — VERIFIED (local)
+- **Pedido do usuário:** planejar, desenvolver, aplicar e publicar um design system novo como "ADR final", a partir de `risco-cognitivo-executar-linkedin-v12-dark-mode.html`.
+- **Decisões do usuário:**
+  - azul substitui o verde;
+  - fonte Inter;
+  - Tailwind em tudo;
+  - stack mais avançado de 2026;
+  - publicar direto na `main`.
+- **Stack:** Tailwind v4.3 (`@tailwindcss/vite`) + `@astrojs/starlight-tailwind` 5 + `@fontsource-variable/inter`. Saem Geist e Geist Mono.
+- **Fundações:**
+  - `packages/theme/src/cores.css` tem a paleta nova e 20 pares de contraste × 4 modos;
+  - `packages/theme/src/tailwind.css` concentra ordem das camadas, `@theme` e `@layer components`;
+  - `editorial.css` foi reescrito na família da referência;
+  - `tokens.css` perdeu as regras de aside mortas.
+- **Componentes:**
+  - wrappers em `apps/blog/src/components/ui/` (Botao, Campo, Chip, Selo, Rotulo, Marca);
+  - shell e páginas migrados para utilitários;
+  - `PostCard` passou a ser cartão editorial;
+  - corrigido o `@media` sem fechar no `Header.astro`;
+  - hex fixos trocados por tokens (capa, dashboard, Studio, ECharts, Mermaid).
+- **Gramática nova:**
+  - `[!attention]` sem título vira "Ponto de atenção";
+  - `[!decision]`, `[!decisao]` e `[!reflexao]` viram o bloco de decisão;
+  - ` ```ascii ` vira "Plain txt · infográfico";
+  - rótulos "Plain txt · terminal" e "Plain txt" no Expressive Code.
+- **Guia de estilo:** `/guia-de-estilo/`, com fundações, componentes, família editorial, mood board e storyboard 01–07.
+- **Evidência:**
+  - `npm run check` passou: astro check com 0 erros, unit 96/96, contraste 20 pares × 4 modos, guard, ops e plugin.
+  - `npm run build` passou.
+  - e2e 43/43 (antes 40/40), incluindo axe claro e escuro em `/guia-de-estilo/`, alvos de 44 pt e ausência de overflow a 375, 640, 768 e 1280 px.
+  - Capturas revisadas em 375 e 1280 px, claro e escuro.
+- **Complemento (logo + referência de Ajustes):**
+  - logo "Risco Cognitivo" em texto vivo (`Marca.astro`, `.logo`) no cabeçalho, no rodapé e no guia, mais o favicon "RC";
+  - `--surface-raised` e a lista agrupada no padrão de Ajustes do iOS, com a página Preferências reorganizada em grupos;
+  - botão de tema redondo;
+  - evidência: check 0 erros, contraste 23 pares × 4 modos, e2e verde.
+- **Limitações:**
+  - o dashboard TDAH segue com Chart.js via CDN (sem rede na sessão, os gráficos não aparecem nas capturas; problema anterior);
+  - diagramas antigos em ` ```text ` continuam quebrando linha; o autor migra para ` ```ascii `.
 
 ## Nova conta Cloudflare (2026-09-24)
 
