@@ -1,19 +1,55 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
   "name": "executar-blog",
-  "description": "Marketplace de plugins do projeto executar-Blog.",
+  "description": "Marketplace de plugins do projeto executar-Blog: Copiloto Operacional, skills EXECUTAR e Cloudflare.",
   "owner": {
-    "name": "Sas-Executar"
+    "name": "Sas-Executar",
+    "url": "https://github.com/Sas-Executar"
   },
   "plugins": [
     {
+      "name": "copiloto-operacional",
+      "source": "./plugins/copiloto-operacional",
+      "description": "Opera tarefas, campanhas com gates e status reports do EXECUTAR sobre as issues do GitHub, com o mesmo núcleo do Copiloto Operacional (ADR-015), direto no Claude Code.",
+      "category": "productivity",
+      "tags": [
+        "executar",
+        "copiloto",
+        "github-issues",
+        "pt-br"
+      ]
+    },
+    {
+      "name": "executar-skills",
+      "source": {
+        "source": "github",
+        "repo": "Sas-Executar/Copiloto",
+        "ref": "claude/elegant-davinci-gg3e39"
+      },
+      "description": "As 4 skills do Copiloto EXECUTAR: copiloto-executar, plano-operacional-rastreavel, obsidian-editorial-pipeline e executar-relatorios (tokens EXECUTAR-REPORT-PRINT-DS-001).",
+      "version": "0.1.0",
+      "strict": false,
+      "category": "productivity",
+      "tags": [
+        "executar",
+        "skills",
+        "relatorios",
+        "pt-br"
+      ]
+    },
+    {
       "name": "cloudflare",
-      "description": "Skills e MCP da Cloudflare para desenvolver, testar e publicar aplicações na Cloudflare.",
       "source": {
         "source": "github",
         "repo": "Sas-Executar/skills-cloudflare",
         "ref": "main"
-      }
+      },
+      "description": "Skills e MCP da Cloudflare para desenvolver, testar e publicar aplicações na Cloudflare.",
+      "category": "development",
+      "tags": [
+        "cloudflare",
+        "workers"
+      ]
     }
   ]
 }

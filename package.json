@@ -13,7 +13,7 @@
     "postinstall": "node scripts/setup-env.mjs",
     "dev": "npm run dev -w apps/blog",
     "build": "npm run build --workspaces --if-present",
-    "check": "npm run check --workspaces --if-present && npm run test:unit && node scripts/check-contrast.mjs && node scripts/guard.mjs && node scripts/validate-ops.mjs",
+    "check": "npm run check --workspaces --if-present && npm run test:unit && node scripts/check-contrast.mjs && node scripts/guard.mjs && node scripts/validate-ops.mjs && npm run plugin:check",
     "test:unit": "node --test \"tests/unit/*.test.mjs\"",
     "test:e2e": "playwright test",
     "update:upstream": "npm update && npm run check && npm run build",
@@ -21,10 +21,13 @@
     "export:epub": "node scripts/export.mjs epub",
     "export:pdf": "node scripts/export.mjs pdf",
     "report:sync": "node scripts/sync-report-assets.mjs",
-    "ops:validate": "node scripts/validate-ops.mjs"
+    "ops:validate": "node scripts/validate-ops.mjs",
+    "plugin:build": "node scripts/build-plugin.mjs",
+    "plugin:check": "tsc -p plugins/copiloto-operacional/src && node scripts/build-plugin.mjs --checar"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
-    "@playwright/test": "1.63.0"
+    "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2"
   }
 }

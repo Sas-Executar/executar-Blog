@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "copiloto": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/dist/servidor.mjs"],
+      "env": {
+        "GITHUB_TOKEN": "${user_config.github_token}",
+        "OPS_REPO": "${user_config.ops_repo}",
+        "BLOG_REPO": "${user_config.blog_repo}",
+        "COPILOTO_PAPEL": "${user_config.papel}",
+        "COPILOTO_OPERADOR": "${user_config.operador}",
+        "COPILOTO_DADOS": "${CLAUDE_PLUGIN_DATA}",
+        "COPILOTO_PROJETO": "${CLAUDE_PROJECT_DIR}"
+      }
+    }
+  }
+}

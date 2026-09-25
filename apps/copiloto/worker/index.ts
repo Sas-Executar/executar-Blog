@@ -7,14 +7,17 @@
  *  - scheduled              rotinas de ops/routines/*.yaml, reconciliador e espelho da planilha.
  */
 import { parse as lerYaml } from 'yaml';
-import { GitHub } from '../../studio/worker/github.ts';
 import { ErroComando, extrairComando, parseComando } from './comandos.ts';
-import { type Estado, ESTADOS, ROTULO, completude, decidirFeito, estadoDasLabels, labelDoEstado, lerTaskSpec, promoviveis, transicaoLegal } from './dominio.ts';
+import { promoviveis } from './dominio.ts';
 import { type EnvEmail, type EnvGraph, type EnvSheets, type Navegador, ErroEnvio, base64, enviarEmail, gerarPdf, lerEmail, renovarAssinatura, substituirAbas } from './adaptadores.ts';
 import { type D1Like, Ledger, sha256, ulid } from './ledger.ts';
 import { caminhoRelatorio, htmlEmail, htmlImpressao, textoPlano } from './relatorio.ts';
-import { type PortaDefinicoes, type Resposta, executar, papelDe } from './servico.ts';
+import { abasEspelho, definicoesGithub, validarLabelUi, verificarLink } from './portas.ts';
+import { type Resposta, executar, papelDe } from './servico.ts';
 import { type EnvTarefas, Tarefas } from './tarefas.ts';
+
+// Reexportados para quem já importava daqui (testes e ferramentas).
+export { abasEspelho, validarLabelUi, verificarLink };
 
 export interface Env extends EnvTarefas, EnvEmail, EnvGraph, EnvSheets {
 	LEDGER: D1Like;
@@ -32,38 +35,7 @@ type Mensagem = { tipo: 'email'; id: string } | { tipo: 'saida'; outbox: number 
 
 const log = (dados: Record<string, unknown>) => console.log(JSON.stringify({ componente: 'copiloto', ...dados }));
 
-function definicoes(env: Env): PortaDefinicoes {
-	const gh = new GitHub({ ...env, GITHUB_REPO: env.BLOG_REPO, GITHUB_BRANCH: 'main' });
-	return {
-		async lerOps(caminho) {
-			if (!/^ops\/[a-z0-9/_.-]+$/i.test(caminho) || caminho.includes('..')) return null;
-			try {
-				const r = await gh.api<{ content: string }>(`/contents/${caminho}?ref=main`);
-				return new TextDecoder().decode(Uint8Array.from(atob(r.content.replace(/\n/g, '')), (c) => c.charCodeAt(0)));
-			} catch (e) {
-				if (e instanceof Error && /HTTP 404/.test(e.message)) return null;
-				throw e;
-			}
-		},
-		async abrirPR(caminho, conteudo, titulo, autor) {
-			const base = await gh.shaDoRamo('main');
-			if (!base) throw new Error('main não encontrada');
-			const ramo = `ops/${caminho.replace(/^ops\//, '').replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}`;
-			const sha = await gh.commitar(base, [{ caminho, base64: base64(new TextEncoder().encode(conteudo)) }], titulo, autor);
-			await gh.moverRamo(ramo, sha, true);
-			return gh.abrirPR(ramo, titulo, `Proposta enviada por ${autor} pelo Copiloto Operacional.\n\nO merge humano é a aprovação (ADR-015, DEC-08). O CI valida o schema de ops/.`);
-		},
-	};
-}
-
-/** link_valido: HEAD (ou GET) https com 8 s de limite; 2xx = publicado. */
-export async function verificarLink(url: string, buscar: typeof fetch = fetch): Promise<boolean> {
-	if (!/^https:\/\/[^\s]+$/.test(url)) return false;
-	const sinal = AbortSignal.timeout(8000);
-	const r = await buscar(url, { method: 'HEAD', redirect: 'follow', signal: sinal }).catch(() => null);
-	if (r && r.status === 405) return (await buscar(url, { redirect: 'follow', signal: sinal }).catch(() => null))?.ok ?? false;
-	return r?.ok ?? false;
-}
+const definicoes = (env: Env) => definicoesGithub(env);
 
 const tarefasDe = (env: Env) => new Tarefas({ ...env, GITHUB_BRANCH: env.OPS_BRANCH } as EnvTarefas);
 
@@ -127,23 +99,6 @@ async function processarSaida(env: Env, ledger: Ledger, outbox: number) {
 	}
 }
 
-/** Transição feita direto na UI do GitHub (§5.2): legal → aceita; ilegal → reverte e comenta. */
-export async function validarLabelUi(t: Tarefas, numero: number, adicionada: string, labels: string[]) {
-	if (!adicionada.startsWith('state/')) return 'ignorado';
-	const estados = labels.filter((l) => l.startsWith('state/'));
-	if (estados.length <= 1) return 'ok';
-	const para = estadoDasLabels([adicionada]) as Estado;
-	const de = estadoDasLabels(estados.filter((l) => l !== adicionada));
-	const issue = await t.ler(numero);
-	const spec = lerTaskSpec(issue.corpo);
-	const override = labels.includes('override/operador');
-	const legal = de && transicaoLegal(de, para) && (para !== 'DONE' || (spec && decidirFeito(de, spec, spec.evidencia).acao === 'DONE'));
-	const novas = legal || override ? [...labels.filter((l) => !l.startsWith('state/')), adicionada] : [...labels.filter((l) => l !== adicionada)];
-	await t.gh.api(`/issues/${numero}`, { method: 'PATCH', body: JSON.stringify({ labels: novas }) });
-	if (!legal && !override) await t.comentar(numero, `Transição revertida: ${de ? ROTULO[de] : '?'} → ${ROTULO[para]} não é permitida${para === 'DONE' ? ' sem DoD, evidência e verificação' : ''}. Use /feito ou o caminho legal.`);
-	return legal || override ? 'aceita' : 'revertida';
-}
-
 async function verificarAssinatura(segredo: string, corpo: string, assinatura: string | null) {
 	if (!assinatura?.startsWith('sha256=')) return false;
 	const chave = await crypto.subtle.importKey('raw', new TextEncoder().encode(segredo), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
@@ -195,20 +150,6 @@ interface Rotina {
 	payload?: string;
 	para?: string;
 	estado?: string;
-}
-
-/** Espelho unidirecional GitHub → planilha (DEC-02): reescreve as abas a partir do GitHub. */
-export function abasEspelho(ts: Awaited<ReturnType<Tarefas['listar']>>, agora = new Date()) {
-	const tarefas = ts.filter((t) => t.tipo !== 'ideia');
-	const linhas = tarefas.map((t) => [t.spec?.task_key ?? '', t.numero, t.titulo, t.spec?.area ?? '', t.estado ?? 'INVÁLIDO', t.labels.includes('priority/urgente') ? 'sim' : '', t.spec?.data ?? '', t.spec?.peso ?? 1, t.spec?.workflow ?? '', (t.spec?.depende ?? []).join(' '), (t.spec?.evidencia ?? []).join(' '), t.url ?? '']);
-	const programas = [...new Set(tarefas.map((t) => t.spec?.program).filter(Boolean))] as string[];
-	const progresso = [['escopo', 'percentual', ...ESTADOS], ['todos', completude(tarefas).percentual ?? '', ...ESTADOS.map((e) => completude(tarefas).contagem[e])], ...programas.map((p) => { const c = completude(tarefas.filter((t) => t.spec?.program === p)); return [`programa/${p}`, c.percentual ?? '', ...ESTADOS.map((e) => c.contagem[e])]; })];
-	return {
-		TAREFAS: [['task_key', 'issue', 'título', 'área', 'estado', 'urgente', 'data', 'peso', 'workflow', 'dependências', 'evidência', 'link'], ...linhas],
-		IDEIAS: [['task_key', 'issue', 'título', 'área', 'link'], ...ts.filter((t) => t.tipo === 'ideia').map((t) => [t.spec?.task_key ?? '', t.numero, t.titulo, t.spec?.area ?? '', t.url ?? ''])],
-		PROGRESSO: progresso,
-		_SYNC: [['last_sync_at', 'fonte', 'linhas'], [agora.toISOString(), 'GitHub (System of Record)', linhas.length]],
-	};
 }
 
 async function cron(evento: { cron: string; scheduledTime: number }, env: Env) {

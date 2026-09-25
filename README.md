@@ -25,6 +25,7 @@ npm run dev          # abre o blog em http://localhost:4321
 | `npm run test:e2e` | Testes no navegador (acessibilidade, HIG, busca, assistente) |
 | `npm run export:epub -- "vault/…md"` | Gera EPUB 3 (`export:pdf` gera PDF a partir do blog local) |
 | `npm run update:upstream` | Atualiza dependências e revalida |
+| `npm run plugin:build` | Regera o servidor do plugin (`plugins/copiloto-operacional/dist/`) a partir de `apps/copiloto` |
 | `npm run ops:validate` | Valida workflows, rotinas e áreas em `ops/` (também roda no `check`) |
 | `npm run report:sync -- --de ../Copiloto` | Traz templates e tokens de relatório da skill `executar-relatorios` (commit fixado) |
 
@@ -36,12 +37,22 @@ apps/blog/        site Starlight + Worker de borda (/api/perguntar)
 apps/agente/      Worker + container do assistente (Claude Agent SDK)
 apps/studio/      EXECUTAR Studio: editor, preview, Publish API e MCP
 apps/copiloto/    Copiloto Operacional: comandos por e-mail, campanhas com gates, reports HTML/PDF (ADR-015)
+plugins/          plugins do Claude Code (marketplace em .claude-plugin/marketplace.json, ADR-016)
 ops/              workflows, rotinas, runbooks e áreas versionados (mudam só por PR)
 packages/         markdown-parser, editorial-renderer, content-schema, theme, ui
 scripts/          setup-env, guard, check-contrast, export
 tests/            unit (node:test) e e2e (Playwright + axe)
 docs/             ADRs, plano de testes, deploy, runbook, estado do pipeline
 ```
+
+## Plugin do Claude Code
+Este repositório é um marketplace de plugins (ADR-016). No Claude Code:
+```
+/plugin marketplace add Sas-Executar/executar-Blog
+/plugin install copiloto-operacional@executar-blog
+/plugin configure copiloto-operacional@executar-blog
+```
+No claude.ai: Settings → Plugins → Add marketplace → `Sas-Executar/executar-Blog`. Detalhes em [plugins/copiloto-operacional](plugins/copiloto-operacional/README.md).
 
 ## Documentação
 - [Onboarding](docs/06-docs/onboarding.md) · [Runbook](docs/06-docs/runbook.md) · [Deploy](docs/05-deploy/checklist.md) · [Copiloto Operacional](docs/06-docs/COPILOTO-OPERACIONAL.md)

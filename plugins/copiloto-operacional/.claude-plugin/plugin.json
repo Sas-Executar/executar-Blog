@@ -1,0 +1,51 @@
+{
+  "$schema": "https://code.claude.com/schemas/plugin.json",
+  "name": "copiloto-operacional",
+  "displayName": "Copiloto Operacional EXECUTAR",
+  "version": "1.0.0",
+  "description": "Opera o programa EXECUTAR direto no Claude Code: /hoje, /fila, /feito, /progresso, /campanha, /status-report, /criar-* e reconciliação, sobre as issues do GitHub (fonte da verdade). Mesmo núcleo do Worker do ADR-015, sem e-mail nem Cloudflare.",
+  "author": { "name": "Sas-Executar", "url": "https://github.com/Sas-Executar" },
+  "homepage": "https://github.com/Sas-Executar/executar-Blog/tree/main/plugins/copiloto-operacional",
+  "repository": "https://github.com/Sas-Executar/executar-Blog",
+  "keywords": ["executar", "copiloto", "github-issues", "campanha", "status-report", "pt-br"],
+  "userConfig": {
+    "github_token": {
+      "type": "string",
+      "title": "Token do GitHub",
+      "description": "Token fine-grained: Issues (leitura e escrita) no repositório das tarefas; Contents e Pull requests (leitura e escrita) no repositório das definições. Fica no keychain, nunca no plugin.",
+      "sensitive": true,
+      "required": false
+    },
+    "ops_repo": {
+      "type": "string",
+      "title": "Repositório das tarefas",
+      "description": "owner/repo onde as tarefas são issues com labels state/* e bloco task-spec.",
+      "default": "Sas-Executar/Copiloto"
+    },
+    "blog_repo": {
+      "type": "string",
+      "title": "Repositório das definições",
+      "description": "owner/repo com ops/workflows, ops/routines, ops/runbooks e ops/areas.yaml (só a main vale; propostas viram PR).",
+      "default": "Sas-Executar/executar-Blog"
+    },
+    "papel": {
+      "type": "string",
+      "title": "Papel",
+      "description": "OPERADOR escreve tudo; EDITOR só /feito, /ideia editorial e relatórios; LEITOR só lê. Valor desconhecido vira LEITOR.",
+      "default": "OPERADOR",
+      "options": ["OPERADOR", "EDITOR", "LEITOR"]
+    },
+    "operador": {
+      "type": "string",
+      "title": "Seu e-mail (autoria)",
+      "description": "Aparece na auditoria e nos PRs de /criar-*.",
+      "default": ""
+    },
+    "briefing": {
+      "type": "boolean",
+      "title": "Briefing ao abrir a sessão",
+      "description": "Mostra /hoje no início de cada sessão (somente leitura; equivale à rotina ROT-001).",
+      "default": false
+    }
+  }
+}

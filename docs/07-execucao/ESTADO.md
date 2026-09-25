@@ -2,7 +2,7 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-25 13:30 UTC (Copiloto Operacional, ADR-015)
+**Última atualização:** 2026-09-25 (plugin do Claude Code, ADR-016)
 **Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
@@ -70,6 +70,22 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - **Produção (2026-09-24 17:15 UTC):** o build do blog `00a440d0…` (`5dec061`) terminou com sucesso. O Worker `executar-studio` foi criado via API, com gatilho `b5802fab…` na `main`, e o 1º build `f4b290c1…` terminou com sucesso. https://executar-studio.sas-executar.workers.dev serve a interface com COOP/COEP; `/api/eu` e `/mcp` respondem **403** sem Access (fail closed confirmado).
 - **Builds do commit `38bb427` ✅ CONCLUÍDOS (2026-09-24 17:45 UTC):** blog build `3ccb5d84` → sucesso; studio build `0b343b7e` → sucesso. Ambos os Workers estão ao vivo em produção (https://executar-blog.sas-executar.workers.dev + https://executar-studio.sas-executar.workers.dev) com a implementação integral de ADR-013/ADR-014.
 - **Pendente (usuário):** credencial do GitHub (App ou PAT) e ativação do Zero Trust com os e-mails autorizados; ver ADR-014 e o guia, seção 6.
+
+## Plugin do Claude Code (ADR-016) — 2026-09-25 — VERIFIED (local + GitHub real)
+- **Pedido:** o Copiloto Operacional como plugin, com paridade total e sem Cloudflare (handoff genérico rev. 2).
+- **O erro do claude.ai não vinha de arquivo ausente.** O `marketplace.json` já estava na `main` desde 24/09 e passa no validador. A causa provável é o marketplace já ter sido adicionado. O nome `executar-blog` foi preservado.
+- **Entrega:**
+  - marketplace `executar-blog` na raiz (ampliado), com os plugins `copiloto-operacional`, `executar-skills` e `cloudflare`;
+  - `plugins/copiloto-operacional` com 17 comandos (15 verbos + reconciliar + espelho), 1 skill, hook `SessionStart` e servidor MCP stdio;
+  - o servidor é o mesmo núcleo de `apps/copiloto/worker`, empacotado por `scripts/build-plugin.mjs`;
+  - ledger em `node:sqlite`, relatório em arquivos, PDF por Chromium local.
+- **Evidência:**
+  - `claude plugin validate` passou no marketplace e no plugin;
+  - `claude plugin install copiloto-operacional@executar-blog` funcionou;
+  - `tests/unit/plugin-copiloto.test.mjs` (11 testes, stdio real contra GitHub simulado) passa;
+  - fluxo real somente leitura (H05) OK;
+  - mutação reversível real (T11): #502 criada, repetida sem duplicar, compensada para `state/cancelado`.
+- **Pendente (usuário):** configurar o token no `/plugin configure` e refazer o "Add marketplace" no claude.ai.
 
 ## Copiloto Operacional (ADR-015) — 2026-09-25 — VERIFIED (local)
 - **Pedido:** a partir da pasta "Comece aqui" (ADR-001 do copiloto) e dos 8 documentos IDX. Os IDX 01, 05 e 07 (runbook, painel e padrão de campanha) passam a ser controlados pelo agente. Os IDX 02, 03, 04, 06 e 08, junto com a skill `executar-relatorios`, alimentam os reports. Os reports saem por e-mail em HTML ou PDF.

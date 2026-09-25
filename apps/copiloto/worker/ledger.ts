@@ -48,6 +48,12 @@ export class Ledger {
 		return { novo: false, command_id: existente?.command_id ?? c.command_id, status: existente?.status ?? 'RECEIVED' };
 	}
 
+	/** Resultado guardado de um comando já aplicado (reenvio idempotente devolve o mesmo). */
+	async anterior<T = unknown>(commandId: string): Promise<T | null> {
+		const r = await this.db.prepare('SELECT result FROM command WHERE command_id = ?').bind(commandId).first<{ result: string | null }>();
+		return r?.result ? (JSON.parse(r.result) as T) : null;
+	}
+
 	async statusComando(commandId: string, status: string, result?: unknown) {
 		await this.db.prepare('UPDATE command SET status = ?, result = COALESCE(?, result), attempts = attempts + 1, updated_at = ? WHERE command_id = ?').bind(status, result === undefined ? null : JSON.stringify(result), agoraIso(), commandId).run();
 	}

@@ -1,6 +1,8 @@
 # dependências e builds
 node_modules/
 dist/
+# O plugin roda de dist/servidor.mjs (gerado por npm run plugin:build) — precisa ir no Git.
+!plugins/copiloto-operacional/dist/
 .astro/
 .wrangler/
 *.tgz
