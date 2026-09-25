@@ -1,0 +1,23 @@
+{
+  "name": "@executar/copiloto",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Copiloto Operacional: comandos por e-mail, campanhas com gates e status report HTML/PDF (ADR-015)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "check": "tsc -p worker",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "db:migrate:local": "wrangler d1 migrations apply copiloto-ledger --local"
+  },
+  "dependencies": {
+    "yaml": "2.9.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "wrangler": "4.137.0"
+  }
+}

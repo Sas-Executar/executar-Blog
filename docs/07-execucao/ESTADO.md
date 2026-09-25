@@ -2,7 +2,7 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-23 21:15 UTC
+**Última atualização:** 2026-09-25 13:30 UTC (Copiloto Operacional, ADR-015)
 **Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
@@ -70,6 +70,34 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - **Produção (2026-09-24 17:15 UTC):** o build do blog `00a440d0…` (`5dec061`) terminou com sucesso. O Worker `executar-studio` foi criado via API, com gatilho `b5802fab…` na `main`, e o 1º build `f4b290c1…` terminou com sucesso. https://executar-studio.sas-executar.workers.dev serve a interface com COOP/COEP; `/api/eu` e `/mcp` respondem **403** sem Access (fail closed confirmado).
 - **Builds do commit `38bb427` ✅ CONCLUÍDOS (2026-09-24 17:45 UTC):** blog build `3ccb5d84` → sucesso; studio build `0b343b7e` → sucesso. Ambos os Workers estão ao vivo em produção (https://executar-blog.sas-executar.workers.dev + https://executar-studio.sas-executar.workers.dev) com a implementação integral de ADR-013/ADR-014.
 - **Pendente (usuário):** credencial do GitHub (App ou PAT) e ativação do Zero Trust com os e-mails autorizados; ver ADR-014 e o guia, seção 6.
+
+## Copiloto Operacional (ADR-015) — 2026-09-25 — VERIFIED (local)
+- **Pedido:** a partir da pasta "Comece aqui" (ADR-001 do copiloto) e dos 8 documentos IDX. Os IDX 01, 05 e 07 (runbook, painel e padrão de campanha) passam a ser controlados pelo agente. Os IDX 02, 03, 04, 06 e 08, junto com a skill `executar-relatorios`, alimentam os reports. Os reports saem por e-mail em HTML ou PDF.
+- **Decisões do usuário:**
+  - o GitHub é o principal e a planilha espelha;
+  - o copiloto roda neste monorepo, na Cloudflare;
+  - o Outlook recebe e o Resend envia;
+  - commit direto na `main`.
+- **Código:**
+  - `apps/copiloto`: Worker com D1 (ledger), Queues, Cron e Browser Run (PDF);
+  - parser determinístico dos comandos `/`, máquina de estados com CAS, `/feito` com DoD + evidência + verificação (link verificado), `/campanha`, `/status-report html|pdf`, `/criar-*` por PR;
+  - webhooks do Graph e do GitHub (a transição ilegal feita na UI é revertida);
+  - espelho da planilha;
+  - `ops/`: WF-CAMP-001, rotinas, runbooks e áreas;
+  - Studio: ferramenta MCP `listar_campanhas`.
+- **Relatórios:** a fonte é a skill SK-04 no Copiloto (commit `c03ceb3`, branch `claude/elegant-davinci-gg3e39`), que foi corrigida:
+  - o cabeçalho usava LACUNA e saía invisível;
+  - o texto de marca não passava em contraste;
+  - as fontes não eram IBM Plex;
+  - o e-mail HTML não existia.
+  - `scripts/sync-report-assets.mjs` gera `relatorio-assets.gen.ts`, com teste de paridade byte a byte contra `render_report.py`.
+  - Os IDX 02/03/04/06/08 foram regenerados em `Copiloto/portfolio/{M2.1,S0}/relatorios/`.
+- **Evidência:**
+  - `npm run check` ok: 84 testes unitários (27 do copiloto), contraste, guard e `validate-ops`;
+  - `npm run build` ok (dry-run do `executar-copiloto` com D1, Queue e Browser);
+  - `npm run test:e2e` 40/40;
+  - `wrangler dev` local: webhook do GitHub assinado → `inbound_event` (dedupe ok), assinatura inválida → 401, handshake do Graph ok, notificação → fila → retry sem credencial.
+- **Pendente (usuário), bloqueia só o deploy:** ver ADR-015, seção "Pendências". São elas: Workers Paid, D1 e filas, GitHub App nos 2 repositórios + webhook, app do M365 com certificado, domínio e chave do Resend, service account do Sheets, `RBAC`. Por fim, `EMAIL_ENVIO_ATIVO=1`.
 
 ## Nova conta Cloudflare (2026-09-24)
 

@@ -1,0 +1,8 @@
+id: ROT-003
+nome: Status report 72h
+objetivo: Relatório das últimas 72 horas sobre os tokens da skill executar-relatorios.
+estado: ATIVO
+gatilho: { cron_utc: "0 11 * * 1,3,5" }  # 08:00 seg/qua/sex em America/Sao_Paulo
+comando: /status-report 72h html          # troque para pdf para receber o A4 anexo
+medicao: [report_entregue]
+acaba_quando: E-mail entregue e registrado em schedule_run.

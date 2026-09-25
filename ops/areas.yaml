@@ -1,0 +1,10 @@
+# Áreas válidas para /fila, /ideia e /urgente (ADR-015). Mudança só por PR.
+# slug: rótulo · aliases
+areas:
+  editorial: { rotulo: Editorial e conteúdo, macroarea: A08, aliases: [conteudo, blog] }
+  produto: { rotulo: Produto e experiência, macroarea: A02, aliases: [ux] }
+  engenharia: { rotulo: Arquitetura e engenharia, macroarea: A04, aliases: [eng, dev] }
+  operacoes: { rotulo: Operações, plataforma e deploy, macroarea: A05, aliases: [ops, deploy] }
+  governanca: { rotulo: Governança e gestão, macroarea: A00, aliases: [gestao] }
+  growth: { rotulo: Comunicação e growth, macroarea: A08, aliases: [marketing, midias] }
+  pessoal: { rotulo: Execução pessoal, macroarea: A09, aliases: [rotina] }

@@ -1,0 +1,3 @@
+# Rotinas ativas (ADR-015, DEC-08). O Worker só executa as listadas aqui E com estado ATIVO.
+# cron_utc precisa existir em apps/copiloto/wrangler.jsonc (triggers.crons). America/Sao_Paulo = UTC−3.
+rotinas: [ROT-001, ROT-002, ROT-003, ROT-005]

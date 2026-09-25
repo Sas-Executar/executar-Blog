@@ -61,6 +61,13 @@ const FERRAMENTAS = [
 		annotations: { readOnlyHint: true },
 	},
 	{
+		name: 'listar_campanhas',
+		title: 'Listar workflows de campanha',
+		description: 'Lista os workflows de campanha versionados em ops/workflows (ADR-015): id, nome, estado e ENTRYPOINTs com gate. A operação das campanhas (tarefas, estado, relatórios) é do Copiloto Operacional.',
+		inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+		annotations: { readOnlyHint: true },
+	},
+	{
 		name: 'status_publicacao',
 		title: 'Status do build',
 		description: 'Estado do build/deploy de um commit devolvido por publicar: aguardando, em andamento, sucesso ou falha.',
@@ -105,6 +112,18 @@ async function chamar(nome: string, args: Record<string, unknown>, gh: GitHub, e
 		}
 		case 'historico_artigo':
 			return texto({ versoes: await gh.historico(caminhoSeguro(str('caminho'))) });
+		case 'listar_campanhas': {
+			const { parse } = await import('yaml');
+			const arvore = await gh.api<{ tree: { path: string; type: string }[] }>(`/git/trees/${encodeURIComponent(gh.ramo)}?recursive=1`);
+			const caminhos = arvore.tree.filter((x) => x.type === 'blob' && /^ops\/workflows\/WF-[A-Z]+-\d{3}\.yaml$/.test(x.path)).map((x) => x.path);
+			const campanhas = [];
+			for (const c of caminhos) {
+				const r = await gh.api<{ content: string }>(`/contents/${c}?ref=${encodeURIComponent(gh.ramo)}`);
+				const w = parse(new TextDecoder().decode(Uint8Array.from(atob(r.content.replace(/\n/g, '')), (x) => x.charCodeAt(0)))) as { id: string; nome: string; estado: string; entrypoints?: { id: string; nome: string; passos?: unknown[]; gate?: { titulo: string } }[] };
+				campanhas.push({ id: w.id, nome: w.nome, estado: w.estado, entrypoints: (w.entrypoints ?? []).map((e) => ({ id: e.id, nome: e.nome, passos: e.passos?.length ?? 0, gate: e.gate?.titulo ?? null })) });
+			}
+			return texto({ campanhas });
+		}
 		case 'status_publicacao': {
 			const sha = str('commit');
 			if (!/^[0-9a-f]{7,40}$/.test(sha)) throw new ErroPedido('commit inválido');

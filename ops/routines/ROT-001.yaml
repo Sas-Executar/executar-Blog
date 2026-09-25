@@ -1,0 +1,8 @@
+id: ROT-001
+nome: Briefing diário
+objetivo: Emitir AGORA/PRÓXIMA antes das 08:00 com base no estado canônico (GitHub).
+estado: ATIVO
+gatilho: { cron_utc: "55 10 * * 1-5" }   # 07:55 em America/Sao_Paulo, dias úteis
+comando: /hoje
+medicao: [briefing_entregue_ate_0800]
+acaba_quando: E-mail entregue e registrado em schedule_run.

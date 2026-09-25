@@ -124,7 +124,7 @@ test('MCP: initialize, tools/list, validar e erro de ferramenta', async () => {
 	const init = await rpc({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} });
 	assert.equal(init.result.serverInfo.name, 'executar-studio');
 	const { result } = await rpc({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
-	assert.deepEqual(result.tools.map((t) => t.name), ['listar_artigos', 'ler_artigo', 'validar_artigo', 'pre_visualizar', 'publicar', 'historico_artigo', 'status_publicacao']);
+	assert.deepEqual(result.tools.map((t) => t.name), ['listar_artigos', 'ler_artigo', 'validar_artigo', 'pre_visualizar', 'publicar', 'historico_artigo', 'listar_campanhas', 'status_publicacao']);
 	const val = await rpc({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'validar_artigo', arguments: { markdown: '---\ntitle: x\n---\n' } } });
 	assert.match(val.result.content[0].text, /description/);
 	const lido = await rpc({ jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'ler_artigo', arguments: { caminho: 'Lab/Velho.md' } } });
@@ -132,7 +132,18 @@ test('MCP: initialize, tools/list, validar e erro de ferramenta', async () => {
 	const desconhecida = await rpc({ jsonrpc: '2.0', id: 5, method: 'tools/call', params: { name: 'apagar_tudo', arguments: {} } });
 	assert.equal(desconhecida.error.code, -32602);
 	const notif = await tratarMcp(new Request('https://s/mcp', { method: 'POST', body: JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) }), gh, ENV, 'eu');
+	const camp = await rpc({ jsonrpc: '2.0', id: 6, method: 'tools/call', params: { name: 'listar_campanhas', arguments: {} } });
+	assert.deepEqual(camp.result.structuredContent, { campanhas: [] });
 	assert.equal(notif.status, 202);
+});
+
+test('MCP: listar_campanhas lê os workflows versionados em ops/workflows (ADR-015)', async () => {
+	const { buscar, estado } = githubFalso();
+	estado.arquivos['ops/workflows/WF-CAMP-001.yaml'] = 'id: WF-CAMP-001\nnome: Campanha\nestado: ATIVO\nentrypoints:\n  - id: E1\n    nome: Texto\n    passos: [{}, {}]\n    gate: { titulo: Gate E1 }\n';
+	estado.arquivos['ops/routines/ROT-001.yaml'] = 'id: ROT-001';
+	const gh = new GitHub(ENV, buscar);
+	const r = await tratarMcp(new Request('https://s/mcp', { method: 'POST', body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'listar_campanhas', arguments: {} } }) }), gh, ENV, 'eu');
+	assert.deepEqual((await r.json()).result.structuredContent.campanhas, [{ id: 'WF-CAMP-001', nome: 'Campanha', estado: 'ATIVO', entrypoints: [{ id: 'E1', nome: 'Texto', passos: 2, gate: 'Gate E1' }] }]);
 });
 
 test('Worker: sem Access → 403 em /api e /mcp', async () => {

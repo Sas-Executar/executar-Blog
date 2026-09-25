@@ -1,0 +1,7 @@
+id: ROT-005
+nome: Renovação da subscription do Microsoft Graph
+objetivo: Manter a caixa de comandos notificando o Worker (a subscription expira).
+estado: ATIVO
+gatilho: { cron_utc: "0 */12 * * *" }
+comando: /renovar-graph                   # interno: não é verbo de e-mail
+acaba_quando: sync_state.graph-subscription atualizado.

@@ -1,0 +1,110 @@
+# Workflow padrão de campanha de lançamento: peça-mãe → derivados (ADR-015).
+# Fontes: RC-CAMP-20260906-F01-RUN-V01 (runbook), RC-CAMP-20260906-F01-UXP-V01 (painel/gates/KPIs)
+# e PD-CLB-20260906-F01-DOC-V01 (padrão multiplataforma, Tarefas 01–22).
+# Máquina de estados sequencial: um ENTRYPOINT só abre quando o gate do anterior está DONE
+# (regra de ouro: 1 variável em aberto por vez). Datas são deslocamentos em dias a partir do
+# dia de lançamento (D0), informado em "/campanha WF-CAMP-001 iniciar" com "data: AAAA-MM-DD".
+# Alterações só por PR; o merge humano é a aprovação (DEC-08).
+id: WF-CAMP-001
+versao: 1
+nome: Campanha de lançamento — peça-mãe → derivados
+area: editorial
+estado: ATIVO
+wip: 1
+fontes: [RC-CAMP-20260906-F01-RUN-V01, RC-CAMP-20260906-F01-UXP-V01, PD-CLB-20260906-F01-DOC-V01]
+nomenclatura:
+  padrao: "[HUB]-[PILAR]-[AAAAMMDD]-[SEQ]-[TIPO]-V[VERSAO]__[slug]"
+  tipos: { ART: artigo, VID: roteiro/vídeo, CRS: carrossel, IMG: imagem, INF: infográfico, STR: stories, NWL: newsletter, EBK: ebook, RUN: runbook }
+  pastas: [01_PLANEJAMENTO, 02_PESQUISA-EVIDENCIAS, 03_PECA-MAE, 04_DERIVADOS-TEXTO, 05_ROTEIROS-VIDEO, 06_BRIEFINGS-VISUAIS, 07_NEWSLETTERS, 08_EBOOKS, 09_CTAS-FERRAMENTAS, 10_CONTROLE-INDEXACAO]
+corte_de_escopo: "Sob pressão de prazo, cortar primeiro ebooks (3→1), depois stories e carrosséis; nunca artigo, imagem ou vídeo mãe."
+entrypoints:
+  - id: E1
+    nome: Texto (peça-mãe escrita)
+    sop_kp: [S14, S15, S16, S17]
+    passos:
+      - { id: "01", titulo: Validar o tema do ciclo, dia: -4, peso: 1, pd_clb: ["01"], dod: "Tema nasce de dor real (comentário, dado de uso, pergunta recorrente) e tem encaixe de nicho." }
+      - { id: "02", titulo: Reunir evidências citáveis, dia: -4, peso: 2, pd_clb: ["02"], dod: "Dados, estudos e fontes citáveis que sustentam os claims centrais, reunidos na matriz de evidências." }
+      - { id: "03", titulo: Fechar o Topic Pack, dia: -4, peso: 1, pd_clb: ["03"], dod: "Tema, título de trabalho e CTA/ferramenta do ciclo confirmados por escrito (3 linhas)." }
+      - { id: "04", titulo: Outline da peça-mãe, dia: -4, peso: 2, pd_clb: ["04"], dod: "Outline em blocos com palavras-alvo e camada (Claim/Evidência/Exemplo/Interpretação) aprovado antes da redação." }
+      - { id: "05", titulo: Redigir a primeira metade do artigo, dia: -3, peso: 3, pd_clb: ["05"], dod: "Blocos iniciais redigidos com marcação de camada entre colchetes." }
+      - { id: "06", titulo: Redigir a segunda metade do artigo, dia: -2, peso: 3, pd_clb: ["05"], dod: "Artigo completo, todos os blocos marcados por camada, CTA no fechamento." }
+      - { id: "07", titulo: Revisão de estilo e GEO, dia: -2, peso: 2, pd_clb: ["06", "07"], verificacao: manual, dod: "Checklist de estilo linha a linha, 3+ perguntas diretas com resposta objetiva, fontes verificáveis, H1/H2/H3 coerentes e contagem de palavras na faixa." }
+    gate:
+      titulo: "Gate E1 — artigo aprovado"
+      verificacao: link_valido
+      checklist: [Artigo mãe aprovado, GEO aplicado, Fontes verificáveis, CTA aponta para a ferramenta do ciclo]
+  - id: E2
+    nome: Imagem (sistema visual do ciclo)
+    sop_kp: [S25, S26, S27]
+    passos:
+      - { id: "01", titulo: Briefing das 6 imagens estáticas, dia: -1, peso: 1, pd_clb: ["13"], dod: "Cada imagem nasce de um bloco do artigo (sem cena nova), formato 1:1." }
+      - { id: "02", titulo: Briefing dos 3 infográficos 16:9, dia: -1, peso: 1, pd_clb: ["14"], dod: "Conceito visual e dados a representar em cada infográfico." }
+      - { id: "03", titulo: Gerar e aprovar 6 imagens + 3 infográficos, dia: -1, peso: 3, dod: "9 peças geradas, aprovadas e nomeadas pela convenção." }
+    gate:
+      titulo: "Gate E2 — 6 imagens + 3 infográficos aprovados"
+      verificacao: manual
+      checklist: [6 imagens aprovadas, 3 infográficos aprovados, Nomenclatura aplicada]
+  - id: E3
+    nome: Vídeo (mãe + verticais)
+    sop_kp: [S28]
+    passos:
+      - { id: "01", titulo: Roteiro do vídeo mãe, dia: -1, peso: 2, pd_clb: ["08"], dod: "Gancho + blocos espelhando o artigo + fechamento com CTA, timestamp estimado por bloco." }
+      - { id: "02", titulo: Gravar e editar o vídeo mãe, dia: 0, peso: 3, dod: "Vídeo mãe finalizado com infográficos inseridos e marcação de timestamps." }
+    gate:
+      titulo: "Gate E3 — vídeo mãe e artigo publicáveis (condição de lançamento)"
+      verificacao: manual
+      checklist: [Vídeo mãe editado, Artigo publicável, Vídeo mãe publicável]
+  - id: E4
+    nome: Desmembramento (derivados de todos os canais)
+    sop_kp: [S29, S30, S31, S32, S33, S34, S35, S36, S37]
+    passos:
+      - { id: "01", titulo: Marcar trechos-fonte para derivados, dia: 0, peso: 1, pd_clb: ["09"], dod: "Trechos do artigo e timestamps do vídeo mapeados para cada derivado." }
+      - { id: "02", titulo: Banco de textos curtos, dia: 0, peso: 2, pd_clb: ["10"], dod: "Legendas Instagram, posts LinkedIn e ganchos TikTok/Reels a partir dos trechos marcados." }
+      - { id: "03", titulo: Roteiro dos 4 vídeos verticais, dia: 0, peso: 2, pd_clb: ["11"], dod: "4 cortes com gancho próprio nos primeiros 2 segundos." }
+      - { id: "04", titulo: Roteiro/copy dos 6 carrosséis, dia: 0, peso: 2, pd_clb: ["12"], dod: "1 ideia por slide, capas com as imagens aprovadas." }
+      - { id: "05", titulo: Sequência de 10–12 stories, dia: 0, peso: 1, pd_clb: ["15"], dod: "Quatro portas: descoberta, prova, urgência e retenção, com CTA." }
+      - { id: "06", titulo: Copy das 3 newsletters, dia: 0, peso: 2, pd_clb: ["16"], dod: "Educa → aprofunda → vende, com prova antes do CTA." }
+      - { id: "07", titulo: Outline dos 3 ebooks, dia: 0, peso: 2, pd_clb: ["17"], dod: "Três lead magnets ligados ao CTA do ciclo." }
+      - { id: "08", titulo: Mapear os 6 CTAs de ferramenta, dia: 0, peso: 1, pd_clb: ["18"], dod: "Cada CTA atribuído a uma peça (artigo, vídeo mãe, vertical, carrossel, stories, newsletter 3)." }
+      - { id: "09", titulo: Coerência do arco, nomenclatura e conformidade, dia: 0, peso: 1, pd_clb: ["19", "20", "21"], dod: "Arco temático coerente, todos os arquivos nomeados e nas pastas padrão, checklist pré-handoff ok." }
+      - { id: "10", titulo: Handoff para produção visual e vídeo, dia: 0, peso: 1, pd_clb: ["22"], dod: "Pacote de briefings técnicos por asset com specs de formato." }
+    gate:
+      titulo: "Gate E4 — banco de derivados completo e nomeado"
+      verificacao: manual
+      checklist: [3 legendas Instagram, 2 posts LinkedIn, 3 ganchos TikTok/Reels, 4 roteiros verticais, 6 carrosséis, 6 copies de imagem, 10–12 stories, 3 e-mails, 3 outlines de ebook]
+  - id: E5
+    nome: Agendamento e publicação
+    sop_kp: [S38, S39, S40]
+    passos:
+      - { id: "01", titulo: Calendário de 14 dias preenchido, dia: 0, peso: 1, dod: "Data, hora sugerida, canal, peça e link/arquivo de cada publicação." }
+      - { id: "02", titulo: Lançamento — artigo, vídeo mãe e newsletter 1, dia: 0, peso: 3, verificacao: link_valido, dod: "Artigo publicado no blog, vídeo mãe no YouTube, newsletter 1 enviada, stories 1–4 e post LinkedIn 1 publicados." }
+      - { id: "03", titulo: Distribuição — semana 1, dia: 5, peso: 2, verificacao: manual, dod: "Vertical 1 e 2, carrosséis 1–2, stories 5–8, Shorts 1, LinkedIn 2 e newsletter 2 publicados." }
+      - { id: "04", titulo: Distribuição — semana 2, dia: 14, peso: 2, verificacao: manual, dod: "Verticais 3–4, carrosséis 3–6, stories 9–12, Shorts 2, vídeo LinkedIn, síntese, newsletter 3 e 3 ebooks publicados." }
+    gate:
+      titulo: "Gate E5 — todas as datas do calendário cumpridas"
+      verificacao: manual
+      checklist: [Gate de lançamento, Gate de distribuição semana 1, Gate de distribuição semana 2]
+  - id: E6
+    nome: Medição e aprendizado
+    sop_kp: [S41, S42]
+    passos:
+      - { id: "01", titulo: Ler KPIs primários e secundários, dia: 15, peso: 2, dod: "6 KPIs primários e os secundários por canal lidos (1º ciclo = baseline)." }
+      - { id: "02", titulo: Relatório de 1 página e 3 aprendizados, dia: 15, peso: 2, verificacao: link_valido, dod: "Relatório de 1 página com KPIs e 3 aprendizados registrados; Topic Pack do próximo ciclo rascunhado." }
+    gate:
+      titulo: "Gate E6 — ciclo fechado"
+      verificacao: manual
+      checklist: [KPIs primários lidos, KPIs secundários lidos, Relatório de 1 página, 3 aprendizados, Próximo Topic Pack rascunhado]
+medicao:
+  primarios: [Leituras do artigo mãe, Visualizações do vídeo mãe (>50%), Cliques no CTA da ferramenta (UTM), Ferramentas iniciadas, Ferramentas completadas, Inscritos na newsletter via ciclo]
+  secundarios: [Alcance e salvamentos dos carrosséis, Tempo de leitura e comentários (LinkedIn), Retenção nos 3s iniciais (Reels/TikTok), Taxa de abertura por e-mail]
+assets:
+  artigo_mae: 1
+  video_mae: 1
+  infografico: 3
+  imagem_estatica: 6
+  carrossel: 6
+  video_vertical: 4
+  stories: 12
+  cta_ferramenta: 6
+  newsletter: 3
+  ebook: 3

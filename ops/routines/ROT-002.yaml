@@ -1,0 +1,8 @@
+id: ROT-002
+nome: Fechamento do dia
+objetivo: Mostrar o que fica para amanhã e as dependências ainda abertas.
+estado: ATIVO
+gatilho: { cron_utc: "0 20 * * 1-5" }    # 17:00 em America/Sao_Paulo
+comando: /amanha
+medicao: [fechamento_entregue]
+acaba_quando: E-mail entregue e registrado em schedule_run.

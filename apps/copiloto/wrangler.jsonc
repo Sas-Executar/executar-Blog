@@ -1,0 +1,39 @@
+/**
+ * Worker do Copiloto Operacional (ADR-015). Sem interface: webhooks (Graph/GitHub), fila e cron.
+ * Segredos (wrangler secret put / painel): GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY,
+ * GITHUB_INSTALLATION_ID (ou GITHUB_TOKEN), GITHUB_WEBHOOK_SECRET, RESEND_API_KEY, RBAC,
+ * GRAPH_TENANT_ID, GRAPH_CLIENT_ID, GRAPH_CERT_PRIVATE_KEY, GRAPH_CERT_THUMBPRINT,
+ * GRAPH_CLIENT_STATE, GOOGLE_SA_EMAIL, GOOGLE_SA_PRIVATE_KEY, OPERADOR_EMAIL.
+ * O envio real de e-mail só liga com EMAIL_ENVIO_ATIVO = "1" (fail safe).
+ */
+{
+	"$schema": "../../node_modules/wrangler/config-schema.json",
+	"name": "executar-copiloto",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-09-21",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": { "enabled": true },
+	"preview_urls": false,
+	"vars": {
+		"OPS_REPO": "Sas-Executar/Copiloto",
+		"OPS_BRANCH": "claude/gifted-brown-7u1e5d",
+		"BLOG_REPO": "Sas-Executar/executar-Blog",
+		"EMAIL_FROM": "Copiloto EXECUTAR <copiloto@executar.local>",
+		"EMAIL_ENVIO_ATIVO": "0",
+		"GRAPH_MAILBOX": "",
+		"SHEETS_ID": "",
+		"URL_PUBLICA": ""
+	},
+	// Ledger operacional (DEC-03 emendado). Criar com: wrangler d1 create copiloto-ledger → colar o id.
+	"d1_databases": [{ "binding": "LEDGER", "database_name": "copiloto-ledger", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "migrations" }],
+	"queues": {
+		"producers": [{ "binding": "FILA", "queue": "copiloto-comandos" }],
+		"consumers": [{ "queue": "copiloto-comandos", "max_batch_size": 5, "max_retries": 5, "dead_letter_queue": "copiloto-dlq" }]
+	},
+	// PDF dos relatórios (Browser Run Quick Actions, quickAction("pdf")).
+	"browser": { "binding": "BROWSER" },
+	// UTC. America/Sao_Paulo = UTC−3 (sem horário de verão). As rotinas em ops/routines/ usam o mesmo cron_utc.
+	"triggers": {
+		"crons": ["*/15 * * * *", "55 10 * * 1-5", "0 20 * * 1-5", "0 11 * * 1,3,5", "0 */12 * * *"]
+	}
+}
