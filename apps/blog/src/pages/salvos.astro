@@ -1,17 +1,18 @@
 ---
 // Salvos (HF04): lista local do navegador; remover exclui; lista vazia orienta a descoberta.
+// Lista editorial + selo + botão secundário do design system (ADR-017).
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 ---
 
 <StarlightPage frontmatter={{ title: 'Salvos', description: 'Artigos que você salvou para ler depois.', template: 'splash', pagefind: false }}>
 	<div class="pagina-larga salvos not-content">
-		<p class="intro">Os artigos salvos ficam guardados neste navegador, sem conta e sem prazo para expirar.</p>
+		<p class="intro max-w-2xl text-lead text-pretty text-muted">Os artigos salvos ficam guardados neste navegador, sem conta e sem prazo para expirar.</p>
 		<p class="sr-only" role="status" aria-live="polite" data-estado></p>
-		<ul class="lista" data-lista></ul>
-		<div class="vazio" data-vazio hidden>
-			<p><strong>Você ainda não salvou nenhum artigo.</strong></p>
-			<p>Use o botão Salvar no topo de qualquer artigo para guardá-lo aqui.</p>
-			<a href="/explorar/">Explorar artigos</a>
+		<ul class="lista lista-editorial mt-8" data-lista></ul>
+		<div class="vazio mt-8" data-vazio hidden>
+			<p><strong class="text-ink">Você ainda não salvou nenhum artigo.</strong></p>
+			<p class="text-muted">Use o botão Salvar no topo de qualquer artigo para guardá-lo aqui.</p>
+			<a href="/explorar/" class="botao botao--secundario mt-2">Explorar artigos</a>
 		</div>
 	</div>
 </StarlightPage>
@@ -30,7 +31,8 @@ import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 		vazio.hidden = salvos.length > 0;
 		for (const s of salvos) {
 			const li = document.createElement('li');
-			li.innerHTML = `<div class="texto"><span class="cat"></span><a></a><p></p><span class="tempo"></span></div><button type="button">Remover</button>`;
+			li.className = 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3';
+			li.innerHTML = `<div class="grid min-w-0 flex-1 justify-items-start gap-2"><span class="cat selo"></span><a class="inline-flex min-h-11 items-center font-display text-title font-bold tracking-tight text-ink no-underline hover:text-link"></a><p class="m-0 text-muted"></p><span class="tempo font-mono text-xs text-muted"></span></div><button type="button" class="botao botao--secundario botao--p">Remover</button>`;
 			li.querySelector('.cat')!.textContent = s.categoria;
 			const a = li.querySelector('a')!;
 			a.href = s.url;
@@ -54,85 +56,3 @@ import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 	render();
 	document.addEventListener('astro:page-load', render);
 </script>
-
-<style>
-	.intro {
-		color: var(--muted);
-	}
-	.lista {
-		display: grid;
-		gap: 0.75rem;
-		margin: 1.5rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-	.lista :global(li) {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		padding: 1rem 1.25rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-xl);
-		background: var(--surface);
-	}
-	.lista :global(.texto) {
-		display: grid;
-		gap: 0.25rem;
-	}
-	.lista :global(.cat) {
-		color: var(--brand-text);
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-	}
-	.lista :global(a) {
-		color: var(--foreground);
-		font-size: 1.125rem;
-		font-weight: 600;
-		text-decoration: none;
-	}
-	.lista :global(a:hover) {
-		text-decoration: underline;
-	}
-	.lista :global(p),
-	.lista :global(.tempo) {
-		margin: 0;
-		color: var(--muted);
-		font-size: 0.9375rem;
-	}
-	.lista :global(button) {
-		flex: none;
-		min-height: var(--hit-target);
-		padding-inline: 1rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-pill);
-		background: var(--surface);
-		color: var(--foreground);
-	}
-	.vazio {
-		display: grid;
-		gap: 0.25rem;
-		justify-items: start;
-		margin-top: 1.5rem;
-		padding: 2rem 1.5rem;
-		border: 1px dashed var(--border);
-		border-radius: var(--radius-xl);
-		background: var(--surface);
-	}
-	.vazio[hidden] {
-		display: none;
-	}
-	.vazio p {
-		margin: 0;
-	}
-	.vazio a {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--hit-target);
-		margin-top: 0.5rem;
-		color: var(--link);
-		font-weight: 600;
-	}
-</style>

@@ -45,15 +45,16 @@ export async function iniciarMermaid(raiz = document) {
 	for (const b of blocos) b.dataset.fonte ??= b.textContent ?? '';
 	mermaidCarregado ??= import('mermaid').then((m) => m.default);
 	const mermaid = await mermaidCarregado;
-	const escuro = document.documentElement.dataset.theme === 'dark';
 	mermaid.initialize({
 		startOnLoad: false,
 		securityLevel: 'strict',
 		theme: 'base',
 		fontFamily: getComputedStyle(document.body).fontFamily,
-		themeVariables: escuro
-			? { primaryColor: '#0d2a1c', primaryTextColor: '#f6f6f6', primaryBorderColor: '#58fbad', lineColor: '#c5c5c5', background: '#262626' }
-			: { primaryColor: '#e4f6ed', primaryTextColor: '#4b4a4a', primaryBorderColor: '#007a45', lineColor: '#646363', background: '#ffffff' },
+		// Cores dos tokens (ADR-017): superfície azul-clara, filete azul, linhas em cinza discreto.
+		themeVariables: ((css) => {
+			const t = (nome) => css.getPropertyValue(`--${nome}`).trim();
+			return { primaryColor: t('brand-soft'), primaryTextColor: t('ink'), primaryBorderColor: t('accent'), lineColor: t('muted'), background: t('surface'), secondaryColor: t('surface'), tertiaryColor: t('code-background') };
+		})(getComputedStyle(document.documentElement)),
 	});
 	for (const [i, b] of blocos.entries()) {
 		try {

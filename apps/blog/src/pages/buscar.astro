@@ -10,19 +10,19 @@ const sugestoes = (await artigos()).map((a) => a.titulo);
 
 <StarlightPage frontmatter={{ title: 'Buscar', description: 'Busque nos artigos do EXECUTAR.', template: 'splash', pagefind: false }}>
 	<div class="pagina-larga buscar not-content">
-		<form class="campo" role="search" data-form>
+		<form class="campo campo--busca max-w-2xl" role="search" data-form>
 			<label class="sr-only" for="q">Buscar nos artigos</label>
 			<Icone nome="buscar" />
 			<input id="q" name="q" type="search" placeholder="Ex.: atenção, notificações, checklist…" autocomplete="off" />
-			<button type="submit">Buscar</button>
+			<button type="submit" class="botao">Buscar</button>
 		</form>
-		<p class="estado" role="status" aria-live="polite" data-estado>Digite um termo e pressione Buscar.</p>
-		<ol class="resultados" data-resultados></ol>
-		<div class="vazio" data-vazio hidden>
-			<p>Nenhum resultado para “<strong data-termo></strong>”.</p>
-			<p>Tente outras palavras, um termo mais amplo ou um destes artigos:</p>
-			<ul>
-				{sugestoes.map((s) => <li><button type="button" data-sugestao={s}>{s}</button></li>)}
+		<p class="estado mt-6 font-mono text-xs tracking-wide text-muted uppercase" role="status" aria-live="polite" data-estado>Digite um termo e pressione Buscar.</p>
+		<ol class="resultados lista-editorial" data-resultados></ol>
+		<div class="vazio mt-6" data-vazio hidden>
+			<p>Nenhum resultado para “<strong data-termo class="text-ink"></strong>”.</p>
+			<p class="text-muted">Tente outras palavras, um termo mais amplo ou um destes artigos:</p>
+			<ul class="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
+				{sugestoes.map((s) => <li class="m-0"><button type="button" class="chip" data-sugestao={s}>{s}</button></li>)}
 			</ul>
 		</div>
 	</div>
@@ -71,10 +71,13 @@ const sugestoes = (await artigos()).map((a) => a.titulo);
 				estado.textContent = dados.length === 1 ? `1 resultado para “${q}”.` : `${dados.length} resultados para “${q}”.`;
 				for (const d of dados) {
 					const li = document.createElement('li');
+					li.className = 'grid gap-1';
 					const a = document.createElement('a');
+					a.className = 'inline-flex min-h-11 items-center font-display text-title font-bold tracking-tight text-ink no-underline hover:text-link';
 					a.href = d.url;
 					a.textContent = d.meta.title ?? d.url;
 					const p = document.createElement('p');
+					p.className = 'm-0 text-muted [&_mark]:bg-brand-soft [&_mark]:text-brand-text';
 					p.innerHTML = d.excerpt; // HTML do próprio índice do Pagefind (<mark> nos termos)
 					li.append(a, p);
 					lista.append(li);
@@ -104,97 +107,3 @@ const sugestoes = (await artigos()).map((a) => a.titulo);
 	iniciar();
 	document.addEventListener('astro:page-load', iniciar);
 </script>
-
-<style>
-	.campo {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		max-width: 40rem;
-		padding-inline: 1rem 0.375rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-pill);
-		background: var(--surface);
-		color: var(--muted);
-	}
-	.campo:focus-within {
-		outline: 2px solid var(--semantic-focus-ring);
-		outline-offset: 2px;
-	}
-	.campo input {
-		flex: 1;
-		min-width: 0;
-		min-height: var(--hit-target);
-		border: 0;
-		background: transparent;
-		color: var(--foreground);
-		font: inherit;
-		outline: none;
-	}
-	.campo button,
-	.vazio button {
-		min-height: 2.25rem;
-		padding-inline: 1rem;
-		border: 0;
-		border-radius: var(--radius-pill);
-		background: var(--accent);
-		color: var(--on-accent);
-		font-weight: 600;
-	}
-	.estado {
-		color: var(--muted);
-	}
-	.resultados {
-		display: grid;
-		gap: 0.75rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.resultados :global(li) {
-		padding: 1rem 1.25rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-xl);
-		background: var(--surface);
-	}
-	.resultados :global(a) {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--hit-target);
-		color: var(--foreground);
-		font-size: 1.125rem;
-		font-weight: 600;
-	}
-	.resultados :global(p) {
-		margin: 0;
-		color: var(--muted);
-	}
-	.resultados :global(mark) {
-		background: var(--brand-soft);
-		color: var(--brand-text);
-	}
-	.vazio {
-		padding: 1.5rem;
-		border: 1px dashed var(--border);
-		border-radius: var(--radius-xl);
-		background: var(--surface);
-	}
-	.vazio[hidden] {
-		display: none;
-	}
-	.vazio ul {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-		margin: 0.5rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-	.vazio button {
-		min-height: var(--hit-target);
-		border: 1px solid var(--border);
-		background: var(--surface);
-		color: var(--foreground);
-		font-weight: 500;
-	}
-</style>

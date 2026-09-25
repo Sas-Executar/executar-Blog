@@ -156,3 +156,23 @@ Conteúdo da figura.
 :::desconhecida
 Conteúdo preservado de diretiva desconhecida.
 :::
+
+## Família editorial (ADR-017)
+
+> [!attention]
+> Callout de atenção sem título ganha o rótulo padrão.
+
+> [!decision] Antes de decidir
+> 1. **Qual é o risco?** O custo de errar.
+> 2. **Quem decide?** O dono do processo.
+
+```ascii
+ENTRADA ──▶ LEITURA ──▶ DECISÃO
+                │
+                ▼
+          PRÓXIMA AÇÃO
+```
+
+```sh
+npm run check
+```

@@ -1,85 +1,86 @@
 /*
- * Componentes editoriais (ADR-013/ADR-014): tudo o que a gramática do vault produz. Mesmo CSS no
+ * Componentes editoriais (ADR-013/ADR-014/ADR-017): tudo o que a gramática do vault produz. Mesmo CSS no
  * blog e no Studio (paridade visual). Só usa tokens (cores.css + Desyng System); claro/escuro,
  * contraste AA, impressão e movimento reduzido. O Minimal é referência de design, não dependência:
  * seus helpers (cssclasses img-grid, wide, cards) estão normalizados aqui em tokens.
  */
 
-/* ── Callouts ─────────────────────────────────────────────────────────────── */
+/* ── Família editorial (ADR-017) ─────────────────────────────────────────────────────────
+ * Callouts, decisão, blocos mono (terminal/plain text/infográfico), sumário, listas e citações
+ * compartilham: superfície --surface, filete 1px, raio --radius-card, rótulo em caixa alta 11 pt
+ * e azul como único acento. Sem sombras. */
+
+/* ── Callouts: ícone circular + rótulo em caixa alta ─────────────────────── */
 .callout {
 	--callout-cor: var(--brand-text);
-	--callout-fundo: var(--brand-soft);
-	--callout-borda: var(--brand-line);
-	margin-block: 1.25rem;
-	padding: 0.875rem 1.125rem;
-	border: 1px solid var(--callout-borda);
-	border-inline-start-width: 4px;
-	border-radius: var(--radius-lg);
-	background: var(--callout-fundo);
+	--callout-glifo: 'i';
+	margin-block: var(--rhythm-block);
+	padding: 1rem 1.125rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-card);
+	background: var(--surface);
 	color: var(--foreground);
 }
-.callout--nota,
-.callout--exemplo,
-.callout--citacao {
-	--callout-cor: var(--color-azure-11);
-	--callout-fundo: var(--info-soft);
-	--callout-borda: var(--color-azure-5);
+.callout--dica {
+	--callout-glifo: '≡';
+	border-color: color-mix(in oklab, var(--accent) 22%, transparent);
+	background: var(--brand-soft);
 }
-.callout--pergunta,
+.callout--sucesso {
+	--callout-glifo: '✓';
+}
+.callout--pergunta {
+	--callout-glifo: '?';
+}
 .callout--atencao {
-	--callout-cor: var(--color-warning-11);
-	--callout-fundo: var(--warning-soft);
-	--callout-borda: var(--color-warning-5);
+	--callout-glifo: '!';
 }
 .callout--perigo {
-	--callout-cor: var(--color-error-11);
-	--callout-fundo: var(--error-soft);
-	--callout-borda: var(--color-error-5);
+	--callout-cor: var(--error-text);
+	--callout-glifo: '!';
+	border-color: color-mix(in oklab, var(--error-text) 35%, var(--border));
+	background: var(--error-soft);
 }
-:root[data-theme='dark'] .callout {
-	--callout-cor: var(--brand-text);
+.callout--exemplo {
+	--callout-glifo: '→';
 }
-:root[data-theme='dark'] :is(.callout--nota, .callout--exemplo, .callout--citacao) {
-	--callout-cor: var(--color-azure-7);
-	--callout-borda: var(--color-azure-10);
-}
-:root[data-theme='dark'] :is(.callout--pergunta, .callout--atencao) {
-	--callout-cor: var(--color-warning-7);
-	--callout-borda: var(--color-warning-10);
-}
-:root[data-theme='dark'] .callout--perigo {
-	--callout-cor: var(--color-error-7);
-	--callout-borda: var(--color-error-10);
+.callout--citacao {
+	--callout-glifo: '“';
 }
 .callout__titulo {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: 0.75rem;
 	margin: 0;
 	color: var(--callout-cor);
-	font-weight: 600;
+	font-family: var(--font-sans);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
 }
 .callout__titulo::before {
-	content: '';
+	content: var(--callout-glifo);
 	flex: none;
-	width: 1.125rem;
-	height: 1.125rem;
-	background: currentColor;
-	-webkit-mask: var(--callout-icone) center / contain no-repeat;
-	mask: var(--callout-icone) center / contain no-repeat;
-	--callout-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 8h.01M11 12h1v4h1'/%3E%3C/svg%3E");
+	display: grid;
+	place-items: center;
+	width: 1.75rem;
+	height: 1.75rem;
+	border: 2px solid currentColor;
+	border-radius: 50%;
+	font-size: 0.9375rem;
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: 0;
+	text-transform: none;
 }
-.callout--dica .callout__titulo::before,
-.callout--sucesso .callout__titulo::before {
-	--callout-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z'/%3E%3C/svg%3E");
-}
-.callout--atencao .callout__titulo::before,
-.callout--perigo .callout__titulo::before,
-.callout--pergunta .callout__titulo::before {
-	--callout-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 3 2 21h20zM12 10v4M12 17h.01'/%3E%3C/svg%3E");
+.callout__corpo {
+	padding-inline-start: 2.5rem;
+	color: var(--foreground);
 }
 .callout__corpo > :first-child {
-	margin-top: 0.5rem;
+	margin-top: 0.375rem;
 }
 .callout__corpo > :last-child {
 	margin-bottom: 0;
@@ -96,6 +97,7 @@ details.callout > summary {
 details.callout > summary::after {
 	content: '▸';
 	margin-inline-start: auto;
+	font-size: 0.875rem;
 	transition: transform var(--motion-duration-default) var(--motion-easing-out);
 }
 details.callout[open] > summary::after {
@@ -105,24 +107,169 @@ details.callout > summary::-webkit-details-marker {
 	display: none;
 }
 
+/* ── Bloco de decisão/reflexão: filetes, número mono azul, sem caixa ─────── */
+.callout--decisao {
+	padding: 1.5rem 0 0.25rem;
+	border: 0;
+	border-block: var(--rule-strong);
+	border-radius: 0;
+	background: transparent;
+}
+.callout--decisao .callout__titulo::before {
+	display: none;
+}
+.callout--decisao .callout__corpo {
+	padding-inline-start: 0;
+}
+.callout--decisao .callout__corpo > ol {
+	counter-reset: decisao;
+	margin: 0.5rem 0 0;
+	padding: 0;
+	list-style: none;
+}
+.callout--decisao .callout__corpo > ol > li {
+	position: relative;
+	counter-increment: decisao;
+	margin: 0;
+	padding: 1.125rem 0 1.125rem 2.875rem;
+	border-bottom: var(--rule);
+	color: var(--muted);
+	font-size: 0.9375rem;
+	line-height: 1.5;
+}
+.callout--decisao .callout__corpo > ol > li:last-child {
+	border-bottom: 0;
+}
+.callout--decisao .callout__corpo > ol > li::before {
+	content: counter(decisao, decimal-leading-zero);
+	position: absolute;
+	inset-inline-start: 0;
+	top: 1.3rem;
+	color: var(--link);
+	font: 700 0.75rem/1.3 var(--font-mono);
+	letter-spacing: 0.03em;
+}
+.callout--decisao .callout__corpo > ol > li > :is(strong, p > strong):first-child {
+	display: block;
+	margin-bottom: 0.25rem;
+	color: var(--ink);
+	font-size: 1.0625rem;
+	font-weight: 650;
+	line-height: 1.35;
+	letter-spacing: -0.01em;
+}
+.callout--decisao .callout__corpo > ol > li > p {
+	margin: 0;
+}
+
+/* ── Blocos mono: terminal e plain text (Expressive Code) + infográfico ASCII ─ */
+/* O Expressive Code desenha a moldura (astro.config: styleOverrides); aqui entram os rótulos. */
+.expressive-code {
+	margin-block: var(--rhythm-block);
+}
+.expressive-code .frame pre {
+	background: var(--ec-codeBg);
+}
+.expressive-code .frame.is-terminal .header,
+.expressive-code .frame.has-title .header {
+	justify-content: flex-start;
+	padding-inline: 1.125rem;
+	background: var(--brand-soft);
+	color: var(--brand-text);
+}
+.expressive-code .frame.has-title:not(.is-terminal) .header .title {
+	padding-inline: 0;
+	background: transparent;
+	border: 0;
+}
+.expressive-code .frame .header .title::after {
+	display: none;
+}
+.expressive-code .frame .header .title {
+	font: 700 0.6875rem/1.4 var(--font-mono);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.expressive-code .frame.is-terminal .header .title:empty::before {
+	content: 'Plain txt · terminal';
+}
+.expressive-code .frame:not(.has-title):not(.is-terminal):has(> pre[data-language='text'], > pre[data-language='plaintext'], > pre[data-language='txt'])::before {
+	content: 'Plain txt';
+}
+.expressive-code .frame:not(.has-title):not(.is-terminal):has(> pre[data-language='text'], > pre[data-language='plaintext'], > pre[data-language='txt'])::before {
+	display: block;
+	padding: 0.75rem 1.125rem;
+	border: 1px solid var(--border);
+	border-bottom-color: color-mix(in oklab, var(--accent) 18%, var(--border));
+	border-radius: var(--radius-card) var(--radius-card) 0 0;
+	background: var(--brand-soft);
+	color: var(--brand-text);
+	font: 700 0.6875rem/1.4 var(--font-mono);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.expressive-code .frame:not(.has-title):not(.is-terminal):has(> pre[data-language='text'], > pre[data-language='plaintext'], > pre[data-language='txt']) > pre {
+	border: 1px solid var(--border);
+	border-top: 0;
+	border-bottom-left-radius: var(--radius-card);
+	border-bottom-right-radius: var(--radius-card);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+.infografico {
+	margin: var(--rhythm-block) 0;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-card);
+	background: var(--surface);
+	overflow: hidden;
+}
+.infografico figcaption {
+	margin: 0;
+	padding: 0.75rem 1.125rem;
+	border-bottom: 1px solid color-mix(in oklab, var(--accent) 18%, var(--border));
+	background: var(--brand-soft);
+	color: var(--brand-text);
+	font: 700 0.6875rem/1.4 var(--font-mono);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.infografico pre {
+	display: block;
+	width: max-content;
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 1.75rem 1.5rem 2rem;
+	overflow-x: auto;
+	border: 0;
+	background: transparent;
+	color: var(--foreground);
+	font: 0.875rem/1.55 var(--font-mono);
+	white-space: pre;
+	tab-size: 2;
+}
+.infografico pre:focus-visible {
+	outline: 2px solid var(--focus-ring);
+	outline-offset: -2px;
+}
+
 /* ── Inline: destaque, tags, wikilinks ───────────────────────────────────── */
 mark {
 	padding-inline: 0.15em;
 	border-radius: var(--radius-sm);
-	background: var(--color-warning-3);
-	color: var(--foreground);
+	background: var(--brand-soft);
+	color: var(--ink);
+	box-shadow: inset 0 -0.12em 0 var(--brand-line);
 }
-:root[data-theme='dark'] mark {
-	background: #5a3f10;
-}
+/* #tag = selo (mesma receita de .selo em tailwind.css, em tamanho de texto corrido) */
 .tag {
 	display: inline-block;
-	padding: 0 0.4em;
+	padding: 0.05em 0.55em;
+	border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
 	border-radius: var(--radius-pill);
 	background: var(--brand-soft);
 	color: var(--brand-text);
-	font-size: 0.875em;
-	font-weight: 500;
+	font-size: 0.8125em;
+	font-weight: 600;
 }
 .wikilink--quebrado {
 	color: var(--muted);
@@ -137,7 +284,7 @@ mark {
 	min-height: var(--hit-target);
 	padding-inline: 0.875rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-control);
 	background: var(--surface);
 	font-weight: 600;
 	text-decoration: none !important;
@@ -187,9 +334,9 @@ mark {
 .task-list-item[data-task='-'] .tarefa__marca::after { content: '–'; }
 .task-list-item[data-task='>'] .tarefa__marca::after { content: '›'; }
 .task-list-item[data-task='<'] .tarefa__marca::after { content: '‹'; }
-.task-list-item[data-task='?'] .tarefa__marca { border-color: var(--color-warning-9); color: var(--color-warning-11); }
+.task-list-item[data-task='?'] .tarefa__marca { border-color: var(--warning-text); color: var(--warning-text); }
 .task-list-item[data-task='?'] .tarefa__marca::after { content: '?'; }
-.task-list-item[data-task='!'] .tarefa__marca { border-color: var(--color-error-9); color: var(--color-error-11); }
+.task-list-item[data-task='!'] .tarefa__marca { border-color: var(--error-text); color: var(--error-text); }
 .task-list-item[data-task='!'] .tarefa__marca::after { content: '!'; }
 .task-list-item[data-task='*'] .tarefa__marca::after { content: '★'; }
 .task-list-item[data-task='"'] .tarefa__marca::after { content: '“'; }
@@ -200,13 +347,24 @@ mark {
 .task-list-item[data-task='I'] .tarefa__marca::after { content: '💡'; font-size: 0.6em; }
 .task-list-item[data-task='p'] .tarefa__marca { color: var(--brand-text); }
 .task-list-item[data-task='p'] .tarefa__marca::after { content: '+'; }
-.task-list-item[data-task='c'] .tarefa__marca { color: var(--color-error-11); }
+.task-list-item[data-task='c'] .tarefa__marca { color: var(--error-text); }
 .task-list-item[data-task='c'] .tarefa__marca::after { content: '−'; }
 .task-list-item[data-task='f'] .tarefa__marca::after { content: '🔥'; font-size: 0.6em; }
 .task-list-item[data-task='k'] .tarefa__marca::after { content: '⚿'; }
 .task-list-item[data-task='w'] .tarefa__marca::after { content: '🏆'; font-size: 0.6em; }
 .task-list-item[data-task='u'] .tarefa__marca::after { content: '↑'; }
 .task-list-item[data-task='d'] .tarefa__marca::after { content: '↓'; }
+
+/* ── Listas numeradas: marcador mono azul, ritmo editorial ─────────────── */
+.markdown-body ol:not(.contains-task-list):not(:where(.not-content, .not-content *)) > li::marker {
+	color: var(--link);
+	font-family: var(--font-mono);
+	font-size: 0.875em;
+	font-weight: 700;
+}
+.markdown-body :is(ol, ul):not(:where(.not-content, .not-content *)) > li + li {
+	margin-top: 0.5rem;
+}
 
 /* ── Math, diagramas, notas de rodapé ────────────────────────────────────── */
 .formula {
@@ -218,7 +376,7 @@ mark {
 	margin: 1.25rem 0;
 	padding: 1rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 	text-align: center;
 }
@@ -248,7 +406,7 @@ mark {
 .tabs {
 	margin-block: 1.25rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 }
 .tabs__lista {
@@ -303,13 +461,12 @@ mark {
 	margin: 0;
 	padding: 1rem 1.25rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 	list-style: none;
 }
 .cartao {
-	margin-block: 1.25rem;
-	box-shadow: var(--shadow-sm);
+	margin-block: var(--rhythm-block);
 }
 .cartao__titulo {
 	margin-top: 0 !important;
@@ -320,7 +477,7 @@ details.toggle {
 	margin-block: 1rem;
 	padding: 0.25rem 1rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 }
 details.toggle > summary {
@@ -348,10 +505,11 @@ details.toggle > summary {
 	place-items: center;
 	width: 2rem;
 	height: 2rem;
+	border: 1.5px solid var(--accent);
 	border-radius: var(--radius-full);
-	background: var(--accent);
-	color: var(--on-accent);
-	font-weight: 600;
+	background: transparent;
+	color: var(--link);
+	font: 700 0.75rem/1 var(--font-mono);
 }
 .linha-do-tempo > :is(ul, ol) {
 	margin: 1.25rem 0;
@@ -380,7 +538,7 @@ details.toggle > summary {
 	margin: 0.5rem 0.75rem 0.5rem 0;
 	padding: 1rem 1.25rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 }
 .metrica p {
@@ -402,10 +560,7 @@ details.toggle > summary {
 	color: var(--brand-text);
 }
 .metrica[data-tendencia='baixa'] .metrica__delta {
-	color: var(--color-error-11);
-}
-:root[data-theme='dark'] .metrica[data-tendencia='baixa'] .metrica__delta {
-	color: var(--color-error-7);
+	color: var(--error-text);
 }
 .comparacao {
 	display: grid;
@@ -420,7 +575,7 @@ details.toggle > summary {
 .comparacao__lado {
 	padding: 1rem 1.25rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 }
 .comparacao__lado[data-lado='depois'] {
@@ -436,15 +591,31 @@ details.toggle > summary {
 	text-transform: uppercase;
 }
 .citacao {
-	margin: 1.5rem 0;
+	margin: var(--rhythm-block) 0;
 }
-.citacao blockquote {
+/* Citações e destaques = pullquote: filete azul à esquerda, filetes finos em cima/embaixo. */
+.citacao blockquote,
+.markdown-body blockquote:not(.callout):not(:where(.not-content *)) {
 	margin: 0;
-	padding: 0.25rem 0 0.25rem 1.25rem;
+	padding: 1.75rem 0 1.75rem 1.5rem;
+	border: 0;
+	border-block: var(--rule);
 	border-inline-start: 4px solid var(--brand) !important;
-	color: var(--foreground);
-	font-size: 1.25rem;
-	line-height: 1.5;
+	border-radius: 0;
+	background: transparent;
+	color: var(--ink);
+	font-family: var(--font-display);
+	font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.625rem);
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
+	text-wrap: balance;
+}
+.markdown-body blockquote:not(.callout):not(:where(.not-content *)) {
+	margin-block: var(--rhythm-block);
+}
+.markdown-body blockquote:not(.callout):not(:where(.not-content *)) > :last-child {
+	margin-bottom: 0;
 }
 .citacao figcaption,
 .figura figcaption {
@@ -459,34 +630,62 @@ details.toggle > summary {
 	width: 100%;
 	aspect-ratio: 16 / 9;
 	border: 0;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 }
+/* Sumário editorial: lista com filetes e número mono azul (sem caixa). */
 .toc {
-	margin-block: 1.5rem;
-	padding: 1rem 1.25rem;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
-	background: var(--surface);
+	margin-block: var(--rhythm-block);
+	counter-reset: toc;
 }
 .toc__titulo {
 	margin: 0 0 0.5rem;
-	color: var(--muted);
-	font-size: 0.8125rem;
-	font-weight: 600;
-	letter-spacing: 0.08em;
+	color: var(--brand-text);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 }
 .toc ol {
 	margin: 0;
-	padding-inline-start: 1.25rem;
+	padding: 0;
+	border-top: var(--rule-strong);
+	list-style: none;
+}
+.toc li {
+	margin: 0;
+	border-bottom: var(--rule);
+	counter-increment: toc;
 }
 .toc .toc__nivel-3 {
-	margin-inline-start: 1rem;
+	padding-inline-start: 2rem;
 }
 .toc a {
-	display: inline-flex;
-	align-items: center;
-	min-height: 2rem;
+	display: flex;
+	gap: 0.75rem;
+	align-items: baseline;
+	min-height: var(--hit-target);
+	padding-block: 0.75rem;
+	color: var(--ink);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1.4;
+	text-decoration: none !important;
+}
+.toc a::before {
+	content: counter(toc, decimal-leading-zero);
+	flex: none;
+	color: var(--link);
+	font: 800 0.75rem/1.4 var(--font-mono);
+}
+.toc a:hover {
+	color: var(--link);
+}
+@media (min-width: 53.125rem) {
+	.toc--colunas ol {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		column-gap: 1.5rem;
+	}
 }
 .database {
 	overflow-x: auto;
@@ -508,7 +707,7 @@ details.toggle > summary {
 .propriedades {
 	margin-block: 1rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-card);
 	background: var(--surface);
 }
 .propriedades > summary {
@@ -633,9 +832,8 @@ details.toggle > summary {
 }
 /* O tema de leitura estiliza <details> com uma barra lateral própria; os componentes definem a sua. */
 .markdown-body details.callout {
-	border: 1px solid var(--callout-borda);
-	border-inline-start-width: 4px;
-	padding: 0.875rem 1.125rem;
+	border: 1px solid var(--border);
+	padding: 0.625rem 1.125rem;
 }
 .markdown-body details.toggle {
 	border: 1px solid var(--border);

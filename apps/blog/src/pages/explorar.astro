@@ -3,6 +3,7 @@
 // Tudo renderizado no build; o filtro só mostra/esconde cards e guarda o estado na URL.
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import ListaArtigos from '../components/ListaArtigos.astro';
+import Chip from '../components/ui/Chip.astro';
 import { CONSCIENCIA, PILARES, artigos, categorias } from '../lib/artigos';
 
 const lista = await artigos();
@@ -15,27 +16,27 @@ const grupos = [
 
 <StarlightPage frontmatter={{ title: 'Explorar', description: 'Explore os artigos por categoria, pilar editorial e nível de consciência.', template: 'splash' }}>
 	<div class="pagina-larga explorar not-content">
-		<p class="intro">Combine os filtros para encontrar o próximo artigo. O pilar diz sobre o que é o texto; a consciência diz em que momento da leitura ele ajuda.</p>
-		<div class="filtros" data-filtros>
+		<p class="intro max-w-2xl text-lead text-pretty text-muted">Combine os filtros para encontrar o próximo artigo. O pilar diz sobre o que é o texto; a consciência diz em que momento da leitura ele ajuda.</p>
+		<div class="filtros mt-8 mb-6 grid gap-6 border-t border-rule pt-6" data-filtros>
 			{
 				grupos.map((g) => (
-					<fieldset>
-						<legend>{g.rotulo}</legend>
-						<div class="opcoes">
-							<button type="button" data-grupo={g.chave} data-valor="" aria-pressed="true">
+					<fieldset class="m-0 border-0 p-0">
+						<legend class="rotulo rotulo--neutro">{g.rotulo}</legend>
+						<div class="flex flex-wrap gap-2">
+							<Chip data-grupo={g.chave} data-valor="" pressionado={true}>
 								Todos
-							</button>
+							</Chip>
 							{g.opcoes.map((o) => (
-								<button type="button" data-grupo={g.chave} data-valor={o.valor} aria-pressed="false">
+								<Chip data-grupo={g.chave} data-valor={o.valor} pressionado={false}>
 									{o.nome}
-								</button>
+								</Chip>
 							))}
 						</div>
 					</fieldset>
 				))
 			}
 		</div>
-		<p class="contagem" role="status" data-contagem>{lista.length} artigos</p>
+		<p class="contagem mb-6 font-mono text-xs tracking-wide text-muted uppercase" role="status" data-contagem>{lista.length} artigos</p>
 		<ListaArtigos lista={lista} vazio="Nenhum artigo combina com esses filtros. Tente tirar um deles." />
 	</div>
 </StarlightPage>
@@ -77,53 +78,3 @@ const grupos = [
 	iniciar();
 	document.addEventListener('astro:page-load', iniciar);
 </script>
-
-<style>
-	.intro {
-		color: var(--muted);
-	}
-	.filtros {
-		display: grid;
-		gap: 1rem;
-		margin-block: 1.5rem 1rem;
-	}
-	fieldset {
-		margin: 0;
-		padding: 0;
-		border: 0;
-	}
-	legend {
-		margin-bottom: 0.5rem;
-		color: var(--muted);
-		font-size: 0.8125rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-	.opcoes {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-	.opcoes button {
-		min-height: var(--hit-target);
-		padding-inline: 1rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-pill);
-		background: var(--surface);
-		color: var(--foreground);
-		font-size: 0.9375rem;
-	}
-	.opcoes button[aria-pressed='true'] {
-		border-color: var(--foreground);
-		background: var(--foreground);
-		color: var(--surface);
-	}
-	.contagem {
-		color: var(--muted);
-		font-size: 0.875rem;
-	}
-	.explorar :global(.post-card[hidden]) {
-		display: none;
-	}
-</style>

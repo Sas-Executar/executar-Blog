@@ -1,6 +1,8 @@
 // Gráficos ```chart (ADR-007/ADR-013) desenhados com ECharts no navegador — o mesmo no blog e no
 // Studio. Carrega o ECharts só quando um gráfico entra na tela; redesenha ao trocar o tema.
-const PALETA = ['#00BF63', '#1F93FF', '#007A45', '#0B6FD3', '#7C7B7B']; // Desyng System (ADR-012)
+// Paleta lida dos tokens (ADR-017): azul de acento primeiro, depois azul-escuro, grafite e apoio.
+const token = (nome, reserva) => getComputedStyle(document.documentElement).getPropertyValue(`--${nome}`).trim() || reserva;
+const paleta = () => [token('accent', '#0a66c2'), token('brand-text', '#004182'), token('muted', '#5d605e'), token('brand-line', '#b7cce4'), token('warning-text', '#7a4a00')];
 const graficos = new Map();
 
 const reduzirMovimento = () => matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.movimento === 'reduzido';
@@ -12,7 +14,8 @@ async function desenhar(el) {
 	const chart = echarts.init(el, escuro ? 'dark' : undefined, { renderer: 'svg' });
 	chart.setOption({
 		backgroundColor: 'transparent',
-		color: PALETA,
+		color: paleta(),
+		textStyle: { fontFamily: token('font-sans', 'system-ui') },
 		animation: !reduzirMovimento(),
 		// HIG: a descrição acessível é o título + resumo do autor, não a gerada automaticamente.
 		aria: { enabled: true, label: { description: el.dataset.descricao } },

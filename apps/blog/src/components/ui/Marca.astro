@@ -1,0 +1,21 @@
+---
+// Marca EXECUTAR (símbolo "E" + nome), compartilhada por cabeçalho e rodapé (ADR-017).
+interface Props {
+	href?: string;
+	pequena?: boolean;
+}
+const { href, pequena = false } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag
+	href={href}
+	aria-label={href ? 'EXECUTAR, página inicial' : undefined}
+	class="inline-flex min-h-11 items-center gap-2.5 font-bold tracking-tight text-ink no-underline"
+>
+	<span
+		aria-hidden="true"
+		class:list={['grid place-items-center rounded-md bg-accent font-bold text-on-accent', pequena ? 'size-6 text-xs' : 'size-7 text-sm']}
+	>E</span>
+	<span class:list={[pequena ? 'text-base' : 'text-lg']}>EXECUTAR</span>
+</Tag>

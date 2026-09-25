@@ -23,8 +23,10 @@ const GRUPOS = {
 	warning: 'atencao', caution: 'atencao', attention: 'atencao',
 	failure: 'perigo', fail: 'perigo', missing: 'perigo', danger: 'perigo', error: 'perigo', bug: 'perigo',
 	example: 'exemplo', quote: 'citacao', cite: 'citacao',
+	// ADR-017: bloco de decisão/reflexão (lista numerada de perguntas e respostas, sem caixa).
+	decision: 'decisao', decisao: 'decisao', 'decisão': 'decisao', reflection: 'decisao', reflexao: 'decisao', 'reflexão': 'decisao',
 };
-const TITULOS = { nota: 'Nota', dica: 'Dica', sucesso: 'Sucesso', pergunta: 'Pergunta', atencao: 'Atenção', perigo: 'Perigo', exemplo: 'Exemplo', citacao: 'Citação' };
+const TITULOS = { nota: 'Nota', dica: 'Dica', sucesso: 'Sucesso', pergunta: 'Pergunta', atencao: 'Ponto de atenção', perigo: 'Perigo', exemplo: 'Exemplo', citacao: 'Citação', decisao: 'Decisão' };
 
 export function grupoCallout(tipo) {
 	return GRUPOS[tipo.toLowerCase()] ?? 'nota';

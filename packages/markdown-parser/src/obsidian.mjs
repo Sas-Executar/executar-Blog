@@ -7,7 +7,7 @@ import { idBloco, slugTitulo } from './slug.mjs';
 
 const EXTERNO = /^(?:[a-z][a-z0-9+.-]*:|\/|#|\.{1,2}\/)/i;
 const IMAGEM = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
-const CALLOUT = /^\[!([\w-]+)\]([+-]?)[ \t]*(.*)$/;
+const CALLOUT = /^\[!([\p{L}\w-]+)\]([+-]?)[ \t]*(.*)$/u;
 const TAREFA = /^\[([ xX/\-><?!*"lbiSIpcfkwud])\]\s+/;
 
 /** Caixas de seleção estendidas do Minimal → rótulo acessível. */

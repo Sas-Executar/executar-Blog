@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sincroniza os tokens do Desyng System (ADR-012) para apps/blog/src/styles/ds/.
+ * Sincroniza os tokens do Desyng System (ADR-012) para packages/theme/src/ds/.
  * Fonte: repositório Sas-Executar/Desyng-System-ecossitema. no commit fixado abaixo.
  * Os arquivos gerados não são editados à mão; para atualizar, mude COMMIT e rode `npm run tokens:sync`.
  */
@@ -20,6 +20,6 @@ for (const file of ['variables.css', 'theme.css']) {
 	let css = await res.text();
 	// theme.css importa variables.css relativo; no blog os dois entram pelo customCss, então o @import sai.
 	css = css.replace(/@import\s+["']\.\/variables\.css["'];?\s*/, '');
-	fs.writeFileSync(path.join(out, file), `/* Desyng System @ ${COMMIT.slice(0, 7)} — gerado por scripts/sync-design-tokens.mjs, não editar. */\n${css}`);
+	fs.writeFileSync(path.join(out, file), `/* Desyng System @ ${COMMIT.slice(0, 7)} — gerado por packages/theme/sync-design-tokens.mjs, não editar. */\n${css}`);
 	console.log(`tokens: ${file} ok`);
 }

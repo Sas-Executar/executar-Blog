@@ -1,0 +1,522 @@
+/*
+ * Design system EXECUTAR (ADR-017): Tailwind CSS v4, configuração CSS-first, integrado ao Starlight
+ * pela integração oficial @astrojs/starlight-tailwind (sem o preflight, que brigaria com o shell).
+ *
+ * - @theme expõe as fundações (cores.css + Desyng System) como utilitários: bg-paper, text-ink,
+ *   border-rule, text-brand, rounded-card, max-w-read… Os valores mudam sozinhos com claro/escuro
+ *   e "Increase Contrast", porque apontam para as variáveis de cores.css (checadas pelo HIG).
+ * - Espaço: a escala do Tailwind (p-4 = 1rem) é a mesma grade de 4px do DS (--space-*).
+ * - @layer components guarda as receitas compartilhadas (botão, campo, chip, selo, rótulo…),
+ *   usadas pelos wrappers Astro (apps/blog/src/components/ui) e pelo HTML montado em JS.
+ *
+ * Ordem das camadas: a do tema Obsidian e a do GitHub Markdown CSS ficam abaixo das do Tailwind.
+ */
+@layer base, starlight, sitegraph, obsidian, github, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@source '../../../apps/blog/src';
+@source '../../../apps/studio/src';
+
+@theme inline {
+	/* Cores semânticas (cores.css) */
+	--color-paper: var(--background);
+	--color-surface: var(--surface);
+	--color-ink: var(--ink);
+	--color-fg: var(--foreground);
+	--color-muted: var(--muted);
+	--color-rule: var(--border);
+	--color-rule-soft: var(--border-soft);
+	--color-accent: var(--accent);
+	--color-link: var(--link);
+	--color-on-accent: var(--on-accent);
+	--color-code: var(--code-background);
+	--color-brand: var(--brand);
+	--color-brand-soft: var(--brand-soft);
+	--color-brand-line: var(--brand-line);
+	--color-brand-text: var(--brand-text);
+	--color-success-soft: var(--success-soft);
+	--color-success-text: var(--success-text);
+	--color-warning-soft: var(--warning-soft);
+	--color-warning-text: var(--warning-text);
+	--color-error-soft: var(--error-soft);
+	--color-error-text: var(--error-text);
+
+	/* Tipografia: Inter + mono do sistema; escala editorial (HIG: corpo 17 pt, nada abaixo de 11 pt) */
+	--font-display: var(--font-display);
+	--text-overline: 0.6875rem;
+	--text-overline--letter-spacing: 0.14em;
+	--text-label: 0.8125rem;
+	--text-small: 0.9375rem;
+	--text-body: var(--font-size-body);
+	--text-lead: 1.1875rem;
+	--text-lead--line-height: 1.47;
+	--text-title: 1.375rem;
+	--text-title--line-height: 1.25;
+	--text-headline: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem);
+	--text-headline--line-height: 1.08;
+	--text-display: clamp(2.25rem, 1.4rem + 3.6vw, 3.75rem);
+	--text-display--line-height: 1.02;
+
+	/* Raio, largura e movimento */
+	--radius-control: var(--radius-control);
+	--radius-card: var(--radius-card);
+	--container-read: 45rem;
+	--container-page: 75rem;
+	--ease-standard: var(--ease-standard);
+}
+
+@theme {
+	--breakpoint-sm: 36.25rem; /* 580px */
+	--breakpoint-md: 53.125rem; /* 850px */
+	--breakpoint-lg: 64rem;
+	--breakpoint-xl: 80rem;
+}
+
+/* O atributo hidden sempre vence os utilitários de display (grid/flex), como no preflight. */
+@layer base {
+	[hidden]:where(:not([hidden='until-found'])) {
+		display: none !important;
+	}
+}
+
+/* ── Componentes compartilhados ─────────────────────────────────────────────────────────── */
+@layer components {
+	/* Foco visível único (teclado) */
+	:where(.botao, .chip, .campo, .segmentado label, .interruptor input, .escolha input, .trilha a, .lista-editorial a):focus-visible,
+	.campo:focus-within,
+	.segmentado label:has(:focus-visible) {
+		outline: 2px solid var(--focus-ring);
+		outline-offset: 2px;
+	}
+
+	/* Rótulo / overline: caixa alta 11 pt, tracking largo, azul. Substitui os títulos de seção soltos. */
+	.rotulo {
+		margin: 0 0 0.75rem;
+		color: var(--brand-text);
+		font-family: var(--font-sans);
+		font-size: var(--text-overline);
+		font-weight: 700;
+		line-height: 1.4;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+	.rotulo--neutro {
+		color: var(--muted);
+	}
+
+	/* Botão: primário (azul cheio), secundário (contorno), quieto (texto). Alvo ≥ 44 pt. */
+	.botao {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: var(--hit-target);
+		padding-inline: 1.125rem;
+		border: 1px solid var(--accent);
+		border-radius: var(--radius-control);
+		background: var(--accent);
+		color: var(--on-accent);
+		font: 600 0.9375rem/1.2 var(--font-sans);
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			background-color 140ms var(--ease-standard),
+			border-color 140ms var(--ease-standard),
+			color 140ms var(--ease-standard);
+	}
+	.botao:hover {
+		border-color: color-mix(in oklab, var(--accent) 82%, var(--ink));
+		background: color-mix(in oklab, var(--accent) 82%, var(--ink));
+		color: var(--on-accent);
+	}
+	.botao:active {
+		transform: translateY(1px);
+	}
+	.botao--secundario {
+		border-color: color-mix(in oklab, var(--accent) 45%, transparent);
+		background: transparent;
+		color: var(--brand-text);
+	}
+	.botao--secundario:hover {
+		border-color: var(--accent);
+		background: var(--brand-soft);
+		color: var(--brand-text);
+	}
+	.botao--quieto {
+		border-color: transparent;
+		background: transparent;
+		color: var(--brand-text);
+	}
+	.botao--quieto:hover {
+		border-color: transparent;
+		background: var(--brand-soft);
+		color: var(--brand-text);
+	}
+	.botao[aria-pressed='true'] {
+		border-color: var(--accent);
+		background: var(--accent);
+		color: var(--on-accent);
+	}
+	.botao--p {
+		padding-inline: 0.875rem;
+		font-size: 0.8125rem;
+	}
+	.botao--g {
+		min-height: 3.25rem;
+		padding-inline: 1.5rem;
+		font-size: 1.0625rem;
+	}
+	.botao:is(:disabled, [aria-disabled='true']) {
+		opacity: 0.45;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+
+	/* Campo de texto / busca (o contêiner recebe o foco) */
+	.campo {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: var(--hit-target);
+		padding-inline: 0.875rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-control);
+		background: var(--surface);
+		color: var(--muted);
+		transition: border-color 140ms var(--ease-standard);
+	}
+	.campo:hover {
+		border-color: color-mix(in oklab, var(--border) 60%, var(--muted));
+	}
+	.campo:focus-within {
+		border-color: var(--accent);
+	}
+	.campo :is(input, select, textarea) {
+		flex: 1;
+		min-width: 0;
+		min-height: var(--hit-target);
+		border: 0;
+		background: transparent;
+		color: var(--foreground);
+		font: inherit;
+		outline: none;
+	}
+	.campo textarea {
+		padding-block: 0.625rem;
+		field-sizing: content;
+		min-height: 6rem;
+		resize: vertical;
+	}
+	.campo--busca {
+		padding-block: 0.1875rem;
+		padding-inline-end: 0.1875rem;
+		border-radius: var(--radius-pill);
+	}
+	.campo--busca .botao {
+		border-radius: var(--radius-pill);
+	}
+	.campo:has(:disabled) {
+		opacity: 0.5;
+	}
+	.campo:has(:user-invalid) {
+		border-color: var(--error-text);
+	}
+	.campo-rotulo {
+		display: block;
+		margin-bottom: 0.375rem;
+		color: var(--ink);
+		font-size: var(--text-label);
+		font-weight: 600;
+	}
+	.campo-ajuda {
+		margin: 0.375rem 0 0;
+		color: var(--muted);
+		font-size: var(--text-label);
+	}
+
+	/* Caixa de seleção e rádio nativos, tingidos pelo acento */
+	.escolha {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.625rem;
+		min-height: var(--hit-target);
+		color: var(--foreground);
+		cursor: pointer;
+	}
+	.escolha input {
+		width: 1.125rem;
+		height: 1.125rem;
+		margin: 0;
+		accent-color: var(--accent);
+		cursor: pointer;
+	}
+	.escolha:has(:disabled) {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Interruptor (toggle): <input type="checkbox" role="switch"> */
+	.interruptor {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		min-height: var(--hit-target);
+		color: var(--foreground);
+		cursor: pointer;
+	}
+	.interruptor input {
+		position: relative;
+		flex: none;
+		width: 2.75rem;
+		height: 1.625rem;
+		margin: 0;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: var(--code-background);
+		appearance: none;
+		cursor: pointer;
+		transition: background-color 220ms var(--ease-standard);
+	}
+	.interruptor input::before {
+		content: '';
+		position: absolute;
+		top: 0.125rem;
+		left: 0.125rem;
+		width: 1.25rem;
+		height: 1.25rem;
+		border-radius: 50%;
+		background: var(--muted);
+		transition: transform 220ms var(--ease-standard);
+	}
+	.interruptor input:checked {
+		border-color: var(--accent);
+		background: var(--accent);
+	}
+	.interruptor input:checked::before {
+		background: var(--on-accent);
+		transform: translateX(1.125rem);
+	}
+	.interruptor:has(:disabled) {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Deslizante (range) */
+	.deslizante {
+		width: 100%;
+		min-height: var(--hit-target);
+		margin: 0;
+		accent-color: var(--accent);
+		cursor: pointer;
+	}
+
+	/* Controle segmentado (tira de rádios) */
+	.segmentado {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		padding: 0.25rem;
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-control);
+		background: var(--code-background);
+	}
+	.segmentado label {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-target);
+		padding-inline: 1rem;
+		border-radius: calc(var(--radius-control) - 0.25rem);
+		color: var(--muted);
+		font-weight: 500;
+		cursor: pointer;
+	}
+	.segmentado input {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+	.segmentado label:has(:checked) {
+		background: var(--surface);
+		box-shadow: 0 0 0 1px var(--border);
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	/* Chip de filtro (aria-pressed) e de navegação (aria-current) */
+	.chip {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		gap: 0.375rem;
+		min-height: var(--hit-target);
+		padding-inline: 1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-pill);
+		background: transparent;
+		color: var(--foreground);
+		font: 500 0.9375rem/1.2 var(--font-sans);
+		text-decoration: none;
+		cursor: pointer;
+		transition:
+			border-color 140ms var(--ease-standard),
+			background-color 140ms var(--ease-standard);
+	}
+	.chip:hover {
+		border-color: var(--accent);
+		color: var(--brand-text);
+	}
+	.chip:is([aria-pressed='true'], [aria-current='page'], .ativa) {
+		border-color: var(--accent);
+		background: var(--brand-soft);
+		color: var(--brand-text);
+		font-weight: 600;
+	}
+	.chip:disabled {
+		opacity: 0.45;
+		cursor: not-allowed;
+	}
+
+	/* Selo (badge/tag): pílula pequena em caixa alta */
+	.selo {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.625rem;
+		border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+		border-radius: var(--radius-pill);
+		background: var(--brand-soft);
+		color: var(--brand-text);
+		font: 600 0.6875rem/1.3 var(--font-sans);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		text-decoration: none;
+	}
+	a.selo:hover {
+		border-color: var(--accent);
+	}
+	.selo--neutro {
+		border-color: var(--border);
+		background: var(--code-background);
+		color: var(--foreground);
+	}
+	.selo--sucesso {
+		border-color: transparent;
+		background: var(--success-soft);
+		color: var(--success-text);
+	}
+	.selo--aviso {
+		border-color: transparent;
+		background: var(--warning-soft);
+		color: var(--warning-text);
+	}
+	.selo--erro {
+		border-color: transparent;
+		background: var(--error-soft);
+		color: var(--error-text);
+	}
+
+	/* Cartão editorial: tipografia + espaço + divisor (sem fundo, sem caixa) */
+	.cartao-editorial {
+		position: relative;
+		display: grid;
+		gap: 0.5rem;
+		align-content: start;
+		padding-block: 1.25rem;
+		border-top: var(--rule-strong);
+	}
+	/* Cartão de superfície: só quando o bloco inteiro é um alvo (ex.: resultado de busca) */
+	.cartao-superficie {
+		padding: 1.25rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-card);
+		background: var(--surface);
+		transition: border-color 140ms var(--ease-standard);
+	}
+	.cartao-superficie:hover {
+		border-color: var(--brand-line);
+	}
+
+	/* Lista editorial: itens separados por filetes */
+	.lista-editorial {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lista-editorial > li {
+		margin: 0;
+		padding-block: var(--rhythm-item);
+		border-bottom: var(--rule);
+	}
+	.lista-editorial > li:first-child {
+		border-top: var(--rule-strong);
+	}
+
+	/* Trilha (breadcrumb) */
+	.trilha {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0 0.5rem;
+		color: var(--muted);
+		font-size: var(--text-label);
+	}
+	.trilha a {
+		display: inline-flex;
+		align-items: center;
+		min-height: var(--hit-target);
+		color: var(--muted);
+		text-decoration: none;
+	}
+	.trilha a:hover {
+		color: var(--ink);
+		text-decoration: underline;
+	}
+
+	/* Estado vazio */
+	.vazio {
+		display: grid;
+		gap: 0.5rem;
+		justify-items: start;
+		padding: 1.75rem 1.5rem;
+		border: 1px dashed var(--border);
+		border-radius: var(--radius-card);
+		color: var(--foreground);
+	}
+	.vazio[hidden] {
+		display: none;
+	}
+	.vazio p {
+		margin: 0;
+	}
+
+	/* Status / feedback (toast) */
+	.status {
+		position: fixed;
+		inset-inline-start: 50%;
+		bottom: calc(4.5rem + env(safe-area-inset-bottom));
+		z-index: 60;
+		max-width: min(90vw, 28rem);
+		padding: 0.75rem 1.125rem;
+		border: 1px solid var(--border);
+		border-inline-start: 4px solid var(--accent);
+		border-radius: var(--radius-control);
+		background: var(--surface);
+		color: var(--ink);
+		font-size: 0.875rem;
+		transform: translateX(-50%);
+	}
+	.status:empty {
+		display: none;
+	}
+	.status--estatico {
+		position: static;
+		transform: none;
+	}
+}

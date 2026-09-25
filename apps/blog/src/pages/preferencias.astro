@@ -37,13 +37,13 @@ const opcoes = [
 ---
 
 <StarlightPage frontmatter={{ title: 'Preferências', description: 'Ajuste tema, tamanho do texto e movimento.', template: 'splash', pagefind: false }}>
-	<div class="preferencias not-content">
-		<p class="intro">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
+	<div class="preferencias not-content grid gap-0">
+		<p class="intro max-w-2xl text-lead text-pretty text-muted">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
 		{
 			opcoes.map((o) => (
-				<fieldset data-preferencia={o.chave}>
-					<legend>{o.rotulo}</legend>
-					<p class="ajuda">{o.ajuda}</p>
+				<fieldset data-preferencia={o.chave} class="m-0 border-0 border-t border-rule px-0 py-6">
+					<legend class="float-left m-0 w-full p-0 font-display text-title font-bold tracking-tight text-ink">{o.rotulo}</legend>
+					<p class="clear-both m-0 pt-1 pb-4 text-small text-muted">{o.ajuda}</p>
 					<div class="segmentado">
 						{o.valores.map(([valor, nome]) => (
 							<label>
@@ -52,7 +52,7 @@ const opcoes = [
 							</label>
 						))}
 					</div>
-					<p class="atual" data-atual />
+					<p class="atual mt-3 mb-0 font-mono text-xs tracking-wide text-muted uppercase" data-atual />
 				</fieldset>
 			))
 		}
@@ -114,72 +114,3 @@ const opcoes = [
 	iniciar();
 	document.addEventListener('astro:page-load', iniciar);
 </script>
-
-<style>
-	.preferencias {
-		display: grid;
-		gap: 1.25rem;
-	}
-	.intro {
-		color: var(--muted);
-	}
-	fieldset {
-		margin: 0;
-		padding: 1.25rem;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-xl);
-		background: var(--surface);
-	}
-	legend {
-		padding: 0;
-		float: left;
-		width: 100%;
-		color: var(--foreground);
-		font-size: 1.125rem;
-		font-weight: 600;
-	}
-	.ajuda,
-	.atual {
-		clear: both;
-		margin: 0.25rem 0 0.75rem;
-		color: var(--muted);
-		font-size: 0.9375rem;
-	}
-	.atual {
-		margin: 0.75rem 0 0;
-	}
-	.segmentado {
-		display: inline-flex;
-		flex-wrap: wrap;
-		gap: 0.25rem;
-		padding: 0.25rem;
-		border-radius: var(--radius-pill);
-		background: var(--code-background);
-	}
-	.segmentado label {
-		position: relative;
-	}
-	.segmentado input {
-		position: absolute;
-		opacity: 0;
-		inset: 0;
-	}
-	.segmentado span {
-		display: inline-flex;
-		align-items: center;
-		min-height: var(--hit-target);
-		padding-inline: 1rem;
-		border-radius: var(--radius-pill);
-		color: var(--foreground);
-		cursor: pointer;
-	}
-	.segmentado input:checked + span {
-		background: var(--surface);
-		box-shadow: var(--shadow-sm);
-		font-weight: 600;
-	}
-	.segmentado input:focus-visible + span {
-		outline: 2px solid var(--semantic-focus-ring);
-		outline-offset: 2px;
-	}
-</style>
