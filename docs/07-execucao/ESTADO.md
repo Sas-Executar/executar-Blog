@@ -87,6 +87,21 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
   - mutação reversível real (T11): #502 criada, repetida sem duplicar, compensada para `state/cancelado`.
 - **Pendente (usuário):** configurar o token no `/plugin configure` e refazer o "Add marketplace" no claude.ai.
 
+### Extensão: agentes por domínio — 2026-09-25 — VERIFIED (local)
+- **Pedido:** subagentes (`agents/*.md`, invocáveis por descrição em linguagem natural), um por área do
+  Copiloto, cobrindo tudo que os comandos já cobrem, podendo chamar tanto `consultar` quanto `executar`.
+- **Entrega:** 5 agentes em `plugins/copiloto-operacional/agents/` — `agente-backlog`, `agente-campanha`,
+  `agente-relatorios`, `agente-definicoes`, `agente-reconciliacao` — cobrindo os 17 verbos sem sobra
+  nem lacuna. `ajuda` continua só comando e agora também lista os agentes.
+- **Sem ferramenta nova:** só orquestram `consultar`/`executar`/`reconciliar`/`espelho`; `.mcp.json` e
+  `plugin.json` não mudaram. Escrita (`executar`) continua pedindo aprovação a cada chamada.
+- **Evidência:** `claude plugin validate` (marketplace e plugin) passou; `npm run check` 96/96 +
+  contraste + guard + validate-ops; `npm run plugin:check` (tsc + drift do `dist/`) sem divergência;
+  teste novo em `tests/unit/plugin-copiloto.test.mjs` confere frontmatter dos 5 agentes e a cobertura
+  dos verbos.
+- **Pendente (usuário):** depois do push, `claude plugin marketplace update executar-blog` (ou Sync no
+  claude.ai) para os 5 agentes aparecerem no inventário do `copiloto-operacional@executar-blog`.
+
 ## Copiloto Operacional (ADR-015) — 2026-09-25 — VERIFIED (local)
 - **Pedido:** a partir da pasta "Comece aqui" (ADR-001 do copiloto) e dos 8 documentos IDX. Os IDX 01, 05 e 07 (runbook, painel e padrão de campanha) passam a ser controlados pelo agente. Os IDX 02, 03, 04, 06 e 08, junto com a skill `executar-relatorios`, alimentam os reports. Os reports saem por e-mail em HTML ou PDF.
 - **Decisões do usuário:**

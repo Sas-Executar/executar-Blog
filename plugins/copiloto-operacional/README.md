@@ -31,6 +31,22 @@ Requisito: Node.js ≥ 22.13 no PATH (o servidor usa `node:sqlite` para o ledger
 | `:espelho` | espelho GitHub → planilha em CSV |
 | `:ajuda` | lista tudo |
 
+## Agentes
+Além dos comandos de barra (uso explícito), o plugin traz 5 subagentes que cobrem os mesmos domínios
+para pedidos em linguagem natural com vários passos (o Claude Code escolhe qual invocar pela descrição):
+
+| Agente | Cuida de | Ferramentas |
+|---|---|---|
+| `agente-backlog` | hoje, amanhã, urgente, fila, ideia, feito, progresso | `consultar`, `executar` |
+| `agente-campanha` | conduzir uma campanha (runbook com gates) do início ao fim | `consultar`, `executar` |
+| `agente-relatorios` | status report e espelho GitHub → planilha | `consultar`, `espelho` |
+| `agente-definicoes` | propor workflow/rotina/runbook (PR) e confirmar/cancelar planos | `consultar`, `executar` |
+| `agente-reconciliacao` | reverter transição ilegal na UI e promover tarefas desbloqueadas | `reconciliar`, `consultar` |
+
+Cada agente pode chamar `executar` (escrita), mas isso **não pula a aprovação**: o Claude Code pede
+confirmação a cada chamada de escrita, exatamente como nos comandos. Os agentes só decidem *quando*
+chamar cada ferramenta dentro do fluxo que conduzem — a separação leitura/escrita continua no servidor.
+
 ## Como funciona
 - Servidor MCP `copiloto` (`dist/servidor.mjs`, gerado por `npm run plugin:build`), com 4 ferramentas:
   - `consultar`: só leitura. O próprio servidor recusa comandos que escrevem, então essa ferramenta pode ser pré-aprovada.

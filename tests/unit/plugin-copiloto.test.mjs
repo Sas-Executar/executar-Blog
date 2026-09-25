@@ -61,6 +61,36 @@ test('os 15 verbos do Copiloto têm comando; leitura pré-aprovada só na ferram
 	assert.match(lerYaml(skill.split('---')[1]).description, /GitHub/);
 });
 
+test('5 agentes por domínio cobrem os 17 verbos; só citam as 4 ferramentas MCP reais', () => {
+	const domínios = {
+		'agente-backlog': ['hoje', 'amanha', 'urgente', 'fila', 'ideia', 'feito', '%'],
+		'agente-campanha': ['campanha'],
+		'agente-relatorios': ['status-report', 'espelho'],
+		'agente-definicoes': ['criar-workflow', 'criar-rotina', 'criar-runbook', 'confirmar', 'cancelar'],
+		'agente-reconciliacao': ['reconciliar'],
+	};
+	const cobertos = new Set(Object.values(domínios).flat());
+	for (const v of [...VERBOS, 'reconciliar', 'espelho']) {
+		if (v === 'ajuda') continue; // só comando: lista comandos e agentes, não é um domínio operável
+		assert.ok(cobertos.has(v), `verbo /${v} sem agente responsável`);
+	}
+
+	const arquivos = fs.readdirSync(path.join(plugin, 'agents')).filter((f) => f.endsWith('.md'));
+	assert.deepEqual(arquivos.map((f) => f.replace(/\.md$/, '')).sort(), Object.keys(domínios).sort());
+
+	for (const f of arquivos) {
+		const texto = fs.readFileSync(path.join(plugin, 'agents', f), 'utf8');
+		const fm = lerYaml(texto.split('---')[1]);
+		const nome = f.replace(/\.md$/, '');
+		assert.equal(fm.name, nome);
+		assert.ok(fm.description?.length > 20, `${f}: description`);
+		assert.ok(fm.model, `${f}: model`);
+		const ferramentas = String(fm.tools ?? '').split(',').map((s) => s.trim());
+		assert.ok(ferramentas.length > 0, `${f}: tools`);
+		for (const t of ferramentas) assert.match(t, new RegExp(`^${FERRAMENTA}(consultar|executar|reconciliar|espelho)$`), `${f}: ferramenta desconhecida ${t}`);
+	}
+});
+
 test('dist/servidor.mjs corresponde ao código-fonte atual (sem divergência)', async () => {
 	assert.equal(fs.readFileSync(path.join(plugin, 'dist/servidor.mjs'), 'utf8'), await empacotar(), 'rode npm run plugin:build');
 });
