@@ -16,8 +16,8 @@
 	--font-size-body: 1.0625rem; /* HIG: texto padrão 17 pt (o DS usa 16px; HIG vence) */
 	--content-width: 45rem; /* coluna de leitura (DS --container-reading 720px) */
 	--page-width: 75rem; /* largura de página (DS --container-page 1200px) */
-	--container-read: var(--content-width);
-	--container-wide: var(--page-width);
+	--container-read: 45rem;
+	--container-wide: 75rem;
 	--hit-target: 44px; /* HIG: controle mínimo 44×44 pt */
 
 	/* Ritmo editorial: tipografia + espaço + divisor no lugar de caixas. */

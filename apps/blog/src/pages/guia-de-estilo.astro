@@ -69,10 +69,10 @@ const exemploArtigo = (await artigos())[0];
 
 const md = async (texto: string) => (await renderMarkdown(`---\ntitle: Guia\n---\n${texto}`, { indice })).html;
 const editorial = await md(`> [!note] Nota
-> Um aviso neutro, com ícone circular e rótulo em caixa alta.
+> Um aviso neutro: rótulo azul em caixa alta, texto e um filete. Sem caixa, sem fundo.
 
 > [!summary] Frase-síntese
-> O resumo do artigo em uma frase, em azul claro.
+> O resumo do artigo em uma frase, com o peso de um lead — o texto fala mais alto que a moldura.
 
 > [!attention]
 > **Ponto de atenção.** O callout de atenção ganha o título "Ponto de atenção" quando o autor não escreve um.
@@ -81,7 +81,7 @@ const editorial = await md(`> [!note] Nota
 > Critério atendido com evidência.
 
 > [!danger] Risco alto
-> Use com parcimônia: é o único callout com cor semântica de erro.
+> Use com parcimônia: só o rótulo muda para a cor semântica de erro.
 
 > [!decision] Decisão
 > 1. **Qual é o problema real?** Separar sintoma de causa antes de agir.
@@ -601,8 +601,9 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 				<Rotulo>Conteúdo</Rotulo>
 				<h2 id="editorial-titulo" class={h2}>Componentes editoriais</h2>
 				<p class="intro-secao">
-					Tudo o que a gramática do vault produz, renderizado pelo mesmo pipeline dos artigos. Callouts, terminal, plain text, infográfico,
-					sumário, listas, decisão e citações são membros da mesma família.
+					Tudo o que a gramática do vault produz, renderizado pelo mesmo pipeline dos artigos (ADR-018). Um único sistema: rótulo azul em
+					caixa alta, conteúdo na largura do texto e filete de 1px — sem cards, sem superfícies azuis. Callouts, decisão, terminal, plain
+					text, infográfico, sumário, tabelas e citações são membros da mesma família.
 				</p>
 			</div>
 			<div class="max-w-read">

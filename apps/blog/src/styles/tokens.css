@@ -16,8 +16,17 @@
 	--sl-color-bg-sidebar: var(--background);
 	--sl-color-text: var(--foreground);
 	--sl-color-white: var(--foreground);
+	/* Escala de cinzas completa (ADR-018): sem ela, a integração do Tailwind injeta o zinco frio
+	   (--color-gray-*) em bordas e fundos do Starlight (pre, tabelas, cabeçalho). */
+	--sl-color-gray-1: var(--ink);
 	--sl-color-gray-2: var(--foreground);
 	--sl-color-gray-3: var(--muted);
+	--sl-color-gray-4: var(--muted);
+	--sl-color-gray-5: var(--border);
+	--sl-color-gray-6: var(--border-soft);
+	--sl-color-gray-7: var(--code-background);
+	--sl-color-black: var(--background);
+	--sl-color-accent-low: var(--brand-soft);
 	--sl-color-hairline: var(--border);
 	--sl-color-hairline-light: var(--border);
 	--sl-color-text-accent: var(--link);
@@ -204,6 +213,20 @@ body {
 	letter-spacing: -0.025em;
 	text-wrap: balance;
 }
+/* Artigo (ADR-018): página na largura editorial da referência — abertura em duas colunas e grade
+   de leitura (texto + sumário lateral). A coluna de texto continua na medida de leitura. */
+:root:has(.artigo-hero) {
+	--content-width: 72rem;
+}
+.leitura .markdown-body {
+	max-width: var(--container-read);
+}
+/* Primeiro parágrafo do artigo = lead. */
+.leitura .sl-markdown-content > p:first-child {
+	color: var(--ink);
+	font-size: 1.1875rem;
+	line-height: 1.55;
+}
 /* Artigo: o corpo começa logo abaixo da capa (sem o respiro duplo entre os painéis do Starlight). */
 .content-panel:has(.artigo-hero) + .content-panel {
 	padding-top: 0.5rem;
@@ -215,22 +238,13 @@ body {
 		display: none;
 	}
 }
-/* Painel de gráfico: mesma superfície dos blocos editoriais. */
-.markdown-body .grafico {
-	padding: 1.25rem;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-card);
-	background: var(--surface);
-}
+/* Painel de gráfico: bloco editorial comum (editorial.css); aqui só o título do gráfico. */
 .markdown-body .grafico figcaption {
 	color: var(--ink);
 	font-size: 1.125rem;
 }
 .markdown-body picture img {
 	border-radius: var(--radius-lg);
-}
-.markdown-body table {
-	background: var(--surface);
 }
 /* Próximos artigos (Pagination do Starlight, fora dos artigos): sem caixa. */
 .pagination-links a {

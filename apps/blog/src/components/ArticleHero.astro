@@ -1,12 +1,12 @@
 ---
-// Override oficial do PageTitle (ADR-010/ADR-012). Nos artigos: trilha "Blog / Categoria", selo
-// de categoria, título, subtítulo, autoria com ações e capa ilustrada (padrão do Showroom).
+// Override oficial do PageTitle (ADR-017/ADR-018). Nos artigos, abertura na estrutura da referência
+// editorial: capa à esquerda e texto à direita (trilha, selo, título, deck, autoria e ações); no
+// celular, capa em cima. As propriedades vão para a coluna de leitura (MarkdownContent.astro).
 // Na página inicial o título fica com o hero da Hoje; nas demais páginas, título simples.
 import Default from '@astrojs/starlight/components/PageTitle.astro';
 import CategoryPill from './CategoryPill.astro';
 import Ilustracao from './Ilustracao.astro';
 import MetaBar from './MetaBar.astro';
-import Propriedades from './Propriedades.astro';
 import { eArtigo, paraArtigo } from '../lib/artigos';
 
 const { entry } = Astro.locals.starlightRoute;
@@ -18,19 +18,20 @@ const subtitulo = entry.data.description && !(entry.body ?? '').includes(entry.d
 
 {
 	artigo ? (
-		<header class="artigo-hero mt-2 mb-2 grid justify-items-start gap-3">
-			<nav class="trilha" aria-label="Trilha">
-				<a href="/blog/">Blog</a>
-				<span aria-hidden="true">/</span>
-				<a href={`/blog/categoria/${artigo.categoriaSlug}/`}>{artigo.categoria}</a>
-			</nav>
-			<CategoryPill nome={artigo.categoria} href={`/blog/categoria/${artigo.categoriaSlug}/`} />
-			<Default />
-			{subtitulo && <p class="m-0 max-w-2xl text-lead text-pretty text-muted">{subtitulo}</p>}
-			<MetaBar artigo={artigo} />
-			<Propriedades dados={entry.data as Record<string, unknown>} />
-			<div class="mt-4 w-full">
+		<header class="artigo-hero mt-2 grid items-center gap-8 border-b border-rule pb-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-12">
+			<div class="capa">
 				<Ilustracao icone={artigo.icone} grande />
+			</div>
+			<div class="grid justify-items-start gap-3">
+				<nav class="trilha" aria-label="Trilha">
+					<a href="/blog/">Blog</a>
+					<span aria-hidden="true">/</span>
+					<a href={`/blog/categoria/${artigo.categoriaSlug}/`}>{artigo.categoria}</a>
+				</nav>
+				<CategoryPill nome={artigo.categoria} href={`/blog/categoria/${artigo.categoriaSlug}/`} />
+				<Default />
+				{subtitulo && <p class="m-0 max-w-xl text-lead text-pretty text-muted">{subtitulo}</p>}
+				<MetaBar artigo={artigo} />
 			</div>
 		</header>
 	) : inicio ? null : (
@@ -49,8 +50,5 @@ const subtitulo = entry.data.description && !(entry.body ?? '').includes(entry.d
 		line-height: 1.02;
 		letter-spacing: -0.035em;
 		text-wrap: balance;
-	}
-	.artigo-hero :global(.propriedades) {
-		width: 100%;
 	}
 </style>

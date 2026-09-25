@@ -11,7 +11,7 @@ const { artigo } = Astro.props;
 const salvo = JSON.stringify({ url: artigo.url, titulo: artigo.titulo, resumo: artigo.resumo, categoria: artigo.categoria, minutos: artigo.minutos });
 ---
 
-<div class="meta-bar mt-6 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 border-y border-rule py-3">
+<div class="meta-bar mt-6 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-rule pt-3">
 	<div class="flex flex-wrap items-center gap-3">
 		<span class="grid size-10 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-text" aria-hidden="true">{artigo.iniciais}</span>
 		<span class="grid leading-tight">

@@ -1,10 +1,71 @@
 ---
 // Override oficial do Starlight: escopo do GitHub Markdown CSS (ADR-005) e as cssclasses do
 // frontmatter do Obsidian, normalizadas como classes do tema (ADR-013: img-grid, wide, cards...).
+// Nos artigos (ADR-018), grade de leitura da referência editorial: coluna de texto + sumário
+// "Neste artigo" fixo na lateral (desktop) ou recolhível acima do texto (celular). O sumário vem
+// dos títulos do próprio Markdown (route data do Starlight), sem duplicar conteúdo.
 import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import Propriedades from './Propriedades.astro';
+import { eArtigo } from '../lib/artigos';
 
-const { entry } = Astro.locals.starlightRoute;
+const { entry, headings } = Astro.locals.starlightRoute;
 const cssclasses = ((entry.data as { cssclasses?: string[] }).cssclasses ?? []).map((c) => `cssclass-${String(c).replace(/[^a-z0-9-]/gi, '')}`);
+const artigo = eArtigo(entry.id) && entry.id !== 'blog';
+const secoes = headings.filter((h) => h.depth === 2);
+const numero = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
-<div class:list={['markdown-body', ...cssclasses]}><Default><slot /></Default></div>
+{
+	artigo ? (
+		<div class="leitura grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1fr)_15rem]">
+			{secoes.length > 1 && (
+				<>
+					<aside class="leitura__sumario not-content hidden lg:order-2 lg:block" aria-labelledby="sumario-lateral">
+						<nav class="sticky top-24" aria-labelledby="sumario-lateral">
+							<p class="rotulo" id="sumario-lateral">Neste artigo</p>
+							<ol class="sumario">
+								{secoes.map((h, i) => (
+									<li>
+										<a href={`#${h.slug}`}>
+											<span aria-hidden="true">{numero(i)}</span>
+											{h.text}
+										</a>
+									</li>
+								))}
+							</ol>
+						</nav>
+					</aside>
+					<details class="leitura__sumario-movel not-content lg:hidden">
+						<summary>Neste artigo · {secoes.length} seções</summary>
+						<nav aria-label="Neste artigo">
+							<ol class="sumario">
+								{secoes.map((h, i) => (
+									<li>
+										<a href={`#${h.slug}`}>
+											<span aria-hidden="true">{numero(i)}</span>
+											{h.text}
+										</a>
+									</li>
+								))}
+							</ol>
+						</nav>
+					</details>
+				</>
+			)}
+			<div class="min-w-0 lg:order-1">
+				<Propriedades dados={entry.data as Record<string, unknown>} />
+				<div class:list={['markdown-body', ...cssclasses]}>
+					<Default>
+						<slot />
+					</Default>
+				</div>
+			</div>
+		</div>
+	) : (
+		<div class:list={['markdown-body', ...cssclasses]}>
+			<Default>
+				<slot />
+			</Default>
+		</div>
+	)
+}

@@ -2,7 +2,7 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-25 (design system editorial, ADR-017)
+**Última atualização:** 2026-09-25 (unificação dos blocos editoriais + artigo reescrito, ADR-018)
 **Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
@@ -186,6 +186,25 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
 - **Limitações:**
   - o dashboard TDAH segue com Chart.js via CDN (sem rede na sessão, os gráficos não aparecem nas capturas; problema anterior);
   - diagramas antigos em ` ```text ` continuam quebrando linha; o autor migra para ` ```ascii `.
+
+## Unificação dos blocos editoriais + artigo reescrito (ADR-018) — 2026-09-25 — VERIFIED (local)
+- **Pedido do usuário:** ADR "Unificação visual dos blocos editoriais", e reescrever o blog que ainda estava em estrutura antiga. Escopo escolhido: layout **e** conteúdo.
+- **Blocos:** um sistema único na base (`editorial.css`, tokens `--bloco-*`): fundo transparente, filete inferior de 1px e rótulo azul em caixa alta idêntico. Vale para:
+  - callouts, decisão e ponto de atenção;
+  - terminal, plain text e infográfico;
+  - diagrama, gráfico e tabela;
+  - comparação, toggle e propriedades.
+- **Interferências neutralizadas na base:** o contorno do Obsidian no Expressive Code, a barra e a seta de `<details>`, e os cinzas `--sl-color-gray-*` (zinco do Tailwind).
+- **Artigo:**
+  - abertura em duas colunas (capa + trilha, selo, título, autoria);
+  - sumário "Neste artigo" fixo na lateral (desktop) ou recolhível (celular);
+  - propriedades na coluna de leitura;
+  - coluna de texto em 45rem.
+- **Conteúdo:**
+  - nos três artigos de fator: ficha do fator, ponto de atenção, bloco de decisão, passos e títulos sem numeração manual;
+  - em Topologia: 19 diagramas passaram a ` ```ascii `;
+  - nenhum texto removido.
+- **Evidência:** ver o commit (`npm run check`, `npm run build`, e2e com teste novo do artigo e da unificação); capturas lado a lado revisadas no laboratório e nos artigos, em desktop e celular, claro e escuro.
 
 ## Nova conta Cloudflare (2026-09-24)
 

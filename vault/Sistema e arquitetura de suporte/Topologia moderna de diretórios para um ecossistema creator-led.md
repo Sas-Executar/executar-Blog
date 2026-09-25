@@ -34,7 +34,7 @@ Para CMS, a escolha-base seria **Sanity + frontend React/Next.js ou equivalente*
 
 A mensuração deve ser concebida como **produto de dados**, não como uma coleção de pageviews. A arquitetura recomendada é:
 
-```text
+```ascii
 browser/app
    ↓
 consent + identity context
@@ -90,7 +90,7 @@ Essas personas são uma hipótese de produto, não dados observados. Devem ser s
 
 O objetivo não deve ser simplesmente “tráfego orgânico”. A cadeia econômica recomendada é:
 
-```text
+```ascii
 impressão/search/social
         ↓
 visita de conteúdo
@@ -199,7 +199,7 @@ Pontuação abaixo é **avaliação arquitetural deste relatório**, em escala d
 
 O blog deve começar **single-tenant no plano editorial**:
 
-```text
+```ascii
 Editorial tenant
 ├── posts
 ├── topics
@@ -211,7 +211,7 @@ Editorial tenant
 
 A camada de creators pode evoluir independentemente:
 
-```text
+```ascii
 Platform
 ├── tenant: editorial
 │   └── branded content
@@ -234,7 +234,7 @@ Em um futuro modelo multi-tenant, cada documento deve carregar identificadores d
 
 A topologia pública recomendada é deliberadamente rasa:
 
-```text
+```ascii
 /
 ├── blog/
 │   ├── {article-slug}/
@@ -373,7 +373,7 @@ Portanto:
 
 devem continuar com:
 
-```text
+```ascii
 canonical → /blog/post/
 ```
 
@@ -485,7 +485,7 @@ As capacidades centrais acima são documentadas pelos próprios produtos: Sanity
 
 Para frontend próprio, um monorepo reduz divergência entre SEO, analytics e design system:
 
-```text
+```ascii
 repo/
 ├── apps/
 │   ├── web/                  # site público + blog
@@ -528,7 +528,7 @@ migrations/content/003-add-primary-topic.ts
 
 Pipeline recomendado:
 
-```text
+```ascii
 PR
  ↓
 lint + typecheck
@@ -591,7 +591,7 @@ A escolha mais barata na fatura pode ser mais cara se exigir uma pessoa adiciona
 
 Use um único **identity plane**, mesmo que a web pública e o app tenham runtimes separados.
 
-```text
+```ascii
 anonymous visitor
       ↓
 example.com/blog/...
@@ -723,7 +723,7 @@ utm_id          = {internal-campaign-id}
 
 Fluxo recomendado:
 
-```text
+```ascii
 CMS publish
    ↓
 webhook
@@ -764,7 +764,7 @@ Backlinks sociais devem usar UTMs padronizados. O CMS deve ser desacoplado das A
 
 O grafo de conteúdo deve suportar múltiplos caminhos sem contaminar a taxonomia editorial:
 
-```text
+```ascii
 SEO article
  ├── creator signup
  ├── follower signup
@@ -808,7 +808,7 @@ Para usuários sujeitos ao GDPR, o desenho precisa também cumprir o Regulamento
 
 Uma CMP adequada ao ecossistema precisa controlar destinos, e não apenas esconder o banner:
 
-```text
+```ascii
 essential    → sempre conforme necessidade operacional
 preferences  → conforme decisão jurídica
 analytics    → policy gate
@@ -847,7 +847,7 @@ Para o plano de identidade, seguir a BCP atual do OAuth reduz dependência de pa
 
 Tenants de creators não devem compartilhar permissões por convençia. O componente que resolve:
 
-```text
+```ascii
 request → user → role → tenant → resource
 ```
 
@@ -936,7 +936,7 @@ Conteúdo deve expor autoria real e contexto sobre quem o produziu; o Google inc
 
 Só considerar essa fase concluída quando for possível reconstruir:
 
-```text
+```ascii
 campaign
  → landing content
  → CTA
@@ -954,7 +954,7 @@ Adicionar queue, syndication, creator/entity relations, newsletter/lifecycle e R
 
 Somente entço criar locale graph:
 
-```text
+```ascii
 content_family_id: "cf_123"
 
 variants:
@@ -995,7 +995,7 @@ old_url,new_url,action,reason
 
 Não fazer:
 
-```text
+```ascii
 1000 URLs antigas → /
 ```
 
@@ -1021,7 +1021,7 @@ O Google observa que o novo site pode receber aumento temporário de crawling ap
 
 **Cutover**
 
-```text
+```ascii
 old URL
    │
    └── 301/308 ──> final canonical URL
@@ -1029,7 +1029,7 @@ old URL
 
 Evitar:
 
-```text
+```ascii
 old → intermediate → locale → https → www → final
 ```
 
@@ -1059,7 +1059,7 @@ Evite combinar, no mesmo dia, **mudança de domínio + mudança completa de CMS 
 
 A arquitetura que melhor equilibra aquisição, SEO, produto, identidade, analytics e evolução para uma creator economy é:
 
-```text
+```ascii
 PUBLIC PLANE
 example.com
 ├── /blog/

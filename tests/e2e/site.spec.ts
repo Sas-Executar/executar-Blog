@@ -54,10 +54,11 @@ test('endereços antigos /artigos redirecionam para /blog', async ({ request }) 
 	expect(res.headers().location).toContain('/blog/fatores-de-riscos-cognitivos/');
 });
 
-test('tabela com estilo GitHub e diagrama renderizado', async ({ page }) => {
+test('tabela editorial (filetes) e diagrama renderizado', async ({ page }) => {
 	await page.goto(ARTIGO);
-	const borda = await page.locator('.markdown-body table td').first().evaluate((el) => getComputedStyle(el).borderTopStyle);
-	expect(borda).toBe('solid');
+	// ADR-018: tabela editorial — só filetes horizontais, sem grade vertical.
+	const borda = await page.locator('.markdown-body table td').first().evaluate((el) => ({ base: getComputedStyle(el).borderBottomStyle, lado: getComputedStyle(el).borderLeftStyle }));
+	expect(borda).toEqual({ base: 'solid', lado: 'none' });
 	await expect(page.locator('pre.mermaid[data-desenhado] svg').first()).toBeVisible({ timeout: 15_000 });
 });
 
@@ -173,6 +174,29 @@ test('família editorial (ADR-017): ponto de atenção, decisão, infográfico e
 	expect(await infografico.locator('pre').evaluate((el) => getComputedStyle(el).whiteSpace)).toBe('pre');
 	await expect(infografico.locator('pre')).toHaveAttribute('tabindex', '0');
 	await expect(page.locator('.expressive-code .frame.is-terminal').first()).toBeVisible();
+});
+
+test('artigo (ADR-018): abertura em duas colunas, sumário lateral e blocos sem caixa', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await page.goto(ARTIGO);
+	const sumario = page.locator('.leitura__sumario');
+	await expect(sumario).toBeVisible();
+	await expect(sumario.getByRole('link', { name: /Origem/ })).toHaveAttribute('href', '#origem');
+	// Unificação: nenhum bloco editorial tem fundo, caixa ou raio; todos fecham com um filete.
+	// O laboratório de sintaxe reúne todos os blocos especiais lado a lado.
+	await page.goto(SINTAXE);
+	for (const sel of ['aside.callout--dica', 'aside.callout--atencao', 'aside.callout--decisao', '.expressive-code', 'figure.infografico', 'figure.diagrama']) {
+		const s = await page.locator(`.markdown-body ${sel}`).first().evaluate((el) => {
+			const c = getComputedStyle(el);
+			return { fundo: c.backgroundColor, raio: c.borderRadius, esquerda: c.borderLeftWidth, base: c.borderBottomWidth };
+		});
+		expect(s, sel).toEqual({ fundo: 'rgba(0, 0, 0, 0)', raio: '0px', esquerda: '0px', base: '1px' });
+	}
+	expect(await page.locator('.expressive-code .frame').first().evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('none');
+	await page.setViewportSize({ width: 375, height: 800 });
+	await page.goto(ARTIGO);
+	await expect(page.locator('.leitura__sumario-movel')).toBeVisible();
+	await expect(sumario).toBeHidden();
 });
 
 test('guia de estilo (ADR-017): fundações, componentes, mood board e storyboard', async ({ page }) => {
