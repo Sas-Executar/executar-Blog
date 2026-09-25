@@ -37,6 +37,7 @@
 	color-scheme: light;
 	--background: #f7f7f3; /* papel off-white */
 	--surface: #fbfbf8; /* superfície: callouts, blocos mono, controles */
+	--surface-raised: #ffffff; /* grupos de lista e botões redondos (padrão Ajustes) */
 	--foreground: #26262a; /* texto corrido */
 	--ink: #0b0b0c; /* títulos e ênfase */
 	--muted: #5d605e; /* texto secundário */
@@ -63,6 +64,7 @@
 	color-scheme: dark;
 	--background: #232527; /* grafite */
 	--surface: #2b2e31;
+	--surface-raised: #2f3236;
 	--foreground: #e9eae8;
 	--ink: #f3f4f2;
 	--muted: #a9adb2;

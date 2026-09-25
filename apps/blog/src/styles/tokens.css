@@ -90,10 +90,15 @@ site-search button {
 	display: flex;
 	align-items: center;
 }
-/* Botão claro/escuro: 44×44 pt também na largura (o tema usa 28px). */
+/* Botão claro/escuro: botão redondo de 44 pt na superfície elevada (padrão Ajustes, ADR-017). */
 starlight-obsidian-theme-select button {
 	min-width: var(--hit-target);
 	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	background: var(--surface-raised);
+	color: var(--ink);
+	box-shadow: 0 1px 2px color-mix(in oklab, var(--ink) 8%, transparent);
 }
 
 /* Painel de gráfico (ADR-007, Grafico.astro). Global (não escopado ao componente) porque o

@@ -1,11 +1,14 @@
 ---
 // Preferências (HF05): cada opção mostra o estado atual e muda a experiência na hora, em todas as
-// páginas (aplicada cedo pelo script de Head.astro, para não piscar).
+// páginas (aplicada cedo pelo script de Head.astro, para não piscar). Layout em listas agrupadas,
+// no padrão de Ajustes do iOS (ADR-017, SOT-REF-003).
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import Icone from '../components/Icone.astro';
 
 const opcoes = [
 	{
 		chave: 'tema',
+		icone: 'tema',
 		rotulo: 'Tema',
 		ajuda: 'Automático segue o modo claro/escuro do seu sistema.',
 		valores: [
@@ -16,6 +19,7 @@ const opcoes = [
 	},
 	{
 		chave: 'texto',
+		icone: 'texto',
 		rotulo: 'Tamanho do texto',
 		ajuda: 'Aumenta o texto dos artigos e da interface.',
 		valores: [
@@ -26,6 +30,7 @@ const opcoes = [
 	},
 	{
 		chave: 'movimento',
+		icone: 'movimento',
 		rotulo: 'Movimento',
 		ajuda: 'Reduzir desliga animações e transições.',
 		valores: [
@@ -33,29 +38,78 @@ const opcoes = [
 			['reduzido', 'Reduzido'],
 		],
 	},
-];
+] as const;
+const atalhos = [
+	{ href: '/salvos/', rotulo: 'Salvos', icone: 'salvos' },
+	{ href: '/explorar/', rotulo: 'Explorar artigos', icone: 'explorar' },
+	{ href: '/buscar/', rotulo: 'Buscar', icone: 'buscar' },
+] as const;
+const sobre = [
+	{ href: '/perguntar/', rotulo: 'Pergunte aos artigos', icone: 'documento' },
+	{ href: '/guia-de-estilo/', rotulo: 'Guia de estilo', icone: 'estilo', valor: 'ADR-017' },
+] as const;
 ---
 
 <StarlightPage frontmatter={{ title: 'Preferências', description: 'Ajuste tema, tamanho do texto e movimento.', template: 'splash', pagefind: false }}>
-	<div class="preferencias not-content grid gap-0">
-		<p class="intro max-w-2xl text-lead text-pretty text-muted">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
-		{
-			opcoes.map((o) => (
-				<fieldset data-preferencia={o.chave} class="m-0 border-0 border-t border-rule px-0 py-6">
-					<legend class="float-left m-0 w-full p-0 font-display text-title font-bold tracking-tight text-ink">{o.rotulo}</legend>
-					<p class="clear-both m-0 pt-1 pb-4 text-small text-muted">{o.ajuda}</p>
-					<div class="segmentado">
-						{o.valores.map(([valor, nome]) => (
-							<label>
-								<input type="radio" name={o.chave} value={valor} />
-								<span>{nome}</span>
-							</label>
-						))}
-					</div>
-					<p class="atual mt-3 mb-0 font-mono text-xs tracking-wide text-muted uppercase" data-atual />
-				</fieldset>
-			))
-		}
+	<div class="preferencias not-content mx-auto max-w-read">
+		<p class="intro m-0 text-lead text-pretty text-muted">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
+
+		<p class="grupo-rotulo" id="grupo-aparencia">Aparência</p>
+		<ul class="grupo" aria-labelledby="grupo-aparencia">
+			{
+				opcoes.map((o) => (
+					<li>
+						<fieldset data-preferencia={o.chave} class="m-0 border-0 px-5 py-4">
+							<legend class="float-left m-0 flex w-full items-center gap-4 p-0 text-[1.0625rem] font-medium text-ink">
+								<span class="grupo__icone"><Icone nome={o.icone} /></span>
+								{o.rotulo}
+							</legend>
+							<p class="clear-both m-0 pt-1 pb-3 pl-10 text-label text-muted">{o.ajuda}</p>
+							<div class="sm:pl-10">
+								<div class="segmentado flex w-full flex-nowrap [&_label]:flex-1 [&_label]:justify-center [&_label]:px-2">
+									{o.valores.map(([valor, nome]) => (
+										<label>
+											<input type="radio" name={o.chave} value={valor} />
+											<span>{nome}</span>
+										</label>
+									))}
+								</div>
+								<p class="atual mt-2 mb-0 font-mono text-xs tracking-wide text-muted uppercase" data-atual />
+							</div>
+						</fieldset>
+					</li>
+				))
+			}
+		</ul>
+
+		<p class="grupo-rotulo" id="grupo-leitura">Sua leitura</p>
+		<ul class="grupo" aria-labelledby="grupo-leitura">
+			{
+				atalhos.map((a) => (
+					<li>
+						<a class="grupo__linha" href={a.href}>
+							<span class="grupo__icone"><Icone nome={a.icone} /></span>
+							<span>{a.rotulo}</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+
+		<p class="grupo-rotulo" id="grupo-sobre">Sobre</p>
+		<ul class="grupo" aria-labelledby="grupo-sobre">
+			{
+				sobre.map((a) => (
+					<li>
+						<a class="grupo__linha" href={a.href}>
+							<span class="grupo__icone"><Icone nome={a.icone} /></span>
+							<span>{a.rotulo}</span>
+							{'valor' in a && <span class="grupo__valor font-mono text-xs">{a.valor}</span>}
+						</a>
+					</li>
+				))
+			}
+		</ul>
 		<p class="sr-only" role="status" aria-live="polite" data-estado></p>
 	</div>
 </StarlightPage>

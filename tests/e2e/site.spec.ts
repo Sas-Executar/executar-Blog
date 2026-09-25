@@ -177,10 +177,12 @@ test('família editorial (ADR-017): ponto de atenção, decisão, infográfico e
 
 test('guia de estilo (ADR-017): fundações, componentes, mood board e storyboard', async ({ page }) => {
 	await page.goto('/guia-de-estilo/');
-	for (const secao of ['Cores', 'Tipografia', 'Botões', 'Controles de formulário', 'Navegação', 'Cartões e listas', 'Componentes editoriais', 'Mood board', 'Storyboard']) {
+	for (const secao of ['Logo', 'Cores', 'Tipografia', 'Botões', 'Controles de formulário', 'Navegação', 'Cartões e listas', 'Componentes editoriais', 'Mood board', 'Storyboard']) {
 		await expect(page.getByRole('heading', { name: secao, exact: true })).toBeVisible();
 	}
 	await expect(page.locator('.storyboard > li')).toHaveCount(7);
+	await expect(page.locator('.cabecalho').getByRole('link', { name: 'Risco Cognitivo, página inicial' })).toBeVisible();
+	await expect(page.locator('#logo .logo--g')).toHaveCount(2);
 	await expect(page.locator('#editorial .callout--decisao')).toBeVisible();
 	await expect(page.locator('#editorial figure.infografico')).toBeVisible();
 	await page.getByRole('switch', { name: 'Texto maior' }).check();

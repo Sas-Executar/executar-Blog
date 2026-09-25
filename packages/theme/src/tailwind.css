@@ -24,6 +24,7 @@
 	/* Cores semânticas (cores.css) */
 	--color-paper: var(--background);
 	--color-surface: var(--surface);
+	--color-surface-raised: var(--surface-raised);
 	--color-ink: var(--ink);
 	--color-fg: var(--foreground);
 	--color-muted: var(--muted);
@@ -90,6 +91,142 @@
 	.segmentado label:has(:focus-visible) {
 		outline: 2px solid var(--focus-ring);
 		outline-offset: 2px;
+	}
+
+	/* Logo "Risco Cognitivo": caixa alta pesada em duas linhas + barra azul (SOT-REF-002). */
+	.logo {
+		display: inline-grid;
+		align-content: center;
+		justify-items: start;
+		gap: 0.26em;
+		min-height: var(--hit-target);
+		color: var(--ink);
+		font-size: 0.8125rem;
+		text-decoration: none;
+	}
+	.logo__texto {
+		font-family: var(--font-display);
+		font-weight: 800;
+		line-height: 0.92;
+		letter-spacing: -0.035em;
+		text-transform: uppercase;
+	}
+	.logo__barra {
+		width: 1.35em;
+		height: 0.13em;
+		min-height: 2px;
+		border-radius: 999px;
+		background: var(--accent);
+	}
+	.logo--m {
+		font-size: 1.125rem;
+	}
+	.logo--g {
+		font-size: clamp(2.75rem, 1.5rem + 6vw, 5.5rem);
+	}
+	a.logo:hover .logo__barra {
+		width: 2.2em;
+	}
+	.logo__barra {
+		transition: width 220ms var(--ease-standard);
+	}
+
+	/* Lista agrupada (padrão Ajustes/iOS, SOT-REF-003): rótulo de seção em sentence case,
+	   grupo de cantos grandes na superfície elevada, linhas com ícone, valor e chevron, e
+	   divisores recuados até o texto. */
+	.grupo-rotulo {
+		margin: 2rem 0 0.5rem;
+		padding-inline: 1.25rem;
+		color: var(--muted);
+		font-size: 0.9375rem;
+		font-weight: 500;
+	}
+	.grupo {
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		border-radius: 1.5rem;
+		background: var(--surface-raised);
+		list-style: none;
+	}
+	.grupo > li,
+	.grupo__linha {
+		margin: 0;
+	}
+	.grupo__linha {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1.5rem minmax(0, 1fr);
+		grid-auto-columns: auto;
+		grid-auto-flow: column;
+		align-items: center;
+		gap: 1rem;
+		min-height: 3.5rem;
+		padding: 0.625rem 1.25rem;
+		color: var(--ink);
+		font-size: 1.0625rem;
+		text-decoration: none;
+	}
+	.grupo__linha--sem-icone {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.grupo > li {
+		position: relative;
+	}
+	.grupo > li + li::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: var(--grupo-recuo, 3.75rem);
+		border-top: 1px solid var(--border-soft);
+	}
+	.grupo--sem-icone {
+		--grupo-recuo: 1.25rem;
+	}
+	.grupo__icone {
+		display: grid;
+		place-items: center;
+		color: var(--foreground);
+	}
+	.grupo__valor {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: var(--muted);
+	}
+	a.grupo__linha::after {
+		content: '';
+		width: 0.5rem;
+		height: 0.5rem;
+		margin-inline-end: 0.25rem;
+		border-top: 1.5px solid var(--muted);
+		border-right: 1.5px solid var(--muted);
+		transform: rotate(45deg);
+	}
+	a.grupo__linha:hover {
+		background: color-mix(in oklab, var(--surface-raised) 92%, var(--ink));
+	}
+	a.grupo__linha:focus-visible {
+		outline: 2px solid var(--focus-ring);
+		outline-offset: -2px;
+	}
+	a.grupo__linha.grupo__linha--acento {
+		color: var(--link);
+	}
+
+	/* Botão redondo de ícone (cabeçalho de Ajustes): 44 pt, superfície elevada. */
+	.botao-icone {
+		display: inline-grid;
+		place-items: center;
+		width: var(--hit-target);
+		height: var(--hit-target);
+		border: 0;
+		border-radius: 50%;
+		background: var(--surface-raised);
+		color: var(--ink);
+		box-shadow: 0 1px 2px color-mix(in oklab, var(--ink) 8%, transparent);
+		cursor: pointer;
 	}
 
 	/* Rótulo / overline: caixa alta 11 pt, tracking largo, azul. Substitui os títulos de seção soltos. */

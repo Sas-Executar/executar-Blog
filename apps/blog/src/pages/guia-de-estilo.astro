@@ -113,6 +113,7 @@ const decisaoStoryboard = await md(`> [!decision] Decisão
 > 2. **Qual o primeiro teste?** Um bloco de foco de 50 minutos por dia.`);
 
 const secoes = [
+	['logo', 'Logo'],
 	['cores', 'Cores'],
 	['tipografia', 'Tipografia'],
 	['espaco', 'Espaço, raio e linhas'],
@@ -162,6 +163,48 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 			<p class="toc__titulo">Sumário</p>
 			<ol>{secoes.map(([id, nome]) => <li><a href={`#${id}`}>{nome}</a></li>)}</ol>
 		</nav>
+
+		<!-- 0. Logo -->
+		<section id="logo" class="secao not-content" aria-labelledby="logo-titulo">
+			<Rotulo>Marca</Rotulo>
+			<h2 id="logo-titulo" class={h2}>Logo</h2>
+			<p class="intro-secao">
+				"Risco Cognitivo" em grotesca pesada, caixa alta e duas linhas, com a barra azul de acento embaixo. É texto vivo, não imagem: nítido em
+				qualquer tamanho e com claro/escuro automáticos.
+			</p>
+			<div class="grid gap-px overflow-hidden rounded-card border border-rule bg-rule md:grid-cols-2">
+				<div class="grid min-h-72 place-items-center bg-paper p-10">
+					<Marca tamanho="g" />
+				</div>
+				<div class="grid min-h-72 place-items-center bg-ink p-10">
+					<Marca tamanho="g" class="text-paper" />
+				</div>
+			</div>
+			<div class="mt-10 grid gap-10 md:grid-cols-3">
+				<div>
+					<h3 class={h3}>Tamanhos</h3>
+					<ul class="lista-editorial">
+						<li class="flex items-center justify-between gap-4"><Marca tamanho="p" /><code class="font-mono text-xs text-muted">p · cabeçalho</code></li>
+						<li class="flex items-center justify-between gap-4"><Marca tamanho="m" /><code class="font-mono text-xs text-muted">m · rodapé</code></li>
+					</ul>
+				</div>
+				<div>
+					<h3 class={h3}>Construção</h3>
+					<ul class="lista-editorial text-small text-muted">
+						<li>Inter 800, caixa alta, entrelinha 0,92, tracking −0,035em</li>
+						<li>Barra: 1,35em × 0,13em, cantos arredondados, <code>--accent</code></li>
+						<li>Respiro entre texto e barra: 0,26em; área mínima de toque 44 pt</li>
+					</ul>
+				</div>
+				<div>
+					<h3 class={h3}>Ícone (favicon)</h3>
+					<div class="flex items-center gap-4">
+						<img src="/favicon.svg" alt="" width="64" height="64" class="rounded-control border border-rule" />
+						<p class="m-0 text-small text-muted">"RC" com a mesma barra azul, para aba do navegador e atalhos.</p>
+					</div>
+				</div>
+			</div>
+		</section>
 
 		<!-- 1. Cores -->
 		<section id="cores" class="secao not-content" aria-labelledby="cores-titulo">
@@ -507,6 +550,25 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">02</span><span class="text-ink">Externalização cognitiva</span></li>
 				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">03</span><span class="text-ink">Fatores de riscos cognitivos</span></li>
 			</ul>
+			<h3 class:list={[h3, 'mt-12']}>Lista agrupada (padrão Ajustes)</h3>
+			<p class="m-0 mb-2 max-w-read text-small text-muted">
+				Grupos de cantos grandes na superfície elevada, rótulo de seção em sentence case, ícone, valor e chevron, divisor recuado até o texto.
+				Usada em Preferências.
+			</p>
+			<div class="max-w-read rounded-card bg-paper py-2">
+				<p class="grupo-rotulo mt-2" id="guia-grupo-conta">Conta</p>
+				<ul class="grupo" aria-labelledby="guia-grupo-conta">
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="pessoas" /></span><span>Perfil</span></a></li>
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="salvos" /></span><span>Salvos</span><span class="grupo__valor">3 artigos</span></a></li>
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="tema" /></span><span>Tema</span><span class="grupo__valor">Automático</span></a></li>
+				</ul>
+				<p class="grupo-rotulo" id="guia-grupo-app">App</p>
+				<ul class="grupo" aria-labelledby="guia-grupo-app">
+					<li><label class="grupo__linha"><span class="grupo__icone"><Icone nome="movimento" /></span><span>Movimento reduzido</span><span class="interruptor min-h-0"><input type="checkbox" role="switch" aria-label="Movimento reduzido" /></span></label></li>
+					<li><a class="grupo__linha grupo__linha--acento" href="#cartoes"><span class="grupo__icone"><Icone nome="estilo" /></span><span>Guia de estilo</span></a></li>
+				</ul>
+			</div>
+
 			<h3 class:list={[h3, 'mt-12']}>Estado vazio</h3>
 			<div class="vazio max-w-read">
 				<p class="text-ink"><strong>Você ainda não salvou nenhum artigo.</strong></p>

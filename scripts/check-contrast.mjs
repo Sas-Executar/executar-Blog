@@ -32,6 +32,9 @@ export const PAIRS = [
 	['success-text', 'success-soft'],
 	['warning-text', 'warning-soft'],
 	['error-text', 'error-soft'],
+	['ink', 'surface-raised'],
+	['muted', 'surface-raised'],
+	['link', 'surface-raised'],
 ];
 
 function luminance(hex) {

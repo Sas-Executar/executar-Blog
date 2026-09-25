@@ -2,7 +2,7 @@
 // Ícones de traço (24×24, currentColor) usados no shell e nos cards. Sempre decorativos:
 // o texto ao lado dá o nome acessível.
 interface Props {
-	nome: 'hoje' | 'explorar' | 'buscar' | 'salvos' | 'preferencias' | 'grafico' | 'documento' | 'pessoas' | 'cubo' | 'link' | 'relogio' | 'check' | 'seta' | 'fechar';
+	nome: 'hoje' | 'explorar' | 'buscar' | 'salvos' | 'preferencias' | 'grafico' | 'documento' | 'pessoas' | 'cubo' | 'link' | 'relogio' | 'check' | 'seta' | 'fechar' | 'tema' | 'texto' | 'movimento' | 'estilo';
 	tamanho?: number;
 }
 const { nome, tamanho = 20 } = Astro.props;
@@ -18,6 +18,10 @@ const d: Record<Props['nome'], string> = {
 	cubo: 'm12 3 8 4.5v9L12 21l-8-4.5v-9zm0 0v18M4 7.5l8 4.5 8-4.5',
 	link: 'M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1',
 	relogio: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v4l3 2',
+	tema: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-18v18',
+	texto: 'M3 18 8 6l5 12M4.8 14h6.4M15 18l3-7 3 7M16.2 15.5h3.6',
+	movimento: 'M3 12h4l2.5-6 5 12 2.5-6h4',
+	estilo: 'M4 20h16M6 16l6-12 6 12M8.5 11h7',
 	check: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm-4-9 3 3 5-6',
 	seta: 'M5 12h14m-6-6 6 6-6 6',
 	fechar: 'M6 6l12 12M18 6 6 18',

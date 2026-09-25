@@ -161,6 +161,11 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
   - `npm run build` passou.
   - e2e 43/43 (antes 40/40), incluindo axe claro e escuro em `/guia-de-estilo/`, alvos de 44 pt e ausência de overflow a 375, 640, 768 e 1280 px.
   - Capturas revisadas em 375 e 1280 px, claro e escuro.
+- **Complemento (logo + referência de Ajustes):**
+  - logo "Risco Cognitivo" em texto vivo (`Marca.astro`, `.logo`) no cabeçalho, no rodapé e no guia, mais o favicon "RC";
+  - `--surface-raised` e a lista agrupada no padrão de Ajustes do iOS, com a página Preferências reorganizada em grupos;
+  - botão de tema redondo;
+  - evidência: check 0 erros, contraste 23 pares × 4 modos, e2e verde.
 - **Limitações:**
   - o dashboard TDAH segue com Chart.js via CDN (sem rede na sessão, os gráficos não aparecem nas capturas; problema anterior);
   - diagramas antigos em ` ```text ` continuam quebrando linha; o autor migra para ` ```ascii `.

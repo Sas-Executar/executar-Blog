@@ -3,6 +3,8 @@ metadata: { id: VISUAL-CONTRACT-BLOG-001, version: 2.0.0, status: ACCEPTED, adr:
 principles: [content_first, mobile_first, low_visual_noise, high_typographic_hierarchy, typography_space_divider_over_boxes, single_blue_accent, predictable_navigation]
 reference: risco-cognitivo-executar-linkedin-v12-dark-mode.html (papel off-white, tinta, azul #0a66c2, filetes finos, sem sombras)
 style_guide: /guia-de-estilo/
+logo: SOT-REF-002-logo-risco-cognitivo.png (texto vivo em Marca.astro; barra azul --accent)
+settings_pattern: SOT-REF-003 lista agrupada estilo Ajustes/iOS (Preferências)
 routes:
   - id: ROUTE-HOJE
     path: /
@@ -18,6 +20,9 @@ routes:
     components: [QuoteBlock (callout quote), TipCard (callout tip), Grafico (bloco chart), Próximos artigos (Pagination)]
   - id: ROUTE-GUIA
     path: /guia-de-estilo/
-    components: [Cores, Tipografia, Espaço, Botao, Campo, Chip, Selo, Rotulo, CartaoEditorial, FamiliaEditorial, MoodBoard, Storyboard]
+    components: [Logo, Cores, Tipografia, Espaço, Botao, Campo, Chip, Selo, Rotulo, CartaoEditorial, FamiliaEditorial, MoodBoard, Storyboard]
+  - id: ROUTE-PREFERENCIAS
+    path: /preferencias/
+    components: [GrupoRotulo, Grupo, GrupoLinha, Segmentado]
 editorial_family: [callout, ponto-de-atencao, decisao, plain-txt-terminal, plain-txt, plain-txt-infografico, sumario, lista-numerada, pullquote]
 deferred: []
