@@ -1,10 +1,8 @@
 ---
-// Guia de estilo (ADR-019): documentação viva do design system — agora no mesmo vocabulário da
-// referência editorial usada no resto do blog (risco-cognitivo.css + integracao.css), não mais nos
-// componentes ui/* do ADR-017 (retirados: nada além desta página os usava). As cores são lidas de
-// @executar/theme/cores.css no build, o contraste vem do mesmo verificador do HIG
-// (scripts/check-contrast.mjs) e os blocos editoriais passam pelo mesmo pipeline de Markdown do
-// vault (@executar/editorial-renderer) e pelo Expressive Code do blog.
+// Guia de estilo (ADR-017): documentação visual viva do design system. Tudo aqui usa os tokens e
+// componentes reais — as cores são lidas de @executar/theme/cores.css no build, o contraste vem do
+// mesmo verificador do HIG (scripts/check-contrast.mjs) e os blocos editoriais passam pelo mesmo
+// pipeline de Markdown do vault (@executar/editorial-renderer) e pelo Expressive Code do blog.
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { Code } from '@astrojs/starlight/components';
 import { renderMarkdown } from '@executar/editorial-renderer';
@@ -13,21 +11,29 @@ import { PAIRS, contrast, parseModes } from '../../../../scripts/check-contrast.
 import CategoryPill from '../components/CategoryPill.astro';
 import Icone from '../components/Icone.astro';
 import PostCard from '../components/PostCard.astro';
+import Botao from '../components/ui/Botao.astro';
+import Campo from '../components/ui/Campo.astro';
+import Chip from '../components/ui/Chip.astro';
+import Marca from '../components/ui/Marca.astro';
+import Rotulo from '../components/ui/Rotulo.astro';
+import Selo from '../components/ui/Selo.astro';
 import { artigos } from '../lib/artigos';
 import { indice } from '../vault.mjs';
 
 const modos = parseModes(coresCss);
 const cores = [
-	{ token: 'paper', real: 'background', nome: 'Papel', papel: 'Fundo da página: off-white neutro.' },
-	{ token: 'card-bg', real: 'surface', nome: 'Superfície', papel: 'Callouts, blocos mono, campos.' },
-	{ token: 'ink', real: 'ink', nome: 'Tinta', papel: 'Títulos e ênfase.' },
-	{ token: 'muted', real: 'muted', nome: 'Secundário', papel: 'Resumos, metadados, ajuda.' },
-	{ token: 'line-strong', real: 'border', nome: 'Filete', papel: 'Divisores fortes e bordas.' },
-	{ token: 'line', real: 'border-soft', nome: 'Filete suave', papel: 'Divisores entre itens.' },
-	{ token: 'soft', real: 'code-background', nome: 'Código', papel: 'Fundo de controles e código.' },
-	{ token: 'brand', real: 'accent', nome: 'Azul', papel: 'Único acento: ação, link, foco.' },
-	{ token: 'brand-dark', real: 'brand-text', nome: 'Azul escuro', papel: 'Rótulos e selos.' },
-	{ token: 'brand-soft', real: 'brand-soft', nome: 'Azul claro', papel: 'Destaques suaves e barras de título.' },
+	{ token: 'background', nome: 'Papel', papel: 'Fundo da página: off-white neutro.' },
+	{ token: 'surface', nome: 'Superfície', papel: 'Callouts, blocos mono, campos.' },
+	{ token: 'ink', nome: 'Tinta', papel: 'Títulos e ênfase.' },
+	{ token: 'foreground', nome: 'Texto', papel: 'Texto corrido.' },
+	{ token: 'muted', nome: 'Secundário', papel: 'Resumos, metadados, ajuda.' },
+	{ token: 'border', nome: 'Filete', papel: 'Divisores fortes e bordas.' },
+	{ token: 'border-soft', nome: 'Filete suave', papel: 'Divisores entre itens.' },
+	{ token: 'code-background', nome: 'Código', papel: 'Fundo de controles e código.' },
+	{ token: 'accent', nome: 'Azul', papel: 'Único acento: ação, link, foco.' },
+	{ token: 'brand-text', nome: 'Azul escuro', papel: 'Rótulos e selos.' },
+	{ token: 'brand-soft', nome: 'Azul claro', papel: 'Destaques suaves e barras de título.' },
+	{ token: 'brand-line', nome: 'Filete azul', papel: 'Linhas decorativas.' },
 ];
 const semanticas = [
 	{ fundo: 'success-soft', texto: 'success-text', nome: 'Sucesso' },
@@ -42,38 +48,40 @@ const pares = PAIRS.map(([fg, bg]) => ({
 }));
 
 const tipos = [
-	{ nome: 'Hero H1', classe: 'guia-tipo--hero', uso: 'Título de artigo', exemplo: 'Execução com clareza' },
-	{ nome: 'Título de seção', classe: 'guia-tipo--h2', uso: 'H2 do artigo', exemplo: 'O custo da troca de tarefa' },
-	{ nome: 'Deck', classe: 'guia-tipo--deck', uso: 'Subtítulo, introdução', exemplo: 'Artigos sobre atenção, processos e o sistema ao redor de quem executa.' },
-	{ nome: 'Corpo', classe: 'guia-tipo--corpo', uso: 'Texto corrido do artigo (19px)', exemplo: 'O texto corrido usa 19px, entrelinha 1,7 e tinta quase preta sobre papel off-white.' },
-	{ nome: 'Pullquote', classe: 'guia-tipo--pull', uso: 'Citação em destaque', exemplo: '“Clareza é uma forma de respeito pelo tempo de quem lê.”' },
-	{ nome: 'Byline / rótulo', classe: 'guia-tipo--rotulo', uso: 'Autoria, seção, callout', exemplo: 'Equipe EXECUTAR · 07 min' },
-	{ nome: 'Eyebrow', classe: 'guia-tipo--eyebrow', uso: 'Categoria, "em destaque"', exemplo: 'Em destaque' },
-	{ nome: 'Mono', classe: 'guia-tipo--mono', uso: 'Terminal, número, metadado', exemplo: '07 min · 2026-09-26' },
+	{ classe: 'text-display font-bold tracking-tighter', nome: 'Display', token: '--text-display', uso: 'Título da página e do artigo', exemplo: 'Execução com clareza' },
+	{ classe: 'text-headline font-bold tracking-tight', nome: 'Headline', token: '--text-headline', uso: 'Abertura de seção', exemplo: 'O custo da troca de tarefa' },
+	{ classe: 'text-title font-bold tracking-tight', nome: 'Title', token: '--text-title', uso: 'Título de card e de bloco', exemplo: 'Memória prospectiva' },
+	{ classe: 'text-lead', nome: 'Lead', token: '--text-lead', uso: 'Subtítulo, introdução', exemplo: 'Artigos sobre atenção, processos e o sistema ao redor de quem executa.' },
+	{ classe: 'text-body', nome: 'Body', token: '--text-body (17 pt)', uso: 'Texto corrido (HIG)', exemplo: 'O texto corrido usa 17 pt, entrelinha 1,7 e tinta quase preta sobre papel off-white.' },
+	{ classe: 'text-small', nome: 'Small', token: '--text-small', uso: 'Rodapé, ajuda', exemplo: 'Informação de apoio.' },
+	{ classe: 'text-label font-semibold', nome: 'Label', token: '--text-label', uso: 'Rótulo de campo', exemplo: 'Sua pergunta' },
+	{ classe: 'rotulo m-0', nome: 'Overline', token: '--text-overline (11 pt)', uso: 'Rótulo de seção', exemplo: 'Em destaque' },
+	{ classe: 'font-mono text-sm', nome: 'Mono', token: '--font-mono', uso: 'Números, código, metadados', exemplo: '07 min · 2026-09-25' },
 ];
+const espacos = [1, 2, 3, 4, 6, 8, 12, 16, 24];
 const raios = [
-	{ nome: 'radius', valor: 'var(--radius) · 5px', uso: 'Botão, chip, tag' },
-	{ nome: 'card-radius', valor: 'var(--card-radius) · 16px', uso: 'Blocos mono, superfícies' },
-	{ nome: 'callout-radius', valor: 'var(--callout-radius) · 14px', uso: 'Callouts (biblioteca V9)' },
+	{ nome: 'control', valor: '12px', uso: 'Botões, campos' },
+	{ nome: 'card', valor: '16px', uso: 'Blocos e superfícies' },
+	{ nome: 'full', valor: '9999px', uso: 'Selos, chips, avatar' },
 ];
 
 const exemploArtigo = (await artigos())[0];
 
 const md = async (texto: string) => (await renderMarkdown(`---\ntitle: Guia\n---\n${texto}`, { indice })).html;
 const editorial = await md(`> [!note] Nota
-> Um aviso neutro: ícone circular, cartão arredondado e texto — a biblioteca de callouts da referência (camada V9).
+> Um aviso neutro: rótulo azul em caixa alta, texto e um filete. Sem caixa, sem fundo.
 
 > [!summary] Frase-síntese
 > O resumo do artigo em uma frase, com o peso de um lead — o texto fala mais alto que a moldura.
 
 > [!attention]
-> **Ponto de atenção.** Esse callout fica de fora da biblioteca com cartão: só filete, igual à referência.
+> **Ponto de atenção.** O callout de atenção ganha o título "Ponto de atenção" quando o autor não escreve um.
 
 > [!success] Aprovado
 > Critério atendido com evidência.
 
 > [!danger] Risco alto
-> Use com parcimônia: só o ícone e o rótulo mudam para a cor semântica.
+> Use com parcimônia: só o rótulo muda para a cor semântica de erro.
 
 > [!decision] Decisão
 > 1. **Qual é o problema real?** Separar sintoma de causa antes de agir.
@@ -82,6 +90,7 @@ const editorial = await md(`> [!note] Nota
 
 1. Listas numeradas usam marcador mono em azul.
 2. O ritmo entre itens é constante.
+3. Nada de caixa: só tipografia e espaço.
 
 > Citações e destaques viram pullquote: filete azul à esquerda, filetes finos em cima e embaixo.
 
@@ -120,133 +129,134 @@ const secoes = [
 ];
 const quadros = [
 	['01', 'Entrada', 'O leitor chega pela Hoje: uma promessa clara e uma busca.'],
-	['02', 'Exploração', 'Categorias em chip estreitam o assunto sem trocar de página.'],
-	['03', 'Leitura', 'Trilha, eyebrow, título grande e deck: a tipografia conduz.'],
-	['04', 'Interação', 'Salvar e copiar link: ações discretas, mesma anatomia do callout.'],
+	['02', 'Exploração', 'Filtros em chips estreitam o assunto sem trocar de página.'],
+	['03', 'Leitura', 'Trilha, categoria, título grande e lead: a tipografia conduz.'],
+	['04', 'Interação', 'Salvar e copiar link: ações secundárias, discretas.'],
 	['05', 'Decisão', 'O bloco de decisão transforma leitura em escolha.'],
-	['06', 'Feedback', 'O sistema confirma com um estado curto, sem interromper.'],
+	['06', 'Feedback', 'O sistema confirma com um aviso curto e um selo.'],
 	['07', 'Próxima ação', 'Continue lendo ou pergunte aos artigos.'],
 ];
+const h2 = 'm-0 mb-2 border-0 p-0 font-display text-headline font-bold tracking-tight text-balance text-ink';
+const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 ---
 
 <StarlightPage frontmatter={{ title: 'Guia de estilo', description: 'Design system editorial do EXECUTAR: fundações, componentes, mood board e storyboard.', template: 'splash', pagefind: false }}>
-	<div class="guia faixa">
-		<header class="guia__cabecalho not-content">
-			<p class="secao-rotulo">Design system · ADR-019</p>
-			<h1>Tipografia primeiro. Azul como único acento.</h1>
-			<p class="guia__deck">
-				Documentação viva do sistema visual do EXECUTAR — agora a própria folha da referência
-				editorial, não uma tradução dela. Papel off-white, tinta quase preta, filetes finos e muito
-				espaço negativo. Cada exemplo é o componente real, com as classes reais — mude o tema no
-				topo para ver o modo escuro.
-			</p>
-			<dl class="guia__meta">
-				<div><dt>Fonte</dt><dd>Inter + mono do sistema</dd></div>
-				<div><dt>Fonte visual</dt><dd>risco-cognitivo.css (verbatim)</dd></div>
-				<div><dt>Regras</dt><dd>Apple HIG (ADR-006)</dd></div>
-				<div><dt>Contraste</dt><dd>≥ 4,5:1 em 4 modos</dd></div>
+	<div class="guia pagina-larga">
+		<header class="not-content grid gap-6 border-b border-rule pb-10 md:grid-cols-[1.4fr_1fr] md:items-end">
+			<div>
+				<Rotulo>Design system · ADR-017</Rotulo>
+				<p class="m-0 font-display text-display font-bold tracking-tighter text-balance text-ink">Tipografia primeiro. Azul como único acento.</p>
+				<p class="mt-5 mb-0 max-w-2xl text-lead text-pretty text-muted">
+					Documentação viva do sistema visual do EXECUTAR: papel off-white, tinta quase preta, cinzas discretos, linhas finas e muito espaço
+					negativo. Cada exemplo abaixo é o componente real, com os tokens reais — mude o tema no topo para ver o modo escuro.
+				</p>
+			</div>
+			<dl class="m-0 grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-xs text-muted">
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Fonte</dt><dd class="m-0 p-0 text-ink">Inter + mono do sistema</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Stack</dt><dd class="m-0 p-0 text-ink">Starlight + Tailwind v4</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Regras</dt><dd class="m-0 p-0 text-ink">Apple HIG (ADR-006)</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Contraste</dt><dd class="m-0 p-0 text-ink">≥ 4,5:1 em 4 modos</dd></div>
 			</dl>
 		</header>
 
-		<nav class="guia__sumario not-content" aria-label="Seções do guia">
-			<p class="guia__sumario-titulo">Sumário</p>
-			<ol>
-				{secoes.map(([id, nome]) => <li><a href={`#${id}`}>{nome}</a></li>)}
-			</ol>
+		<nav class="toc toc--colunas" aria-label="Seções do guia">
+			<p class="toc__titulo">Sumário</p>
+			<ol>{secoes.map(([id, nome]) => <li><a href={`#${id}`}>{nome}</a></li>)}</ol>
 		</nav>
 
 		<!-- 0. Logo -->
-		<section id="logo" class="guia__secao not-content" aria-labelledby="logo-titulo">
-			<p class="secao-rotulo">Marca</p>
-			<h2 id="logo-titulo">Logo</h2>
-			<p class="guia__intro">
-				"RISCO COGNITIVO" em grotesca pesada, caixa alta, com uma barra azul de acento à esquerda
-				(<code>.brand-mark</code>). É texto vivo, não imagem: nítido em qualquer tamanho e com
-				claro/escuro automáticos.
+		<section id="logo" class="secao not-content" aria-labelledby="logo-titulo">
+			<Rotulo>Marca</Rotulo>
+			<h2 id="logo-titulo" class={h2}>Logo</h2>
+			<p class="intro-secao">
+				"Risco Cognitivo" em grotesca pesada, caixa alta e duas linhas, com a barra azul de acento embaixo. É texto vivo, não imagem: nítido em
+				qualquer tamanho e com claro/escuro automáticos.
 			</p>
-			<div class="guia__logo-caixas">
-				<div class="guia__logo-caixa guia__logo-caixa--clara">
-					<span class="brand guia__logo--grande"><span class="brand-mark" aria-hidden="true"></span><span>RISCO COGNITIVO<small>Ideias sob análise</small></span></span>
+			<div class="grid gap-px overflow-hidden rounded-card border border-rule bg-rule md:grid-cols-2">
+				<div class="grid min-h-72 place-items-center bg-paper p-10">
+					<Marca tamanho="g" />
 				</div>
-				<div class="guia__logo-caixa guia__logo-caixa--escura">
-					<span class="brand guia__logo--grande"><span class="brand-mark" aria-hidden="true"></span><span>RISCO COGNITIVO<small>Ideias sob análise</small></span></span>
+				<div class="grid min-h-72 place-items-center bg-ink p-10">
+					<Marca tamanho="g" class="text-paper" />
 				</div>
 			</div>
-			<div class="guia__grade-3">
+			<div class="mt-10 grid gap-10 md:grid-cols-3">
 				<div>
-					<h3>Tamanhos</h3>
-					<ul class="guia__lista-chave">
-						<li><span class="brand">RISCO COGNITIVO<small>Ideias sob análise</small></span> <code>.brand · cabeçalho (29px)</code></li>
-						<li><span class="brand" style="font-size:29px">RISCO COGNITIVO</span> <code>.footer .brand · rodapé</code></li>
+					<h3 class={h3}>Tamanhos</h3>
+					<ul class="lista-editorial">
+						<li class="flex items-center justify-between gap-4"><Marca tamanho="p" /><code class="font-mono text-xs text-muted">p · cabeçalho</code></li>
+						<li class="flex items-center justify-between gap-4"><Marca tamanho="m" /><code class="font-mono text-xs text-muted">m · rodapé</code></li>
 					</ul>
 				</div>
 				<div>
-					<h3>Construção</h3>
-					<ul class="guia__lista-chave guia__lista-nota">
-						<li>Inter 700, caixa alta, entrelinha 0,9, tracking −1,35px</li>
-						<li>Barra: 4px × 31px, sem raio, <code>var(--brand)</code></li>
-						<li>Respiro entre barra e texto: 11px; área mínima de toque 44px</li>
+					<h3 class={h3}>Construção</h3>
+					<ul class="lista-editorial text-small text-muted">
+						<li>Inter 800, caixa alta, entrelinha 0,92, tracking −0,035em</li>
+						<li>Barra: 1,35em × 0,13em, cantos arredondados, <code>--accent</code></li>
+						<li>Respiro entre texto e barra: 0,26em; área mínima de toque 44 pt</li>
 					</ul>
 				</div>
 				<div>
-					<h3>Ícone (favicon)</h3>
-					<div class="guia__favicon">
-						<img src="/favicon.svg" alt="" width="64" height="64" />
-						<p>"RC" com a mesma barra azul, para aba do navegador e atalhos.</p>
+					<h3 class={h3}>Ícone (favicon)</h3>
+					<div class="flex items-center gap-4">
+						<img src="/favicon.svg" alt="" width="64" height="64" class="rounded-control border border-rule" />
+						<p class="m-0 text-small text-muted">"RC" com a mesma barra azul, para aba do navegador e atalhos.</p>
 					</div>
 				</div>
 			</div>
 		</section>
 
 		<!-- 1. Cores -->
-		<section id="cores" class="guia__secao not-content" aria-labelledby="cores-titulo">
-			<p class="secao-rotulo">Fundações</p>
-			<h2 id="cores-titulo">Cores</h2>
-			<p class="guia__intro">Neutros quentes e um único azul. As amostras usam a variável ao vivo; os valores vêm de <code>cores.css</code>.</p>
-			<ul class="guia__cores">
+		<section id="cores" class="secao not-content" aria-labelledby="cores-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="cores-titulo" class={h2}>Cores</h2>
+			<p class="intro-secao">Neutros quentes e um único azul. As amostras usam a variável ao vivo; os valores vêm de <code>cores.css</code>.</p>
+			<ul class="m-0 grid list-none gap-x-6 gap-y-8 p-0 sm:grid-cols-2 lg:grid-cols-4">
 				{
 					cores.map((c) => (
-						<li>
-							<span class="guia__cores-amostra" style={`background: var(--${c.token})`} aria-hidden="true" />
-							<strong>{c.nome}</strong>
-							<code>--{c.token}</code>
-							<span class="guia__cores-papel">{c.papel}</span>
-							<span class="guia__cores-valores">
-								claro {modos.claro[c.real]} · escuro {modos.escuro[c.real]}
+						<li class="m-0 grid gap-3">
+							<span class="block h-20 rounded-card border border-rule" style={`background: var(--${c.token})`} aria-hidden="true" />
+							<span class="grid gap-0.5">
+								<strong class="text-small text-ink">{c.nome}</strong>
+								<code class="font-mono text-xs text-muted">--{c.token}</code>
+								<span class="text-label text-muted">{c.papel}</span>
+								<span class="font-mono text-xs text-muted">
+									claro {modos.claro[c.token]} · escuro {modos.escuro[c.token]}
+								</span>
 							</span>
 						</li>
 					))
 				}
 			</ul>
-			<h3 class="guia__subtitulo">Cores semânticas</h3>
-			<ul class="guia__semanticas">
+			<h3 class:list={[h3, 'mt-12']}>Cores semânticas</h3>
+			<ul class="m-0 flex list-none flex-wrap gap-3 p-0">
 				{
 					semanticas.map((s) => (
-						<li style={`background: var(--${s.fundo}); color: var(--${s.texto})`}>
-							{s.nome} <span>--{s.texto} / --{s.fundo}</span>
+						<li class="m-0 rounded-card px-4 py-3 font-semibold" style={`background: var(--${s.fundo}); color: var(--${s.texto})`}>
+							{s.nome} <span class="font-mono text-xs font-normal">--{s.texto} / --{s.fundo}</span>
 						</li>
 					))
 				}
 			</ul>
-			<h3 class="guia__subtitulo">Pares verificados (Apple HIG, ≥ 4,5:1)</h3>
-			<div class="guia__tabela-scroll" tabindex="0" role="region" aria-label="Tabela de contraste">
-				<table class="guia__tabela">
+			<h3 class:list={[h3, 'mt-12']}>Pares verificados (Apple HIG, ≥ 4,5:1)</h3>
+			<div class="overflow-x-auto" tabindex="0" role="region" aria-label="Tabela de contraste">
+				<table class="w-full border-collapse text-left text-small">
 					<thead>
-						<tr>
-							<th scope="col">Texto</th>
-							<th scope="col">Fundo</th>
-							<th scope="col">Claro</th>
-							<th scope="col">Escuro</th>
+						<tr class="border-b border-rule">
+							<th scope="col" class="py-2 pr-4 font-semibold text-ink">Texto</th>
+							<th scope="col" class="py-2 pr-4 font-semibold text-ink">Fundo</th>
+							<th scope="col" class="py-2 pr-4 font-semibold text-ink">Claro</th>
+							<th scope="col" class="py-2 font-semibold text-ink">Escuro</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody class="font-mono text-xs">
 						{
 							pares.map((p) => (
-								<tr>
-									<td>--{p.fg}</td>
-									<td>--{p.bg}</td>
-									<td>{p.claro.toFixed(1)}:1</td>
-									<td>{p.escuro.toFixed(1)}:1</td>
+								<tr class="border-b border-rule-soft">
+									<td class="py-2 pr-4">--{p.fg}</td>
+									<td class="py-2 pr-4">--{p.bg}</td>
+									<td class="py-2 pr-4">{p.claro.toFixed(1)}:1</td>
+									<td class="py-2">{p.escuro.toFixed(1)}:1</td>
 								</tr>
 							))
 						}
@@ -256,19 +266,20 @@ const quadros = [
 		</section>
 
 		<!-- 2. Tipografia -->
-		<section id="tipografia" class="guia__secao not-content" aria-labelledby="tipografia-titulo">
-			<p class="secao-rotulo">Fundações</p>
-			<h2 id="tipografia-titulo">Tipografia</h2>
-			<p class="guia__intro">A tipografia é o principal elemento visual: Inter em pesos 400–800, tracking negativo nos títulos, mono para números.</p>
-			<ul class="guia__tipos">
+		<section id="tipografia" class="secao not-content" aria-labelledby="tipografia-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="tipografia-titulo" class={h2}>Tipografia</h2>
+			<p class="intro-secao">A tipografia é o principal elemento visual: Inter em pesos 400–800, tracking negativo nos títulos, mono para números.</p>
+			<ul class="lista-editorial">
 				{
 					tipos.map((t) => (
-						<li>
-							<span class="guia__tipos-legenda">
-								<strong>{t.nome}</strong>
-								<span>{t.uso}</span>
+						<li class="grid gap-2 md:grid-cols-[12rem_1fr] md:items-baseline md:gap-8">
+							<span class="grid gap-0.5">
+								<strong class="text-small text-ink">{t.nome}</strong>
+								<code class="font-mono text-xs text-muted">{t.token}</code>
+								<span class="text-label text-muted">{t.uso}</span>
 							</span>
-							<span class:list={['guia__tipos-exemplo', t.classe]}>{t.exemplo}</span>
+							<span class:list={['font-display text-ink', t.classe]}>{t.exemplo}</span>
 						</li>
 					))
 				}
@@ -276,20 +287,30 @@ const quadros = [
 		</section>
 
 		<!-- 3. Espaço, raio e linhas -->
-		<section id="espaco" class="guia__secao not-content" aria-labelledby="espaco-titulo">
-			<p class="secao-rotulo">Fundações</p>
-			<h2 id="espaco-titulo">Espaço, raio e linhas</h2>
-			<p class="guia__intro">Ritmo editorial, não grade de utilitário: <code>--bloco-margem</code> (34px) entre blocos, <code>--bloco-folga</code> (22px) dentro deles. Poucas sombras: nenhuma.</p>
-			<div class="guia__grade-3">
+		<section id="espaco" class="secao not-content" aria-labelledby="espaco-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="espaco-titulo" class={h2}>Espaço, raio e linhas</h2>
+			<p class="intro-secao">Grade de 4px (a escala do Tailwind é a mesma do Desyng System: <code>p-4</code> = 16px). Poucas sombras: nenhuma.</p>
+			<ul class="m-0 grid list-none gap-2 p-0">
+				{
+					espacos.map((n) => (
+						<li class="m-0 grid grid-cols-[4.5rem_1fr] items-center gap-4 font-mono text-xs text-muted">
+							<span>{n * 4}px</span>
+							<span class="block h-3 rounded-sm bg-accent" style={`width: calc(var(--spacing) * ${n})`} aria-hidden="true" />
+						</li>
+					))
+				}
+			</ul>
+			<div class="mt-12 grid gap-8 md:grid-cols-3">
 				<div>
-					<h3>Raio</h3>
-					<ul class="guia__raios">
+					<h3 class={h3}>Raio</h3>
+					<ul class="m-0 grid list-none gap-4 p-0">
 						{
 							raios.map((r) => (
-								<li>
-									<span class="guia__raios-amostra" style={`border-radius: ${r.valor.split(' · ')[1]}`} aria-hidden="true" />
-									<span>
-										<code>{r.nome}</code>
+								<li class="m-0 flex items-center gap-4">
+									<span class="block size-14 border border-rule bg-surface" style={`border-radius: var(--radius-${r.nome})`} aria-hidden="true" />
+									<span class="grid text-label text-muted">
+										<code class="font-mono text-xs text-ink">--radius-{r.nome}</code>
 										{r.valor} · {r.uso}
 									</span>
 								</li>
@@ -298,119 +319,182 @@ const quadros = [
 					</ul>
 				</div>
 				<div>
-					<h3>Linhas</h3>
-					<div class="guia__linhas">
-						<div><div class="guia__linha guia__linha--forte" /><code>var(--line-strong)</code> · separa blocos</div>
-						<div><div class="guia__linha" /><code>var(--line)</code> · separa itens</div>
-						<div><div class="guia__linha guia__linha--azul" /><code>4px azul</code> · pullquote, decisão</div>
+					<h3 class={h3}>Linhas</h3>
+					<div class="grid gap-6 text-label text-muted">
+						<div><div class="border-t border-rule" /><code class="font-mono text-xs">--rule-strong</code> · separa blocos</div>
+						<div><div class="border-t border-rule-soft" /><code class="font-mono text-xs">--rule</code> · separa itens</div>
+						<div><div class="border-t-4 border-accent" /><code class="font-mono text-xs">4px azul</code> · pullquote, convite</div>
 					</div>
 				</div>
 				<div>
-					<h3>Foco</h3>
-					<p class="guia__foco-nota">Anel de 3px no azul, afastado 2px. Use Tab para ver.</p>
-					<span class="guia__foco-demo">Elemento em foco</span>
+					<h3 class={h3}>Foco</h3>
+					<p class="m-0 mb-4 text-label text-muted">Anel de 2px no azul, afastado 2px. Use Tab para ver.</p>
+					<span class="inline-flex min-h-11 items-center rounded-control px-4 outline-2 outline-offset-2 outline-(--focus-ring)">Elemento em foco</span>
 				</div>
 			</div>
 		</section>
 
 		<!-- 4. Layout -->
-		<section id="layout" class="guia__secao not-content" aria-labelledby="layout-titulo">
-			<p class="secao-rotulo">Fundações</p>
-			<h2 id="layout-titulo">Layout e breakpoints</h2>
-			<p class="guia__intro">Duas larguras e dois pontos de quebra, iguais aos da própria referência. No celular, margem lateral fixa, alvos de 44px e a barra inferior de navegação.</p>
-			<div class="guia__grade-2">
-				<ul class="guia__lista-chave">
-					<li><span>Coluna de leitura</span><code>--container-read · 45rem</code></li>
-					<li><span>Página</span><code>var(--max) · 1120px</code></li>
-					<li><span>Alvo de toque</span><code>--hit-target · 44px</code></li>
+		<section id="layout" class="secao not-content" aria-labelledby="layout-titulo">
+			<Rotulo>Fundações</Rotulo>
+			<h2 id="layout-titulo" class={h2}>Layout e breakpoints</h2>
+			<p class="intro-secao">Duas larguras e quatro pontos de quebra. No celular, margem lateral fixa, alvos de 44 pt e a barra inferior de navegação.</p>
+			<div class="grid gap-8 md:grid-cols-2">
+				<ul class="lista-editorial text-small">
+					<li class="flex justify-between gap-4"><span class="text-ink">Coluna de leitura</span><code class="font-mono text-xs text-muted">max-w-read · 45rem</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">Página</span><code class="font-mono text-xs text-muted">max-w-page · 75rem</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">Alvo de toque</span><code class="font-mono text-xs text-muted">--hit-target · 44px</code></li>
 				</ul>
-				<ul class="guia__lista-chave">
-					<li><span>sm — celular grande</span><code>580px</code></li>
-					<li><span>md — nav de seção some, barra inferior assume</span><code>850px</code></li>
+				<ul class="lista-editorial text-small">
+					<li class="flex justify-between gap-4"><span class="text-ink">sm — celular grande</span><code class="font-mono text-xs text-muted">580px</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">md — tablet (barra superior)</span><code class="font-mono text-xs text-muted">850px</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">lg — notebook</span><code class="font-mono text-xs text-muted">1024px</code></li>
+					<li class="flex justify-between gap-4"><span class="text-ink">xl — desktop</span><code class="font-mono text-xs text-muted">1280px</code></li>
 				</ul>
 			</div>
 		</section>
 
 		<!-- 5. Botões -->
-		<section id="botoes" class="guia__secao not-content" aria-labelledby="botoes-titulo">
-			<p class="secao-rotulo">Componentes</p>
-			<h2 id="botoes-titulo">Botões</h2>
-			<p class="guia__intro">
-				Um botão só, <code>.edit-btn</code>: pílula azul cheia, ícone à esquerda (lápis por padrão, check quando <code>aria-pressed="true"</code>).
-				Usado como link ("Perguntar") e como <code>&lt;button&gt;</code> (buscar, salvar, remover). 44px de altura mínima.
-			</p>
-			<div class="guia__botoes-linha">
-				<a class="edit-btn" href="#botoes">Perguntar</a>
-				<button type="button" class="edit-btn">Buscar</button>
-				<button type="button" class="edit-btn" aria-pressed="true">Salvo</button>
-				<button type="button" class="edit-btn" disabled>Desativado</button>
-			</div>
-			<p class="guia__intro guia__intro--apertado">
-				Ação secundária dentro de um bloco (copiar link, salvar), mesma anatomia dos callouts: <code>.acao</code>.
-			</p>
-			<div class="guia__botoes-linha">
-				<button type="button" class="acao"><Icone nome="link" tamanho={16} />Copiar link</button>
-				<button type="button" class="acao" aria-pressed="true"><Icone nome="salvos" tamanho={16} />Salvo</button>
+		<section id="botoes" class="secao not-content" aria-labelledby="botoes-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="botoes-titulo" class={h2}>Botões</h2>
+			<p class="intro-secao">Três variantes e três tamanhos, todos com 44 pt de altura mínima. <code>&lt;Botao variante tamanho href pressionado&gt;</code> ou a classe <code>.botao</code>.</p>
+			<div class="grid gap-6">
+				{
+					(['primario', 'secundario', 'quieto'] as const).map((v) => (
+						<div class="grid gap-3 border-t border-rule-soft pt-4 md:grid-cols-[10rem_1fr] md:items-center">
+							<code class="font-mono text-xs text-muted">{v}</code>
+							<div class="flex flex-wrap items-center gap-3">
+								<Botao variante={v} tamanho="p">Pequeno</Botao>
+								<Botao variante={v}>Médio</Botao>
+								<Botao variante={v} tamanho="g">Grande</Botao>
+								<Botao variante={v} pressionado={true}>Pressionado</Botao>
+								<Botao variante={v} disabled>Desativado</Botao>
+							</div>
+						</div>
+					))
+				}
+				<div class="grid gap-3 border-t border-rule-soft pt-4 md:grid-cols-[10rem_1fr] md:items-center">
+					<code class="font-mono text-xs text-muted">com ícone / link</code>
+					<div class="flex flex-wrap items-center gap-3">
+						<Botao href="#botoes">Perguntar <Icone nome="seta" tamanho={16} /></Botao>
+						<Botao variante="secundario" tamanho="p"><Icone nome="salvos" tamanho={16} />Salvar</Botao>
+						<Botao variante="secundario" tamanho="p"><Icone nome="link" tamanho={16} />Copiar link</Botao>
+					</div>
+				</div>
 			</div>
 		</section>
 
 		<!-- 6. Controles -->
-		<section id="controles" class="guia__secao not-content" aria-labelledby="controles-titulo">
-			<p class="secao-rotulo">Componentes</p>
-			<h2 id="controles-titulo">Controles de formulário</h2>
-			<p class="guia__intro">Os três controles reais do blog: campo de busca, chip de filtro e segmentado — usados em Buscar, Explorar e Preferências.</p>
-			<div class="guia__grade-2">
+		<section id="controles" class="secao not-content" aria-labelledby="controles-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="controles-titulo" class={h2}>Controles de formulário</h2>
+			<p class="intro-secao">Controles nativos tingidos pelo acento: acessíveis por padrão, sem biblioteca extra.</p>
+			<form class="grid gap-x-10 gap-y-8 md:grid-cols-2 [&>div]:min-w-0" onsubmit="return false">
 				<div>
-					<h3>Campo de busca</h3>
-					<form class="campo-busca" role="search" onsubmit="return false">
-						<label class="sr-only" for="guia-busca">Buscar</label>
-						<Icone nome="buscar" />
-						<input id="guia-busca" type="search" placeholder="Buscar artigos, temas, conceitos…" />
-						<button type="submit" class="edit-btn">Buscar</button>
-					</form>
+					<Campo id="guia-nome" rotulo="Campo de texto" placeholder="Digite aqui" ajuda="Texto de ajuda abaixo do campo." />
 				</div>
 				<div>
-					<h3>Segmentado</h3>
+					<Campo id="guia-busca" rotulo="Busca" busca icone="buscar" type="search" placeholder="Buscar artigos…">
+						<button slot="acao" type="button" class="botao">Buscar</button>
+					</Campo>
+				</div>
+				<div>
+					<Campo id="guia-erro" rotulo="Campo obrigatório" required placeholder="Deixe vazio e saia do campo" />
+				</div>
+				<div>
+					<Campo id="guia-off" rotulo="Campo desativado" disabled value="Somente leitura" />
+				</div>
+				<div>
+					<label class="campo-rotulo" for="guia-select">Seleção</label>
+					<div class="campo">
+						<select id="guia-select">
+							<option>Pessoa e cognição</option>
+							<option>Projetos e operações</option>
+							<option>Sistema e arquitetura</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<label class="campo-rotulo" for="guia-data">Data (calendário nativo)</label>
+					<div class="campo">
+						<input id="guia-data" type="date" value="2026-09-25" />
+					</div>
+				</div>
+				<fieldset class="m-0 border-0 p-0">
+					<legend class="campo-rotulo">Caixas de seleção</legend>
+					<div class="grid">
+						<label class="escolha"><input type="checkbox" checked /> Receber novos artigos</label>
+						<label class="escolha"><input type="checkbox" /> Mostrar resumo</label>
+						<label class="escolha"><input type="checkbox" disabled /> Opção desativada</label>
+					</div>
+				</fieldset>
+				<fieldset class="m-0 border-0 p-0">
+					<legend class="campo-rotulo">Rádios</legend>
+					<div class="grid">
+						<label class="escolha"><input type="radio" name="guia-radio" checked /> Descoberta</label>
+						<label class="escolha"><input type="radio" name="guia-radio" /> Compreensão</label>
+						<label class="escolha"><input type="radio" name="guia-radio" /> Decisão</label>
+					</div>
+				</fieldset>
+				<fieldset class="m-0 border-0 p-0">
+					<legend class="campo-rotulo">Interruptores</legend>
+					<div class="grid">
+						<label class="interruptor"><input type="checkbox" role="switch" checked /> Movimento reduzido</label>
+						<label class="interruptor"><input type="checkbox" role="switch" /> Texto maior</label>
+						<label class="interruptor"><input type="checkbox" role="switch" disabled /> Indisponível</label>
+					</div>
+				</fieldset>
+				<div>
+					<label class="campo-rotulo" for="guia-range">Deslizante</label>
+					<input id="guia-range" class="deslizante" type="range" min="0" max="100" value="60" />
+					<p class="campo-ajuda">Tamanho do texto: 60%.</p>
+				</div>
+				<fieldset class="m-0 border-0 p-0 md:col-span-2">
+					<legend class="campo-rotulo">Controle segmentado</legend>
 					<div class="segmentado">
 						<label><input type="radio" name="guia-seg" checked /><span>Automático</span></label>
 						<label><input type="radio" name="guia-seg" /><span>Claro</span></label>
 						<label><input type="radio" name="guia-seg" /><span>Escuro</span></label>
 					</div>
-				</div>
-			</div>
-			<h3 class="guia__subtitulo">Chips de filtro</h3>
-			<div class="opcoes">
-				<button type="button" class="filtro-chip" aria-pressed="true">Todos</button>
-				<button type="button" class="filtro-chip" aria-pressed="false">P1 · Problemas</button>
-				<button type="button" class="filtro-chip" aria-pressed="false">C3 · Decisão</button>
-			</div>
+				</fieldset>
+			</form>
 		</section>
 
 		<!-- 7. Navegação -->
-		<section id="navegacao" class="guia__secao not-content" aria-labelledby="navegacao-titulo">
-			<p class="secao-rotulo">Componentes</p>
-			<h2 id="navegacao-titulo">Navegação</h2>
-			<p class="guia__intro">Marca, trilha, chip de categoria e barra inferior. No celular, as cinco seções ficam sempre visíveis embaixo.</p>
-			<div class="guia__grade-2">
-				<div class="guia__grade-item">
+		<section id="navegacao" class="secao not-content" aria-labelledby="navegacao-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="navegacao-titulo" class={h2}>Navegação</h2>
+			<p class="intro-secao">Marca, trilha, chips e barra inferior. No celular, as cinco seções ficam sempre visíveis embaixo.</p>
+			<div class="grid gap-10 md:grid-cols-2">
+				<div class="grid content-start gap-6">
+					<div><h3 class={h3}>Marca</h3><Marca /></div>
 					<div>
-						<h3>Trilha</h3>
-						<nav class="crumb trilha" aria-label="Trilha de exemplo"><a href="#navegacao">Blog</a> / <a href="#navegacao">Pessoa e cognição</a></nav>
+						<h3 class={h3}>Trilha</h3>
+						<nav class="trilha" aria-label="Trilha de exemplo"><a href="#navegacao">Blog</a><span aria-hidden="true">/</span><a href="#navegacao">Pessoa e cognição</a></nav>
 					</div>
 					<div>
-						<h3>Chip de categoria</h3>
-						<nav class="guia__botoes-linha" aria-label="Categorias de exemplo">
-							<a href="#navegacao" class="categoria-chip is-active">Todos</a>
-							<a href="#navegacao" class="categoria-chip">Pessoa e cognição</a>
-							<a href="#navegacao" class="categoria-chip">Projetos e operações</a>
+						<h3 class={h3}>Chips de navegação</h3>
+						<nav class="flex flex-wrap gap-2" aria-label="Categorias de exemplo">
+							<Chip href="#navegacao" ativo>Todos</Chip>
+							<Chip href="#navegacao">Pessoa e cognição</Chip>
+							<Chip href="#navegacao">Projetos e operações</Chip>
 						</nav>
+					</div>
+					<div>
+						<h3 class={h3}>Chips de filtro</h3>
+						<div class="flex flex-wrap gap-2">
+							<Chip pressionado={true}>P1 · Problemas</Chip>
+							<Chip pressionado={false}>P2 · Métodos</Chip>
+							<Chip disabled>Indisponível</Chip>
+						</div>
 					</div>
 				</div>
 				<div>
-					<h3>Barra inferior (celular)</h3>
-					<div class="guia__barra-mock">
-						<div class="guia__barra-mock-tela">conteúdo</div>
-						<div class="guia__barra-mock-nav" role="presentation">
+					<h3 class={h3}>Barra inferior (celular)</h3>
+					<div class="mx-auto max-w-sm overflow-hidden rounded-card border border-rule">
+						<div class="grid h-32 place-items-center bg-surface text-label text-muted">conteúdo</div>
+						<div class="grid grid-cols-5 border-t border-rule bg-paper" role="presentation">
 							{
 								(
 									[
@@ -421,7 +505,7 @@ const quadros = [
 										['preferencias', 'Ajustes'],
 									] as const
 								).map(([icone, nome], i) => (
-									<span class:list={['guia__barra-mock-item', { 'is-active': i === 1 }]}>
+									<span class:list={['grid min-h-14 content-center justify-items-center gap-0.5 text-overline font-medium', i === 1 ? 'font-semibold text-brand-text' : 'text-muted']}>
 										<Icone nome={icone} tamanho={22} />
 										{nome}
 									</span>
@@ -434,202 +518,251 @@ const quadros = [
 		</section>
 
 		<!-- 8. Cartões e listas -->
-		<section id="cartoes" class="guia__secao not-content" aria-labelledby="cartoes-titulo">
-			<p class="secao-rotulo">Componentes</p>
-			<h2 id="cartoes-titulo">Cartões e listas</h2>
-			<p class="guia__intro">O cartão de artigo (<code>.rc-card</code>) é a única superfície com borda e raio do sistema. Listas preferem filete entre itens.</p>
-			<div class="guia__grade-3">
+		<section id="cartoes" class="secao not-content" aria-labelledby="cartoes-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="cartoes-titulo" class={h2}>Cartões e listas</h2>
+			<p class="intro-secao">Cartões editoriais preferem tipografia + espaço + divisor. A superfície com caixa fica para quando o bloco inteiro é um alvo.</p>
+			<div class="grid gap-x-8 gap-y-10 md:grid-cols-3">
 				<div>
-					<p class="guia__legenda">Cartão de artigo</p>
+					<p class="rotulo rotulo--neutro">Cartão de artigo</p>
 					{exemploArtigo && <PostCard artigo={exemploArtigo} />}
 				</div>
 				<div>
-					<p class="guia__legenda">Cartão em destaque</p>
-					{exemploArtigo && <PostCard artigo={exemploArtigo} destaque />}
+					<p class="rotulo rotulo--neutro">Cartão editorial</p>
+					<article class="cartao-editorial">
+						<CategoryPill nome="Método" />
+						<h3 class="m-0 font-display text-title font-bold tracking-tight text-ink">Blocos de foco de 50 minutos</h3>
+						<p class="m-0 text-muted">Sem fundo e sem sombra: o filete superior e o espaço fazem o trabalho da caixa.</p>
+						<span class="font-mono text-xs text-muted">06 min</span>
+					</article>
 				</div>
 				<div>
-					<p class="guia__legenda">Bloco de decisão</p>
-					<div class="markdown-body guia__decisao-mini"><Fragment set:html={decisaoStoryboard} /></div>
+					<p class="rotulo rotulo--neutro">Superfície</p>
+					<article class="cartao-superficie grid gap-2">
+						<h3 class="m-0 text-title font-bold tracking-tight text-ink">Resultado de busca</h3>
+						<p class="m-0 text-muted">Borda de 1px, raio de 16px, nenhuma sombra. O hover acende o filete em azul.</p>
+					</article>
 				</div>
 			</div>
-			<h3 class="guia__subtitulo">Lista simples (Salvos)</h3>
-			<ul class="lista-simples">
-				<li><CategoryPill nome="Pessoa e cognição" /><a href="#cartoes">Competição pela atenção</a><p>3 min de leitura</p></li>
-				<li><CategoryPill nome="Sistema e arquitetura de suporte" /><a href="#cartoes">Externalização cognitiva</a><p>5 min de leitura</p></li>
+			<h3 class:list={[h3, 'mt-12']}>Lista editorial</h3>
+			<ul class="lista-editorial max-w-read">
+				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">01</span><span class="text-ink">Competição pela atenção</span></li>
+				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">02</span><span class="text-ink">Externalização cognitiva</span></li>
+				<li class="flex items-baseline gap-4"><span class="font-mono text-xs font-bold text-link">03</span><span class="text-ink">Fatores de riscos cognitivos</span></li>
 			</ul>
-			<h3 class="guia__subtitulo">Estado vazio</h3>
-			<div class="vazio">
-				<p><strong>Você ainda não salvou nenhum artigo.</strong></p>
-				<p>Use o botão Salvar no topo de qualquer artigo.</p>
-				<a class="edit-btn" href="#cartoes">Explorar artigos</a>
+			<h3 class:list={[h3, 'mt-12']}>Lista agrupada (padrão Ajustes)</h3>
+			<p class="m-0 mb-2 max-w-read text-small text-muted">
+				Grupos de cantos grandes na superfície elevada, rótulo de seção em sentence case, ícone, valor e chevron, divisor recuado até o texto.
+				Usada em Preferências.
+			</p>
+			<div class="max-w-read rounded-card bg-paper py-2">
+				<p class="grupo-rotulo mt-2" id="guia-grupo-conta">Conta</p>
+				<ul class="grupo" aria-labelledby="guia-grupo-conta">
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="pessoas" /></span><span>Perfil</span></a></li>
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="salvos" /></span><span>Salvos</span><span class="grupo__valor">3 artigos</span></a></li>
+					<li><a class="grupo__linha" href="#cartoes"><span class="grupo__icone"><Icone nome="tema" /></span><span>Tema</span><span class="grupo__valor">Automático</span></a></li>
+				</ul>
+				<p class="grupo-rotulo" id="guia-grupo-app">App</p>
+				<ul class="grupo" aria-labelledby="guia-grupo-app">
+					<li><label class="grupo__linha"><span class="grupo__icone"><Icone nome="movimento" /></span><span>Movimento reduzido</span><span class="interruptor min-h-0"><input type="checkbox" role="switch" aria-label="Movimento reduzido" /></span></label></li>
+					<li><a class="grupo__linha grupo__linha--acento" href="#cartoes"><span class="grupo__icone"><Icone nome="estilo" /></span><span>Guia de estilo</span></a></li>
+				</ul>
+			</div>
+
+			<h3 class:list={[h3, 'mt-12']}>Estado vazio</h3>
+			<div class="vazio max-w-read">
+				<p class="text-ink"><strong>Você ainda não salvou nenhum artigo.</strong></p>
+				<p class="text-muted">Use o botão Salvar no topo de qualquer artigo.</p>
+				<Botao variante="secundario" href="#cartoes">Explorar artigos</Botao>
 			</div>
 		</section>
 
 		<!-- 9. Selos e status -->
-		<section id="selos" class="guia__secao not-content" aria-labelledby="selos-titulo">
-			<p class="secao-rotulo">Componentes</p>
-			<h2 id="selos-titulo">Selos e status</h2>
-			<p class="guia__intro">A eyebrow marca categoria; a tag marca tema; o estado confirma uma ação sem interromper a leitura.</p>
-			<div class="guia__botoes-linha">
-				<CategoryPill nome="Pessoa e cognição" />
-				<span class="tags"><a href="#selos">atenção</a></span>
-				<span class="tags"><a href="#selos">processos</a></span>
+		<section id="selos" class="secao not-content" aria-labelledby="selos-titulo">
+			<Rotulo>Componentes</Rotulo>
+			<h2 id="selos-titulo" class={h2}>Selos e status</h2>
+			<p class="intro-secao">Selos marcam categoria e estado; o status confirma uma ação sem interromper.</p>
+			<div class="flex flex-wrap gap-2">
+				<Selo>Categoria</Selo>
+				<Selo variante="neutro">Rascunho</Selo>
+				<Selo variante="sucesso">Publicado</Selo>
+				<Selo variante="aviso">Em revisão</Selo>
+				<Selo variante="erro">Bloqueado</Selo>
 			</div>
-			<div class="guia__status">
-				<p class="estado-busca" role="status">Artigo salvo. Ele fica disponível em Salvos.</p>
-				<p class="estado-busca" role="status">Link copiado para a área de transferência.</p>
+			<div class="mt-8 grid max-w-md gap-3">
+				<p class="status status--estatico m-0">Artigo salvo. Ele fica disponível em Salvos.</p>
+				<p class="status status--estatico m-0">Link copiado para a área de transferência.</p>
 			</div>
 		</section>
 
 		<!-- 10. Componentes editoriais -->
-		<section id="editorial" class="guia__secao" aria-labelledby="editorial-titulo">
+		<section id="editorial" class="secao" aria-labelledby="editorial-titulo">
 			<div class="not-content">
-				<p class="secao-rotulo">Conteúdo</p>
-				<h2 id="editorial-titulo">Componentes editoriais</h2>
-				<p class="guia__intro">
-					Tudo o que a gramática do vault produz, renderizado pelo mesmo pipeline dos artigos (ADR-018/019). Ponto de atenção, decisão,
-					terminal, plain text e infográfico ficam só com filete; a biblioteca de callouts comum (nota, síntese, aprovado, risco) usa o
-					cartão arredondado com ícone circular da própria referência (camada V9).
+				<Rotulo>Conteúdo</Rotulo>
+				<h2 id="editorial-titulo" class={h2}>Componentes editoriais</h2>
+				<p class="intro-secao">
+					Tudo o que a gramática do vault produz, renderizado pelo mesmo pipeline dos artigos (ADR-018). Um único sistema: rótulo azul em
+					caixa alta, conteúdo na largura do texto e filete de 1px — sem cards, sem superfícies azuis. Callouts, decisão, terminal, plain
+					text, infográfico, sumário, tabelas e citações são membros da mesma família.
 				</p>
 			</div>
-			<div class="leitura__principal">
-				<div class="article-text markdown-body">
-					<Fragment set:html={editorial} />
-					<Code lang="sh" code={'npm run check    # astro check + tsc + unit + contraste HIG + guard\nnpm run build'} />
-					<Code lang="text" code={'Plain text preserva espaços:\n  - recuo de dois espaços\n  - colunas    alinhadas'} />
-				</div>
+			<div class="max-w-read">
+				<Fragment set:html={editorial} />
+				<Code lang="sh" code={'npm run check    # astro check + tsc + unit + contraste HIG + guard\nnpm run build'} />
+				<Code lang="text" code={'Plain text preserva espaços:\n  - recuo de dois espaços\n  - colunas    alinhadas'} />
 			</div>
 		</section>
 
 		<!-- 11. Mood board -->
-		<section id="mood-board" class="guia__secao not-content" aria-labelledby="mood-titulo">
-			<p class="secao-rotulo">Direção</p>
-			<h2 id="mood-titulo">Mood board</h2>
-			<p class="guia__intro">Um caderno editorial, não um painel: calma, precisão e leitura longa.</p>
+		<section id="mood-board" class="secao not-content" aria-labelledby="mood-titulo">
+			<Rotulo>Direção</Rotulo>
+			<h2 id="mood-titulo" class={h2}>Mood board</h2>
+			<p class="intro-secao">Um caderno editorial, não um painel: calma, precisão e leitura longa.</p>
 
-			<div class="guia__mood">
-				<div class="guia__mood-bloco guia__mood-bloco--principios">
-					<p class="secao-rotulo">Princípios</p>
-					<ol>
+			<div class="grid gap-px overflow-hidden rounded-card border border-rule bg-rule md:grid-cols-6 md:grid-rows-[auto_auto_auto]">
+				<div class="grid content-between gap-8 bg-paper p-6 md:col-span-3 md:row-span-2 md:p-8">
+					<p class="rotulo m-0">Princípios</p>
+					<ol class="m-0 grid list-none gap-4 p-0">
 						{
 							[
 								['Tipografia primeiro', 'Hierarquia por tamanho, peso e espaço, não por cor ou caixa.'],
 								['Um acento', 'O azul marca ação, link, foco e rótulo. Nada mais disputa.'],
 								['Linhas finas', 'Filetes de 1px separam; sombras quase não existem.'],
 								['Espaço negativo', 'Respiro generoso entre blocos; colunas estreitas para ler.'],
-								['Acessível por padrão', 'HIG: 19px, 44px, 4,5:1, movimento reduzido.'],
+								['Acessível por padrão', 'HIG: 17 pt, 44 pt, 4,5:1, movimento reduzido.'],
 							].map(([t, d], i) => (
-								<li>
-									<span>{String(i + 1).padStart(2, '0')}</span>
+								<li class="m-0 grid grid-cols-[2rem_1fr] gap-3 border-t border-rule-soft pt-4">
+									<span class="font-mono text-xs font-bold text-link">{String(i + 1).padStart(2, '0')}</span>
 									<span>
-										<strong>{t}</strong>
-										<span>{d}</span>
+										<strong class="block text-ink">{t}</strong>
+										<span class="text-small text-muted">{d}</span>
 									</span>
 								</li>
 							))
 						}
 					</ol>
 				</div>
-				<div class="guia__mood-amostra" style="background:var(--brand);color:var(--on-accent)">
-					<span>--brand</span>
-					<span>Azul</span>
+				<div class="grid content-end bg-accent p-6 text-on-accent md:col-span-2">
+					<span class="font-mono text-xs">--accent</span>
+					<span class="font-display text-headline font-bold tracking-tight">Azul</span>
 				</div>
-				<div class="guia__mood-amostra" style="background:var(--ink);color:var(--paper)">
-					<span>--ink</span>
-					<span>Tinta</span>
+				<div class="grid content-end bg-ink p-6 text-paper">
+					<span class="font-mono text-xs">--ink</span>
+					<span class="font-display text-title font-bold">Tinta</span>
 				</div>
-				<div class="guia__mood-amostra" style="background:var(--card-bg);color:var(--ink)">
-					<span>--paper / --card-bg</span>
-					<span>Papel</span>
+				<div class="grid content-end bg-surface p-6 md:col-span-2">
+					<span class="font-mono text-xs text-muted">--background / --surface</span>
+					<span class="font-display text-title font-bold text-ink">Papel</span>
 				</div>
-				<div class="guia__mood-amostra guia__mood-amostra--nevoa" style="background:var(--brand-soft)">
-					<span>--brand-soft</span>
-					<span>Névoa</span>
+				<div class="grid content-end bg-brand-soft p-6">
+					<span class="font-mono text-xs text-brand-text">--brand-soft</span>
+					<span class="font-display text-title font-bold text-brand-text">Névoa</span>
 				</div>
-				<div class="guia__mood-bloco guia__mood-bloco--tipo">
-					<p class="secao-rotulo">Tipografia</p>
-					<p class="guia__mood-aa" aria-hidden="true">Aa</p>
-					<p class="guia__mood-legenda">Inter 400–800 · tracking negativo nos títulos · mono do sistema para números.</p>
+				<div class="grid gap-2 bg-paper p-6 md:col-span-3 md:p-8">
+					<p class="rotulo m-0">Tipografia</p>
+					<p class="m-0 font-display text-[clamp(3.5rem,2rem+6vw,6.5rem)] leading-none font-extrabold tracking-tighter text-ink" aria-hidden="true">Aa</p>
+					<p class="m-0 text-small text-muted">Inter 400–800 · tracking −0,035em nos títulos · mono do sistema para números.</p>
 				</div>
-				<div class="guia__mood-bloco guia__mood-bloco--atmosfera">
-					<p class="secao-rotulo">Atmosfera</p>
-					<blockquote class="pullquote">Clareza é uma forma de respeito pelo tempo de quem lê.</blockquote>
-					<div class="guia__botoes-linha">
-						<span class="tags"><a href="#mood-board">Editorial</a></span>
-						<span class="tags"><a href="#mood-board">Silencioso</a></span>
-						<span class="tags"><a href="#mood-board">Preciso</a></span>
+				<div class="grid content-start gap-3 bg-paper p-6 md:col-span-3 md:p-8">
+					<p class="rotulo m-0">Composição e ritmo</p>
+					<div class="grid grid-cols-6 gap-2" aria-hidden="true">
+						<span class="col-span-4 h-3 rounded-full bg-ink" />
+						<span class="col-span-2" />
+						<span class="col-span-6 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-5 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-6 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-3 h-1.5 rounded-full bg-rule" />
+						<span class="col-span-6 mt-3 border-t border-rule" />
+						<span class="col-span-1 h-1.5 rounded-full bg-accent" />
+						<span class="col-span-5 h-1.5 rounded-full bg-rule-soft" />
+					</div>
+					<p class="m-0 text-small text-muted">Coluna de 45rem, título forte, texto em blocos, divisor, próximo item. Ritmo de 32px entre blocos e 18px entre itens.</p>
+				</div>
+				<div class="grid content-start gap-4 bg-paper p-6 md:col-span-6 md:grid-cols-3 md:p-8">
+					<p class="rotulo m-0 md:col-span-3">Atmosfera e padrões</p>
+					<blockquote class="m-0 border-0 border-l-4 border-accent py-1 pl-4 font-display text-title leading-snug font-bold text-ink">
+						Clareza é uma forma de respeito pelo tempo de quem lê.
+					</blockquote>
+					<div class="grid content-start gap-2">
+						<div class="flex flex-wrap gap-2"><Selo>Editorial</Selo><Selo variante="neutro">Silencioso</Selo><Selo>Preciso</Selo></div>
+						<p class="m-0 text-small text-muted">Palavras-guia: editorial, silencioso, preciso, confiável, humano.</p>
+					</div>
+					<div class="flex flex-wrap content-start gap-3">
+						<Botao tamanho="p">Primário</Botao>
+						<Botao variante="secundario" tamanho="p">Secundário</Botao>
+						<Chip pressionado={true}>Filtro</Chip>
 					</div>
 				</div>
 			</div>
 		</section>
 
 		<!-- 12. Storyboard -->
-		<section id="storyboard" class="guia__secao" aria-labelledby="storyboard-titulo">
+		<section id="storyboard" class="secao" aria-labelledby="storyboard-titulo">
 			<div class="not-content">
-				<p class="secao-rotulo">Experiência</p>
-				<h2 id="storyboard-titulo">Storyboard</h2>
-				<p class="guia__intro">O fluxo do leitor em sete quadros, montados com os componentes reais do sistema.</p>
+				<Rotulo>Experiência</Rotulo>
+				<h2 id="storyboard-titulo" class={h2}>Storyboard</h2>
+				<p class="intro-secao">O fluxo do leitor em sete quadros, montados com os componentes reais do sistema.</p>
 			</div>
-			<ol class="storyboard not-content">
+			<ol class="storyboard not-content m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
 				{
 					quadros.map(([n, titulo, texto]) => (
-						<li class="guia__quadro">
-							<div class="guia__quadro-cabecalho">
-								<span>{n}</span>
-								<strong>{titulo}</strong>
+						<li class="@container m-0 grid content-start gap-4 rounded-card border border-rule bg-surface p-5">
+							<div class="flex items-baseline gap-3 border-b border-rule-soft pb-3">
+								<span class="font-mono text-xs font-bold text-link">{n}</span>
+								<strong class="text-ink">{titulo}</strong>
 							</div>
-							<div class="guia__quadro-corpo">
+							<div class="quadro grid min-h-40 content-center gap-3">
 								{n === '01' && (
 									<>
-										<p class="eyebrow">Conhecimento em prática</p>
-										<p class="guia__quadro-titulo">Riscos cognitivos, com clareza.</p>
-										<div class="campo-busca" aria-hidden="true">
+										<p class="rotulo m-0">Conhecimento em prática</p>
+										<p class="m-0 font-display text-title leading-tight font-bold tracking-tight text-ink">Riscos cognitivos, com clareza.</p>
+										<div class="campo campo--busca" aria-hidden="true">
 											<Icone nome="buscar" />
-											<span class="guia__quadro-placeholder">Buscar…</span>
+											<span class="flex-1 text-small text-muted">Buscar…</span>
 										</div>
 									</>
 								)}
 								{n === '02' && (
-									<div class="guia__botoes-linha" aria-hidden="true">
-										<span class="categoria-chip is-active">Todos</span>
-										<span class="categoria-chip">P1 · Problemas</span>
-										<span class="categoria-chip">C3 · Decisão</span>
+									<div class="flex flex-wrap gap-2" aria-hidden="true">
+										<span class="chip ativa">Todos</span>
+										<span class="chip">P1 · Problemas</span>
+										<span class="chip">C3 · Decisão</span>
 									</div>
 								)}
 								{n === '03' && (
 									<>
-										<span class="crumb" aria-hidden="true">Blog / Pessoa e cognição</span>
-										<CategoryPill nome="Pessoa e cognição" />
-										<p class="guia__quadro-titulo">Competição pela atenção</p>
-										<p class="guia__quadro-deck">Por que a troca de tarefa custa mais do que parece.</p>
+										<span class="trilha" aria-hidden="true">Blog / Pessoa e cognição</span>
+										<Selo>Pessoa e cognição</Selo>
+										<p class="m-0 font-display text-title leading-tight font-bold tracking-tight text-ink">Competição pela atenção</p>
+										<p class="m-0 text-small text-muted">Por que a troca de tarefa custa mais do que parece.</p>
 									</>
 								)}
 								{n === '04' && (
-									<div class="guia__botoes-linha" aria-hidden="true">
-										<span class="acao"><Icone nome="link" tamanho={16} />Copiar link</span>
-										<span class="acao" aria-pressed="true"><Icone nome="salvos" tamanho={16} />Salvo</span>
+									<div class="flex flex-wrap gap-2" aria-hidden="true">
+										<span class="botao botao--secundario botao--p"><Icone nome="link" tamanho={16} />Copiar link</span>
+										<span class="botao botao--p"><Icone nome="salvos" tamanho={16} />Salvo</span>
 									</div>
 								)}
 								{n === '05' && (
-									<div class="markdown-body guia__decisao-mini">
+									<div class="markdown-body text-small [&_.callout]:my-0 [&_.callout]:border-t-0 [&_.callout]:pt-0">
 										<Fragment set:html={decisaoStoryboard} />
 									</div>
 								)}
 								{n === '06' && (
 									<>
-										<p class="estado-busca" role="status">Artigo salvo.</p>
-										<span class="tags"><a href="#storyboard">Em Salvos</a></span>
+										<p class="status status--estatico m-0">Artigo salvo.</p>
+										<Selo variante="sucesso">Em Salvos</Selo>
 									</>
 								)}
 								{n === '07' && (
-									<div class="guia__quadro-proximo">
-										<p class="secao-rotulo">Continue lendo</p>
-										<p class="guia__quadro-titulo">Externalização cognitiva</p>
-										<span class="edit-btn" aria-hidden="true">Ler agora</span>
+									<div class="cartao-editorial">
+										<p class="rotulo m-0">Continue lendo</p>
+										<p class="m-0 font-display text-title leading-tight font-bold tracking-tight text-ink">Externalização cognitiva</p>
+										<span class="botao botao--quieto botao--p -ml-3 justify-self-start" aria-hidden="true">Ler agora <Icone nome="seta" tamanho={16} /></span>
 									</div>
 								)}
 							</div>
-							<p class="guia__quadro-texto">{texto}</p>
+							<p class="m-0 text-label text-muted">{texto}</p>
 						</li>
 					))
 				}
@@ -639,714 +772,28 @@ const quadros = [
 </StarlightPage>
 
 <style>
-	.guia__cabecalho {
-		padding-bottom: 36px;
-		border-bottom: 1px solid var(--line);
-	}
-	.guia__cabecalho h1 {
-		margin: 16px 0 0;
-		color: var(--ink);
-		font-family: var(--display);
-		font-size: clamp(34px, 3.4vw, 52px);
-		font-weight: 700;
-		line-height: 1.05;
-		letter-spacing: -1.5px;
-		text-wrap: balance;
-	}
-	.guia__deck {
-		max-width: 640px;
-		margin: 18px 0 0;
-		color: var(--muted);
-		font-size: 17px;
-		line-height: 1.55;
-	}
-	.guia__meta {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 12px 24px;
-		margin: 28px 0 0;
-		font-family: var(--mono);
-		font-size: 12px;
-	}
-	.guia__meta div {
-		padding-top: 10px;
-		border-top: 1px solid var(--line);
-	}
-	.guia__meta dt {
-		color: var(--muted);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-	}
-	.guia__meta dd {
-		margin: 2px 0 0;
-		color: var(--ink);
-	}
-	.guia__sumario {
-		margin: 32px 0 0;
-		padding: 20px 0;
-		border-bottom: 1px solid var(--line);
-	}
-	.guia__sumario-titulo {
-		margin: 0 0 10px;
-		color: var(--brand-dark);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-	}
-	:global(html[data-theme='dark']) .guia__sumario-titulo {
-		color: var(--brand-on-dark);
-	}
-	.guia__sumario ol {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-		gap: 6px 24px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__sumario a {
-		color: var(--muted);
-		font-size: 14px;
-		text-decoration: none;
-	}
-	.guia__sumario a:hover {
-		color: var(--brand);
-	}
-	.guia__secao {
+	.guia .secao {
 		margin-top: 0;
-		padding-block: 56px 16px;
-		scroll-margin-top: 80px;
+		padding-block: 4rem 1rem;
+		scroll-margin-top: 5rem;
 	}
-	.guia__secao + .guia__secao {
-		border-top: 1px solid var(--line);
+	.guia .secao + .secao {
+		border-top: 1px solid var(--border);
 	}
-	.guia__secao h2 {
-		margin: 0 0 12px;
-		color: var(--ink);
-		font-family: var(--display);
-		font-size: 30px;
-		font-weight: 700;
-		letter-spacing: -0.5px;
-	}
-	.guia__secao h3 {
-		margin: 0 0 14px;
-		color: var(--ink);
-		font-family: var(--display);
-		font-size: 18px;
-		font-weight: 700;
-	}
-	.guia__intro {
-		max-width: 640px;
-		margin: 0 0 36px;
+	.guia .intro-secao {
+		max-width: 42rem;
+		margin: 0 0 2.5rem;
 		color: var(--muted);
-		font-size: 16px;
-		line-height: 1.55;
+		font-size: var(--text-lead);
+		line-height: 1.47;
+		text-wrap: pretty;
 	}
-	.guia__intro--apertado {
-		margin-top: 28px;
-		margin-bottom: 16px;
-	}
-	.guia__subtitulo {
-		margin-top: 44px !important;
-	}
-	.guia code {
-		font-family: var(--mono);
+	.guia code:not(pre code) {
+		font-family: var(--font-mono);
 		font-size: 0.85em;
 	}
-	/* min-width:0 nos itens: sem isso, conteúdo que não quebra (form.campo-busca, .segmentado)
-	   força a coluna a ficar mais larga que a viewport no celular (ADR-019, mesmo problema já
-	   corrigido em Hoje.astro e no formulário de controles). */
-	.guia__grade-3,
-	.guia__grade-2 {
-		display: grid;
-		gap: 32px;
-	}
-	.guia__grade-3 > *,
-	.guia__grade-2 > * {
-		min-width: 0;
-	}
-	@media (min-width: 48rem) {
-		.guia__grade-3 {
-			grid-template-columns: repeat(3, 1fr);
-		}
-		.guia__grade-2 {
-			grid-template-columns: repeat(2, 1fr);
-		}
-		.guia__logo-caixas {
-			grid-template-columns: 1fr 1fr;
-		}
-	}
-	.guia__grade-item {
-		display: grid;
-		gap: 24px;
-	}
-
-	/* Logo */
-	.guia__logo-caixas {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1px;
-		overflow: hidden;
-		border: 1px solid var(--line);
-		border-radius: var(--card-radius);
-		background: var(--line);
-		margin-bottom: 40px;
-	}
-	.guia__logo-caixa {
-		display: grid;
-		place-items: center;
-		min-height: 220px;
-		padding: 32px;
-	}
-	/* Caixas fixas (não seguem o tema do site: mostram a marca sobre um fundo claro e um escuro
-	   literais, por isso cores fixas — --ink/--paper viram o oposto no tema escuro do site). */
-	.guia__logo-caixa--clara {
-		background: #f7f7f3;
-	}
-	.guia__logo-caixa--clara .brand {
-		color: #0b0b0c;
-	}
-	.guia__logo-caixa--clara .brand small {
-		color: #5d605e;
-	}
-	.guia__logo-caixa--escura {
-		background: #0b0b0c;
-	}
-	.guia__logo-caixa--escura .brand {
-		color: #fff;
-	}
-	.guia__logo-caixa--escura .brand small {
-		color: #c7c9c6;
-	}
-	/* html[data-theme=dark] .brand small{color:var(--theme-muted)} (risco-cognitivo.css) tem mais
-	   especificidade que as duas regras acima e reaplicaria a cor do tema em ambas as caixas. */
-	:global(html[data-theme='dark']) .guia__logo-caixa--clara .brand small {
-		color: #5d605e;
-	}
-	:global(html[data-theme='dark']) .guia__logo-caixa--escura .brand small {
-		color: #c7c9c6;
-	}
-	.guia__logo--grande {
-		font-size: 44px;
-	}
-	.guia__lista-nota li {
-		font-size: 13px;
-		color: var(--muted);
-	}
-	.guia__favicon {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-	}
-	.guia__favicon img {
-		border: 1px solid var(--line);
-		border-radius: 12px;
-	}
-	.guia__favicon p {
-		margin: 0;
-		color: var(--muted);
-		font-size: 13px;
-	}
-
-	/* Lista simples real (Salvos): .lista-simples é global (integracao.css) — aqui só o ajuste
-	   deste caso (eyebrow + link + texto de apoio, sem o botão Remover). */
-	#cartoes .lista-simples > li {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 4px;
-	}
-	#cartoes .lista-simples > li a {
-		font-size: 17px;
-	}
-	#cartoes .lista-simples > li p {
-		margin: 0;
-		color: var(--muted);
-		font-size: 13px;
-	}
-
-	/* Lista chave/valor (só nesta página: tamanhos, breakpoints...) */
-	.guia__lista-chave {
-		display: grid;
-		gap: 0;
-		margin: 0;
+	.guia .not-content code:not(pre code) {
 		padding: 0;
-		list-style: none;
-		max-width: 45rem;
-	}
-	.guia__lista-chave > li {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 12px;
-		padding: 10px 0;
-		border-top: 1px solid var(--line);
-		color: var(--ink);
-		font-size: 14px;
-	}
-	.guia__lista-chave > li code {
-		color: var(--muted);
-		font-size: 12px;
-	}
-
-	/* Cores */
-	.guia__cores {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 24px 24px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__cores > li {
-		display: grid;
-		gap: 6px;
-	}
-	.guia__cores-amostra {
-		display: block;
-		height: 72px;
-		border: 1px solid var(--line);
-		border-radius: var(--card-radius);
-	}
-	.guia__cores > li strong {
-		color: var(--ink);
-		font-size: 14px;
-	}
-	.guia__cores > li code {
-		color: var(--muted);
-		font-size: 12px;
-	}
-	.guia__cores-papel {
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__cores-valores {
-		color: var(--muted);
-		font-family: var(--mono);
-		font-size: 11px;
-	}
-	.guia__semanticas {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 12px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__semanticas li {
-		border-radius: var(--card-radius);
-		padding: 12px 16px;
-		font-weight: 600;
-	}
-	.guia__semanticas li span {
-		font-family: var(--mono);
-		font-size: 11px;
-		font-weight: 400;
-	}
-	.guia__tabela-scroll {
-		overflow-x: auto;
-	}
-	.guia__tabela {
-		width: 100%;
-		border-collapse: collapse;
-		text-align: left;
-		font-size: 13px;
-	}
-	.guia__tabela th,
-	.guia__tabela td {
-		padding: 8px 16px 8px 0;
-		border-bottom: 1px solid var(--line);
-	}
-	.guia__tabela th {
-		color: var(--ink);
-		font-weight: 700;
-	}
-	.guia__tabela td {
-		color: var(--muted);
-		font-family: var(--mono);
-		font-size: 12px;
-	}
-
-	/* Tipografia */
-	.guia__tipos {
-		display: grid;
-		gap: 0;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__tipos > li {
-		display: grid;
-		gap: 12px;
-		padding: 20px 0;
-		border-top: 1px solid var(--line);
-	}
-	.guia__tipos-legenda {
-		display: grid;
-		gap: 2px;
-	}
-	.guia__tipos-legenda strong {
-		color: var(--ink);
-		font-size: 13px;
-	}
-	.guia__tipos-legenda span {
-		color: var(--muted);
-		font-size: 12px;
-	}
-	.guia__tipos-exemplo {
-		color: var(--ink);
-	}
-	.guia-tipo--hero {
-		font-family: var(--display);
-		font-size: clamp(32px, 3.5vw, 48px);
-		font-weight: 700;
-		letter-spacing: -1.5px;
-		line-height: 1.05;
-	}
-	.guia-tipo--h2 {
-		font-family: var(--display);
-		font-size: 28px;
-		font-weight: 700;
-		letter-spacing: -0.5px;
-	}
-	.guia-tipo--deck {
-		font-size: 19px;
-		color: var(--muted);
-	}
-	.guia-tipo--corpo {
-		font-size: 19px;
-		line-height: 1.7;
-	}
-	.guia-tipo--pull {
-		font-family: var(--display);
-		font-size: 26px;
-		font-weight: 700;
-		border-left: 4px solid var(--brand);
-		padding-left: 16px;
-	}
-	.guia-tipo--rotulo {
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--muted);
-	}
-	.guia-tipo--eyebrow {
-		font-size: 11px;
-		font-weight: 800;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--brand);
-	}
-	.guia-tipo--mono {
-		font-family: var(--mono);
-		font-size: 13px;
-		color: var(--muted);
-	}
-	@media (min-width: 48rem) {
-		.guia__tipos > li {
-			grid-template-columns: 14rem 1fr;
-			align-items: baseline;
-		}
-	}
-
-	/* Espaço, raio, linhas */
-	.guia__raios {
-		display: grid;
-		gap: 16px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__raios li {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-	}
-	.guia__raios-amostra {
-		display: block;
-		width: 56px;
-		height: 56px;
-		flex: none;
-		border: 1px solid var(--line);
-		background: var(--card-bg);
-	}
-	.guia__raios li span {
-		display: grid;
-		color: var(--muted);
-		font-size: 12px;
-	}
-	.guia__raios li code {
-		color: var(--ink);
-	}
-	.guia__linhas {
-		display: grid;
-		gap: 20px;
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__linha {
-		height: 0;
-		margin-bottom: 8px;
-		border-top: 1px solid var(--line);
-	}
-	.guia__linha--forte {
-		border-top-color: var(--line-strong);
-	}
-	.guia__linha--azul {
-		border-top: 4px solid var(--brand);
-	}
-	.guia__foco-nota {
-		margin: 0 0 16px;
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__foco-demo {
-		display: inline-flex;
-		align-items: center;
-		min-height: 44px;
-		padding-inline: 16px;
-		border-radius: var(--radius);
-		outline: 3px solid var(--brand);
-		outline-offset: 2px;
-		color: var(--ink);
-	}
-
-	/* Botões e ações */
-	.guia__botoes-linha {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 12px;
-	}
-	.guia__status {
-		display: grid;
-		gap: 8px;
-		margin-top: 24px;
-		max-width: 26rem;
-	}
-
-	/* Navegação */
-	.guia__barra-mock {
-		max-width: 22rem;
-		margin: 0 auto;
-		overflow: hidden;
-		border: 1px solid var(--line);
-		border-radius: var(--card-radius);
-	}
-	.guia__barra-mock-tela {
-		display: grid;
-		place-items: center;
-		height: 128px;
-		background: var(--card-bg);
-		color: var(--muted);
-		font-size: 12px;
-	}
-	.guia__barra-mock-nav {
-		display: grid;
-		grid-template-columns: repeat(5, 1fr);
-		border-top: 1px solid var(--line);
-		background: var(--paper);
-	}
-	.guia__barra-mock-item {
-		display: grid;
-		justify-items: center;
-		gap: 2px;
-		min-height: 56px;
-		align-content: center;
-		color: var(--muted);
-		font-size: 10px;
-		font-weight: 600;
-	}
-	.guia__barra-mock-item.is-active {
-		color: var(--brand-dark);
-		font-weight: 700;
-	}
-	:global(html[data-theme='dark']) .guia__barra-mock-item.is-active {
-		color: var(--brand-on-dark);
-	}
-	.guia__mood-amostra--nevoa {
-		color: var(--brand-dark);
-	}
-	:global(html[data-theme='dark']) .guia__mood-amostra--nevoa {
-		color: var(--brand-on-dark);
-	}
-
-	/* Cartões e listas */
-	.guia__legenda {
-		margin: 0 0 12px;
-		color: var(--muted);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-	}
-	.guia__decisao-mini :global(.decision-card) {
-		margin: 0;
-	}
-
-	/* Mood board */
-	.guia__mood {
-		display: grid;
-		gap: 1px;
-		overflow: hidden;
-		border: 1px solid var(--line);
-		border-radius: var(--card-radius);
-		background: var(--line);
-	}
-	.guia__mood-bloco,
-	.guia__mood-amostra {
-		padding: 28px;
-		background: var(--paper);
-	}
-	.guia__mood-bloco ol {
-		display: grid;
-		gap: 16px;
-		margin: 16px 0 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__mood-bloco li {
-		display: grid;
-		grid-template-columns: 2rem 1fr;
-		gap: 12px;
-		padding-top: 16px;
-		border-top: 1px solid var(--line);
-	}
-	.guia__mood-bloco li > span:first-child {
-		color: var(--brand);
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 700;
-	}
-	.guia__mood-bloco li strong {
-		display: block;
-		color: var(--ink);
-	}
-	.guia__mood-bloco li span span {
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__mood-amostra {
-		display: grid;
-		align-content: end;
-		gap: 6px;
-		min-height: 140px;
-		font-family: var(--mono);
-		font-size: 12px;
-	}
-	.guia__mood-amostra span:last-child {
-		font-family: var(--display);
-		font-size: 22px;
-		font-weight: 700;
-	}
-	.guia__mood-aa {
-		margin: 8px 0;
-		font-family: var(--display);
-		font-size: clamp(56px, 6vw, 96px);
-		font-weight: 800;
-		line-height: 1;
-		color: var(--ink);
-	}
-	.guia__mood-legenda {
-		margin: 0;
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__mood .pullquote {
-		margin: 16px 0;
-	}
-	@media (min-width: 48rem) {
-		/* Grade explícita de 2 colunas: cada linha preenche as duas células, sem espaço sobrando
-		   pelo posicionamento automático (o problema de um mosaico de 6 colunas mal preenchido). */
-		.guia__mood {
-			grid-template-columns: 1fr 1fr;
-		}
-		.guia__mood-bloco--principios {
-			grid-column: 1;
-			grid-row: 1 / 3;
-		}
-		.guia__mood-bloco--tipo,
-		.guia__mood-bloco--atmosfera {
-			grid-column: 1 / -1;
-		}
-	}
-
-	/* Storyboard */
-	.storyboard {
-		display: grid;
-		gap: 20px;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-	.guia__quadro {
-		display: grid;
-		gap: 16px;
-		align-content: start;
-		padding: 20px;
-		border: 1px solid var(--line);
-		border-radius: var(--card-radius);
-		background: var(--card-bg);
-	}
-	.guia__quadro-cabecalho {
-		display: flex;
-		align-items: baseline;
-		gap: 12px;
-		padding-bottom: 12px;
-		border-bottom: 1px solid var(--line);
-	}
-	.guia__quadro-cabecalho span {
-		color: var(--brand);
-		font-family: var(--mono);
-		font-size: 12px;
-		font-weight: 700;
-	}
-	.guia__quadro-cabecalho strong {
-		color: var(--ink);
-	}
-	.guia__quadro-corpo {
-		display: grid;
-		gap: 10px;
-		min-height: 140px;
-		align-content: center;
-	}
-	.guia__quadro-titulo {
-		margin: 0;
-		color: var(--ink);
-		font-family: var(--display);
-		font-size: 18px;
-		font-weight: 700;
-		line-height: 1.2;
-	}
-	.guia__quadro-deck {
-		margin: 0;
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__quadro-placeholder {
-		color: var(--muted);
-		font-size: 13px;
-	}
-	.guia__quadro-proximo {
-		display: grid;
-		gap: 8px;
-	}
-	.guia__quadro-texto {
-		margin: 0;
-		color: var(--muted);
-		font-size: 12px;
-	}
-	@media (min-width: 36rem) {
-		.storyboard {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-	@media (min-width: 64rem) {
-		.storyboard {
-			grid-template-columns: repeat(4, 1fr);
-		}
+		background: transparent;
 	}
 </style>

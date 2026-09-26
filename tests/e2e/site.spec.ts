@@ -219,15 +219,11 @@ test('guia de estilo (ADR-017): fundações, componentes, mood board e storyboar
 	}
 	await expect(page.locator('.storyboard > li')).toHaveCount(7);
 	await expect(page.locator('.cabecalho').getByRole('link', { name: 'Risco Cognitivo, página inicial' })).toBeVisible();
-	// ui/Marca.astro saiu (ADR-019): a seção Logo agora demonstra a marca real do Header, em
-	// duas caixas (clara/escura) na mesma classe .brand.
-	await expect(page.locator('#logo .guia__logo--grande')).toHaveCount(2);
+	await expect(page.locator('#logo .logo--g')).toHaveCount(2);
 	await expect(page.locator('#editorial .callout--decisao')).toBeVisible();
 	await expect(page.locator('#editorial pre.ascii-art')).toBeVisible();
-	// O interruptor genérico saiu (ADR-019): o único controle nativo do sistema real é o
-	// segmentado (Preferências), demonstrado aqui na seção Controles de formulário.
-	await page.getByRole('radio', { name: 'Escuro' }).check();
-	await expect(page.getByRole('radio', { name: 'Escuro' })).toBeChecked();
+	await page.getByRole('switch', { name: 'Texto maior' }).check();
+	await expect(page.getByRole('switch', { name: 'Texto maior' })).toBeChecked();
 });
 
 test('sintaxe Obsidian: callouts, destaque, wikilinks, tarefas, math e rodapé', async ({ page }) => {

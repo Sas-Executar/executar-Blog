@@ -1,0 +1,25 @@
+---
+// Campo de texto/busca do design system (ADR-017): o contêiner .campo recebe borda e foco; o
+// rótulo é visível (ou só para leitor de tela com rotuloOculto). Slot "acao" = botão à direita.
+import type { ComponentProps, HTMLAttributes } from 'astro/types';
+import Icone from '../Icone.astro';
+
+interface Props extends HTMLAttributes<'input'> {
+	id: string;
+	rotulo: string;
+	rotuloOculto?: boolean;
+	ajuda?: string;
+	icone?: ComponentProps<typeof Icone>['nome'];
+	busca?: boolean;
+	classeCampo?: string;
+}
+const { id, rotulo, rotuloOculto = false, ajuda, icone, busca = false, classeCampo, ...resto } = Astro.props;
+---
+
+<label class:list={['campo-rotulo', { 'sr-only': rotuloOculto }]} for={id}>{rotulo}</label>
+<div class:list={['campo', { 'campo--busca': busca }, classeCampo]}>
+	{icone && <Icone nome={icone} />}
+	<input id={id} aria-describedby={ajuda ? `${id}-ajuda` : undefined} {...resto} />
+	<slot name="acao" />
+</div>
+{ajuda && <p class="campo-ajuda" id={`${id}-ajuda`}>{ajuda}</p>}
