@@ -15,7 +15,7 @@
 	"observability": { "enabled": true },
 	"preview_urls": false,
 	"vars": {
-		"OPS_REPO": "Sas-Executar/Copiloto",
+		"OPS_REPO": "Sas-Executar/executar-Blog",
 		"OPS_BRANCH": "claude/gifted-brown-7u1e5d",
 		"BLOG_REPO": "Sas-Executar/executar-Blog",
 		"EMAIL_FROM": "Copiloto EXECUTAR <copiloto@executar.local>",

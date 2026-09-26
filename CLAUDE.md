@@ -8,6 +8,35 @@ Decisões em `docs/02-adr/`; estado do pipeline em `docs/07-execucao/ESTADO.md`.
 - Estratégia: **minimal code, max upstream**. Antes de escrever algo, pergunte: isso já existe upstream? Se sim, é duplicação — não escreva.
 - Use a skill `engineering:*` do estágio (system-design, architecture, testing-strategy, code-review, tech-debt, deploy-checklist, documentation; debug/incident-response/standup sob demanda). Os plugins estão declarados em `.claude/settings.json`.
 
+## Governança de tarefas (Copiloto Operacional — ADR-015/ADR-016)
+
+Este repositório é o **repositório operacional** do Copiloto EXECUTAR (`OPS_REPO`): é aqui que as
+tarefas de execução vivem como issues, não em `Sas-Executar/Copiloto`. `Sas-Executar/Copiloto` continua
+existindo com seu histórico (500+ issues da governança do Programa) como **catálogo do ecossistema**,
+só leitura — emenda de 2026-09-26 aos dois ADRs, não altere isso sem repetir a mesma decisão do usuário.
+
+O schema real é código, não este arquivo — fonte da verdade em `apps/copiloto/worker/dominio.ts` e
+`tarefas.ts`. Resumo para quem for abrir uma issue manualmente ou via agente que não tem acesso ao MCP
+do Copiloto:
+
+- **Labels de estado** (`state/*`, exclusivas, uma por issue): `state/backlog_validated` (Na fila) →
+  `state/ready` (Pronta) → `state/doing` (Fazendo) → `state/verify` (Verificando) → `state/done`
+  (Concluída); mais `state/blocked` (Bloqueada) e `state/cancelado`. Transições legais: `backlog_validated
+  → ready|blocked|cancelado`; `ready → doing|blocked|cancelado`; `doing → verify|done|blocked`; `verify →
+  done|doing`; `blocked → ready`. `done` e `cancelado` não têm saída.
+- **Labels de tipo:** `type/tarefa`, `type/ideia`, `type/editorial`. Mais `priority/urgente` e `gate`
+  (genérica, sem G00–G11 — os gates de campanha vivem em `ops/workflows/*.yaml`, não em labels numeradas).
+- **Bloco `task-spec`** no corpo da issue (YAML entre `<!-- task-spec:v1 -->` e `<!-- /task-spec -->`):
+  `task_key`, `area`, `program?`, `workflow?`, `etapa?`, `dod`, `data?` (AAAA-MM-DD), `peso`, `depende[]`,
+  `verificacao` (`link_valido|pr_mergeado|manual`), `evidencia[]`, `origem{command_id,canal}`.
+- **`DONE` só sai de `doing`/`verify`** e exige `dod` preenchido + `evidencia` + verificação batida —
+  nunca marque uma issue como concluída sem isso (regra `decidirFeito`).
+- Vínculo com um Epic é o recurso nativo de sub-issue do GitHub, não uma label — não existe
+  `type:portfolio-epic` neste schema (isso era do `CLAUDE.md` antigo do Copiloto, não vale mais aqui).
+- Prefira usar os comandos do plugin (`/copiloto-operacional:fila`, `:feito`, `:campanha` etc., ver
+  `plugins/copiloto-operacional/README.md` e `docs/06-docs/COPILOTO-OPERACIONAL.md`) a criar a issue à
+  mão — eles garantem idempotência (`task_key`), labels e o bloco `task-spec` corretos.
+
 ## ADR — Claude Code operando diretamente na `main`
 
 **Status:** Aceito  

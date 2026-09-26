@@ -1,6 +1,6 @@
 # Copiloto Operacional: como usar
 
-Resumo do ADR-015. Você manda um e-mail com um comando na primeira linha para a caixa do copiloto e recebe a resposta no mesmo thread. O **GitHub** guarda o estado (issues do `Sas-Executar/Copiloto`). A planilha só espelha o GitHub. O Studio publica.
+Resumo do ADR-015. Você manda um e-mail com um comando na primeira linha para a caixa do copiloto e recebe a resposta no mesmo thread. O **GitHub** guarda o estado (issues deste repositório, `Sas-Executar/executar-Blog` — ADR-015/016, emenda 2026-09-26; `Sas-Executar/Copiloto` é o catálogo do ecossistema, só leitura). A planilha só espelha o GitHub. O Studio publica.
 
 ## Comandos
 
