@@ -1,13 +1,15 @@
 /**
- * GitHubAdapter do domínio (ADR-015, DEC-01): única porta de escrita no System of Record.
- * Tarefas = issues com labels `state/*` exclusivas e bloco task-spec. Reusa o cliente do Studio
- * (GitHub App/token só em secrets do Worker) apontado para o repositório operacional.
+ * GitHubAdapter do domínio (ADR-015, DEC-01 — emendado 2026-09-26): única porta de escrita no
+ * System of Record. Tarefas = issues com labels `state/*` exclusivas e bloco task-spec, no
+ * repositório operacional (`OPS_REPO`, hoje Sas-Executar/executar-Blog; Sas-Executar/Copiloto
+ * ficou como catálogo do ecossistema, só leitura). Reusa o cliente do Studio (GitHub App/token
+ * só em secrets do Worker) apontado para o repositório operacional.
  */
 import { GitHub } from '../../studio/worker/github.ts';
 import { type Estado, type TaskSpec, type Tarefa, ESTADOS, ROTULO, comTaskSpec, estadoDasLabels, labelDoEstado, lerTaskSpec, transicaoLegal } from './dominio.ts';
 
 export interface EnvTarefas {
-	OPS_REPO: string; // "Sas-Executar/Copiloto"
+	OPS_REPO: string; // ex.: "Sas-Executar/executar-Blog"
 	GITHUB_APP_ID?: string;
 	GITHUB_APP_PRIVATE_KEY?: string;
 	GITHUB_INSTALLATION_ID?: string;
