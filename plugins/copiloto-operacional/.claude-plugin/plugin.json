@@ -19,8 +19,8 @@
     "ops_repo": {
       "type": "string",
       "title": "Repositório das tarefas",
-      "description": "owner/repo onde as tarefas são issues com labels state/* e bloco task-spec.",
-      "default": "Sas-Executar/Copiloto"
+      "description": "owner/repo onde as tarefas são issues com labels state/* e bloco task-spec (execução). Sas-Executar/Copiloto passou a ser só catálogo do ecossistema (leitura) — ADR-015/016, emenda 2026-09-26.",
+      "default": "Sas-Executar/executar-Blog"
     },
     "blog_repo": {
       "type": "string",

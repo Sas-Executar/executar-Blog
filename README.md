@@ -54,6 +54,13 @@ Este repositório é um marketplace de plugins (ADR-016). No Claude Code:
 ```
 No claude.ai: Settings → Plugins → Add marketplace → `Sas-Executar/executar-Blog`. Detalhes em [plugins/copiloto-operacional](plugins/copiloto-operacional/README.md).
 
+## Como abrir uma tarefa
+As tarefas de execução do Copiloto Operacional são issues **deste repositório** (`OPS_REPO`, ADR-015/016,
+emenda 2026-09-26) — `Sas-Executar/Copiloto` é o catálogo do ecossistema (histórico da governança do
+Programa), só leitura. Prefira os comandos do plugin (`/copiloto-operacional:fila <area> "<título>" dod:
+<critério>`, `:feito`, `:campanha` etc.) a abrir a issue à mão — eles cuidam das labels `state/*`, do
+bloco `task-spec` e da idempotência. O schema completo está em [CLAUDE.md](CLAUDE.md#governança-de-tarefas-copiloto-operacional--adr-015adr-016).
+
 ## Documentação
 - [Onboarding](docs/06-docs/onboarding.md) · [Runbook](docs/06-docs/runbook.md) · [Deploy](docs/05-deploy/checklist.md) · [Copiloto Operacional](docs/06-docs/COPILOTO-OPERACIONAL.md)
 - [Decisões (ADRs)](docs/02-adr/) · [Estado do pipeline](docs/07-execucao/ESTADO.md)
