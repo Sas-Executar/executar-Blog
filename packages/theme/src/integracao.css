@@ -302,6 +302,24 @@ details.callout > .callout-body {
 	align-items: center;
 	min-height: 36px;
 }
+/* Chip de categoria (Hoje, guia de estilo): pílula com borda, cheia quando ativa. */
+.categoria-chip {
+	display: inline-flex;
+	align-items: center;
+	flex: none;
+	min-height: 44px;
+	padding-inline: 16px;
+	border: 1px solid var(--line);
+	border-radius: 999px;
+	color: var(--ink);
+	font-size: 15px;
+	text-decoration: none;
+}
+.categoria-chip.is-active {
+	border-color: var(--ink);
+	background: var(--ink);
+	color: var(--paper);
+}
 
 /* ── 3. Cartões e listas no vocabulário da referência ─────────────────────────────────── */
 .rc-card {
@@ -692,19 +710,4 @@ a.grupo-linha:hover {
 }
 html[data-theme='dark'] .acao:is(:hover, [aria-pressed='true']) {
 	color: var(--brand-on-dark);
-}
-
-/* ── 4. Compat com o design system anterior (ADR-017), ainda em /guia-de-estilo/ ────────────── */
-/* A referência zera a cor de todo link (a{color:inherit}, risco-cognitivo.css, fora de camada).
-   Como isso vence os utilitários do Tailwind (dentro de @layer components) na cascata de camadas
-   mesmo com menos especificidade, o botão do guia de estilo herdava a tinta do texto em vez da
-   cor por variante. Repete aqui a mesma cor que packages/theme/src/tailwind.css já define. */
-.botao {
-	color: var(--on-accent);
-}
-.botao:is(.botao--secundario, .botao--quieto) {
-	color: var(--brand-text);
-}
-.botao[aria-pressed='true'] {
-	color: var(--on-accent);
 }

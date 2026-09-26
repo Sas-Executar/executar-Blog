@@ -1,157 +1,277 @@
 ---
 /**
- * Dashboard síntese TDAH × Framework 694.
+ * Dashboard síntese TDAH × Framework 694 (ADR-019: vocabulário da referência editorial).
  * Fonte: dashboard_sintese_tdah_694.html fornecido para publicação.
  * Chart.js 4.5.1 mantém tooltip e legenda interativos.
  */
 const kpis = [
-  { label: 'Evidências', value: '240', detail: '180 quantitativas + 60 qualitativas' },
-  { label: 'Suporte direto', value: '28', detail: 'de 694 perguntas' },
-  { label: 'Investigar resolvíveis', value: '25', detail: 'já têm evidência específica' },
-  { label: 'Sem evidência', value: '182', detail: 'ainda sem lastro na base TDAH' },
+	{ label: 'Evidências', value: '240', detail: '180 quantitativas + 60 qualitativas' },
+	{ label: 'Suporte direto', value: '28', detail: 'de 694 perguntas' },
+	{ label: 'Investigar resolvíveis', value: '25', detail: 'já têm evidência específica' },
+	{ label: 'Sem evidência', value: '182', detail: 'ainda sem lastro na base TDAH' },
 ];
 ---
 
-<section class="tdah-dashboard pagina-larga not-content pt-4 pb-8" aria-labelledby="tdah-dashboard-title">
-  <header class="mb-8 max-w-4xl">
-    <p class="rotulo">Síntese interativa</p>
-    <h1 id="tdah-dashboard-title" class="m-0 font-display text-display font-bold tracking-tighter text-balance text-ink">TDAH adulto × Framework de Descoberta</h1>
-    <p class="mt-4 mb-0 max-w-3xl text-lead text-pretty text-muted">
-      240 evidências cruzadas com 694 perguntas de produto. Interaja com os gráficos:
-      passe o cursor ou toque para ver valores e use a legenda para ocultar ou exibir séries.
-    </p>
-  </header>
+<section class="tdah-dashboard" aria-labelledby="tdah-dashboard-title">
+	<header class="tdah-dashboard__cabecalho">
+		<p class="secao-rotulo">Síntese interativa</p>
+		<h1 id="tdah-dashboard-title">TDAH adulto × Framework de Descoberta</h1>
+		<p class="tdah-dashboard__deck">
+			240 evidências cruzadas com 694 perguntas de produto. Interaja com os gráficos: passe o
+			cursor ou toque para ver valores e use a legenda para ocultar ou exibir séries.
+		</p>
+	</header>
 
-  <div class="mb-8 grid grid-cols-2 gap-x-6 gap-y-2 md:grid-cols-4" aria-label="Indicadores principais">
-    {kpis.map((k) => (
-      <article class="grid content-start gap-1 border-t border-rule pt-4 pb-2">
-        <span class="rotulo rotulo--neutro m-0">{k.label}</span>
-        <strong class="font-display text-4xl leading-none font-bold tracking-tight text-ink tabular-nums">{k.value}</strong>
-        <small class="text-label leading-snug text-muted">{k.detail}</small>
-      </article>
-    ))}
-  </div>
+	<div class="tdah-dashboard__kpis" aria-label="Indicadores principais">
+		{
+			kpis.map((k) => (
+				<article class="tdah-dashboard__kpi">
+					<span class="tdah-dashboard__kpi-rotulo">{k.label}</span>
+					<strong class="tdah-dashboard__kpi-valor">{k.value}</strong>
+					<small class="tdah-dashboard__kpi-detalhe">{k.detail}</small>
+				</article>
+			))
+		}
+	</div>
 
-  <div class="grid gap-4 md:grid-cols-2">
-    <figure class="chart-card m-0 min-w-0 rounded-card border border-rule bg-surface p-5 md:col-span-2">
-      <figcaption class="mb-3 grid gap-1">
-        <strong class="text-base text-ink">Cobertura das 694 perguntas</strong>
-        <span class="text-label text-muted">Presença de evidência na base TDAH.</span>
-      </figcaption>
-      <div class="relative h-80"><canvas id="tdah-cobertura"></canvas></div>
-    </figure>
+	<div class="tdah-dashboard__grade">
+		<figure class="tdah-dashboard__grafico tdah-dashboard__grafico--largo">
+			<figcaption>
+				<strong>Cobertura das 694 perguntas</strong>
+				<span>Presença de evidência na base TDAH.</span>
+			</figcaption>
+			<div class="tdah-dashboard__tela"><canvas id="tdah-cobertura"></canvas></div>
+		</figure>
 
-    <figure class="chart-card m-0 min-w-0 rounded-card border border-rule bg-surface p-5">
-      <figcaption class="mb-3 grid gap-1">
-        <strong class="text-base text-ink">Evidências quantitativas por tema</strong>
-        <span class="text-label text-muted">Principais grupos entre os 180 registros quantitativos.</span>
-      </figcaption>
-      <div class="relative h-92"><canvas id="tdah-temas"></canvas></div>
-    </figure>
+		<figure class="tdah-dashboard__grafico">
+			<figcaption>
+				<strong>Evidências quantitativas por tema</strong>
+				<span>Principais grupos entre os 180 registros quantitativos.</span>
+			</figcaption>
+			<div class="tdah-dashboard__tela tdah-dashboard__tela--alta"><canvas id="tdah-temas"></canvas></div>
+		</figure>
 
-    <figure class="chart-card m-0 min-w-0 rounded-card border border-rule bg-surface p-5">
-      <figcaption class="mb-3 grid gap-1">
-        <strong class="text-base text-ink">Cobertura por decisão</strong>
-        <span class="text-label text-muted">AVANÇAR, CORRIGIR, INVESTIGAR e PAUSAR.</span>
-      </figcaption>
-      <div class="relative h-92"><canvas id="tdah-decisoes"></canvas></div>
-    </figure>
-  </div>
+		<figure class="tdah-dashboard__grafico">
+			<figcaption>
+				<strong>Cobertura por decisão</strong>
+				<span>AVANÇAR, CORRIGIR, INVESTIGAR e PAUSAR.</span>
+			</figcaption>
+			<div class="tdah-dashboard__tela tdah-dashboard__tela--alta"><canvas id="tdah-decisoes"></canvas></div>
+		</figure>
+	</div>
 
-  <aside class="mt-6 border-t border-rule pt-4 text-small leading-relaxed text-muted">
-    <strong class="text-ink">Como ler.</strong> “Suporte direto” indica ao menos uma evidência específica com alta
-    similaridade textual; “suporte temático” indica contexto relacionado. O material original
-    recomenda revisão manual para scores abaixo de 0,15 e não substitui validação primária das fontes.
-  </aside>
+	<aside class="tdah-dashboard__nota">
+		<strong>Como ler.</strong> "Suporte direto" indica ao menos uma evidência específica com alta
+		similaridade textual; "suporte temático" indica contexto relacionado. O material original
+		recomenda revisão manual para scores abaixo de 0,15 e não substitui validação primária das fontes.
+	</aside>
 </section>
+
+<style>
+	.tdah-dashboard {
+		padding-bottom: 44px;
+		border-bottom: 1px solid var(--line);
+	}
+	.tdah-dashboard__cabecalho {
+		max-width: 760px;
+	}
+	.tdah-dashboard__cabecalho h1 {
+		margin: 0;
+		color: var(--ink);
+		font-family: var(--display);
+		font-size: clamp(32px, 3.2vw, 46px);
+		font-weight: 700;
+		line-height: 1.05;
+		letter-spacing: -1.5px;
+		text-wrap: balance;
+	}
+	.tdah-dashboard__deck {
+		margin: 16px 0 0;
+		color: var(--muted);
+		font-size: 17px;
+		line-height: 1.6;
+	}
+	.tdah-dashboard__kpis {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px 24px;
+		margin: 32px 0;
+	}
+	.tdah-dashboard__kpi {
+		display: grid;
+		gap: 4px;
+		align-content: start;
+		padding-top: 14px;
+		border-top: 1px solid var(--line);
+	}
+	.tdah-dashboard__kpi-rotulo {
+		color: var(--muted);
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+	.tdah-dashboard__kpi-valor {
+		color: var(--ink);
+		font-family: var(--display);
+		font-size: 34px;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: -0.5px;
+		font-variant-numeric: tabular-nums;
+	}
+	.tdah-dashboard__kpi-detalhe {
+		color: var(--muted);
+		font-size: 12px;
+		line-height: 1.4;
+	}
+	.tdah-dashboard__grade {
+		display: grid;
+		gap: 20px;
+	}
+	.tdah-dashboard__grafico {
+		min-width: 0;
+		margin: 0;
+		padding: 20px;
+		border: 1px solid var(--card-border);
+		border-radius: var(--card-radius);
+		background: var(--card-bg);
+	}
+	.tdah-dashboard__grafico figcaption {
+		display: grid;
+		gap: 4px;
+		margin-bottom: 14px;
+	}
+	.tdah-dashboard__grafico strong {
+		color: var(--card-text);
+		font-size: 16px;
+	}
+	.tdah-dashboard__grafico figcaption span {
+		color: var(--muted);
+		font-size: 13px;
+	}
+	.tdah-dashboard__tela {
+		position: relative;
+		height: 320px;
+	}
+	.tdah-dashboard__tela--alta {
+		height: 368px;
+	}
+	.tdah-dashboard__nota {
+		margin-top: 24px;
+		padding-top: 16px;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
+		font-size: 13px;
+		line-height: 1.6;
+	}
+	.tdah-dashboard__nota strong {
+		color: var(--ink);
+	}
+	@media (min-width: 48rem) {
+		.tdah-dashboard__kpis {
+			grid-template-columns: repeat(4, 1fr);
+		}
+		.tdah-dashboard__grade {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.tdah-dashboard__grafico--largo {
+			grid-column: 1 / -1;
+		}
+	}
+</style>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 <script is:inline>
-  (() => {
-    const ChartJS = window.Chart;
-    if (!ChartJS) return;
+	(() => {
+		const ChartJS = window.Chart;
+		if (!ChartJS) return;
 
-    const css = getComputedStyle(document.documentElement);
-    const text = css.getPropertyValue('--foreground').trim() || '#26262a';
-    const muted = css.getPropertyValue('--muted').trim() || '#5d605e';
-    const border = css.getPropertyValue('--border').trim() || '#d9d9d2';
-    const accent = css.getPropertyValue('--accent').trim() || '#0a66c2';
-    const brand = css.getPropertyValue('--brand-text').trim() || '#004182';
+		const css = getComputedStyle(document.documentElement);
+		const text = css.getPropertyValue('--ink').trim() || '#0b0b0c';
+		const muted = css.getPropertyValue('--muted').trim() || '#5d605e';
+		const border = css.getPropertyValue('--line').trim() || '#d9d9d2';
+		const accent = css.getPropertyValue('--brand').trim() || '#0a66c2';
+		const brand = css.getPropertyValue('--brand-dark').trim() || '#004182';
 
-    ChartJS.defaults.color = muted;
-    ChartJS.defaults.font.family = css.getPropertyValue('--font-sans').trim() || 'system-ui';
-    ChartJS.defaults.plugins.legend.labels.usePointStyle = true;
+		ChartJS.defaults.color = muted;
+		ChartJS.defaults.font.family = css.getPropertyValue('--sans').trim() || 'system-ui';
+		ChartJS.defaults.plugins.legend.labels.usePointStyle = true;
 
-    const common = {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { intersect: false, mode: 'index' },
-      plugins: {
-        legend: { position: 'bottom' },
-        tooltip: { enabled: true }
-      }
-    };
+		const common = {
+			responsive: true,
+			maintainAspectRatio: false,
+			interaction: { intersect: false, mode: 'index' },
+			plugins: {
+				legend: { position: 'bottom' },
+				tooltip: { enabled: true },
+			},
+		};
 
-    new ChartJS(document.getElementById('tdah-cobertura'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Suporte temático', 'Sem evidência', 'Suporte direto'],
-        datasets: [{
-          data: [484, 182, 28],
-          backgroundColor: [accent, border, brand],
-          borderWidth: 0
-        }]
-      },
-      options: { ...common, cutout: '68%', plugins: { ...common.plugins, legend: { position: 'bottom' } } }
-    });
+		new ChartJS(document.getElementById('tdah-cobertura'), {
+			type: 'doughnut',
+			data: {
+				labels: ['Suporte temático', 'Sem evidência', 'Suporte direto'],
+				datasets: [
+					{
+						data: [484, 182, 28],
+						backgroundColor: [accent, border, brand],
+						borderWidth: 0,
+					},
+				],
+			},
+			options: { ...common, cutout: '68%', plugins: { ...common.plugins, legend: { position: 'bottom' } } },
+		});
 
-    new ChartJS(document.getElementById('tdah-temas'), {
-      type: 'bar',
-      data: {
-        labels: [
-          'Sintomas e funções executivas',
-          'Síntese estratégica',
-          'Sintomas nucleares',
-          'Parâmetros operacionais',
-          'Prejuízo funcional',
-          'Funções executivas',
-          'Demanda orgânica'
-        ],
-        datasets: [{
-          label: 'Registros',
-          data: [91, 23, 18, 13, 10, 10, 5],
-          backgroundColor: accent,
-          borderRadius: 6
-        }]
-      },
-      options: {
-        ...common,
-        indexAxis: 'y',
-        scales: {
-          x: { beginAtZero: true, grid: { color: border } },
-          y: { grid: { display: false }, ticks: { color: text } }
-        },
-        plugins: { ...common.plugins, legend: { display: false } }
-      }
-    });
+		new ChartJS(document.getElementById('tdah-temas'), {
+			type: 'bar',
+			data: {
+				labels: [
+					'Sintomas e funções executivas',
+					'Síntese estratégica',
+					'Sintomas nucleares',
+					'Parâmetros operacionais',
+					'Prejuízo funcional',
+					'Funções executivas',
+					'Demanda orgânica',
+				],
+				datasets: [
+					{
+						label: 'Registros',
+						data: [91, 23, 18, 13, 10, 10, 5],
+						backgroundColor: accent,
+						borderRadius: 6,
+					},
+				],
+			},
+			options: {
+				...common,
+				indexAxis: 'y',
+				scales: {
+					x: { beginAtZero: true, grid: { color: border } },
+					y: { grid: { display: false }, ticks: { color: text } },
+				},
+				plugins: { ...common.plugins, legend: { display: false } },
+			},
+		});
 
-    new ChartJS(document.getElementById('tdah-decisoes'), {
-      type: 'bar',
-      data: {
-        labels: ['AVANÇAR', 'CORRIGIR', 'INVESTIGAR', 'PAUSAR'],
-        datasets: [
-          { label: 'Suporte direto', data: [1, 2, 25, 0], backgroundColor: brand },
-          { label: 'Suporte temático', data: [40, 33, 401, 10], backgroundColor: accent },
-          { label: 'Sem evidência', data: [28, 24, 128, 2], backgroundColor: border }
-        ]
-      },
-      options: {
-        ...common,
-        scales: {
-          x: { stacked: true, grid: { display: false }, ticks: { color: text } },
-          y: { stacked: true, beginAtZero: true, grid: { color: border } }
-        }
-      }
-    });
-  })();
+		new ChartJS(document.getElementById('tdah-decisoes'), {
+			type: 'bar',
+			data: {
+				labels: ['AVANÇAR', 'CORRIGIR', 'INVESTIGAR', 'PAUSAR'],
+				datasets: [
+					{ label: 'Suporte direto', data: [1, 2, 25, 0], backgroundColor: brand },
+					{ label: 'Suporte temático', data: [40, 33, 401, 10], backgroundColor: accent },
+					{ label: 'Sem evidência', data: [28, 24, 128, 2], backgroundColor: border },
+				],
+			},
+			options: {
+				...common,
+				scales: {
+					x: { stacked: true, grid: { display: false }, ticks: { color: text } },
+					y: { stacked: true, beginAtZero: true, grid: { color: border } },
+				},
+			},
+		});
+	})();
 </script>
