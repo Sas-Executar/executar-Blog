@@ -17,10 +17,10 @@ test('slug do caminho igual ao das URLs publicadas', () => {
 
 test('callouts: tipos, título, dobráveis e tipo desconhecido', async () => {
 	const h = await html('> [!tip] Minha dica\n> corpo\n\n> [!warning]- Fechado\n> x\n\n> [!danger]+ Aberto\n> y\n\n> [!inventado]\n> z');
-	assert.match(h, /<aside class="callout callout--dica" data-callout="tip" aria-label="Minha dica">/);
-	assert.match(h, /<details class="callout callout--atencao" data-callout="warning"><summary class="callout__titulo">Fechado<\/summary>/);
-	assert.match(h, /<details class="callout callout--perigo" data-callout="danger" open/);
-	assert.match(h, /callout--nota" data-callout="inventado"/);
+	assert.match(h, /<aside class="callout callout--evidence callout--soft callout--dica" data-callout="tip" aria-label="Minha dica">/);
+	assert.match(h, /<details class="callout callout--attention callout--atencao" data-callout="warning"><summary class="callout-line"><span class="callout-icon" aria-hidden="true"><\/span><strong class="callout__titulo">Fechado<\/strong><\/summary>/);
+	assert.match(h, /<details class="callout callout--attention callout--danger callout--perigo" data-callout="danger" open/);
+	assert.match(h, /callout--note callout--nota" data-callout="inventado"/);
 });
 
 test('destaque, comentários (inline e em bloco) e tags', async () => {
@@ -79,7 +79,7 @@ test('diretivas: tabs, columns, toggle, callout, steps, metric, comparison, quot
 		':::figure{caption="Legenda"}', 'conteúdo', ':::',
 	].join('\n');
 	const h = await html(md);
-	assert.match(h, /<nav class="toc" aria-label="Nesta página">.*href="#um".*href="#dois"/s);
+	assert.match(h, /<nav class="toc-bloco" aria-label="Nesta página">.*href="#um".*href="#dois"/s);
 	assert.match(h, /role="tablist".*aria-selected="true"[^>]*>A<.*aria-selected="false"[^>]*>B</s);
 	assert.match(h, /role="tabpanel"[^>]*data-ativo/);
 	assert.equal((h.match(/data-ativo/g) ?? []).length, 1);
@@ -151,8 +151,8 @@ test('eBook: EPUB com capítulos na ordem e Web Book com sumário', async () => 
 
 test('ADR-017: ponto de atenção, bloco de decisão e infográfico ASCII', async () => {
 	const h = await html('> [!attention]\n> Cuidado com o atalho.\n\n> [!decision] Antes de decidir\n> 1. **Qual é o risco?** O custo de errar.\n> 2. **Quem decide?** O dono do processo.\n\n```ascii title="Fluxo · infográfico"\nA ──▶ B\n    │\n    ▼\n    C\n```');
-	assert.match(h, /<aside class="callout callout--atencao" data-callout="attention" aria-label="Ponto de atenção">/);
-	assert.match(h, /<aside class="callout callout--decisao" data-callout="decision" aria-label="Antes de decidir">/);
-	assert.match(h, /<ol>\s*<li><strong>Qual é o risco\?<\/strong> O custo de errar\.<\/li>/);
-	assert.match(h, /<figure class="infografico"><figcaption>Fluxo · infográfico<\/figcaption><pre tabindex="0">A ──▶ B\n    │/);
+	assert.match(h, /<aside class="aside-note callout--atencao" data-callout="attention" aria-label="Ponto de atenção">/);
+	assert.match(h, /<section class="decision-card callout--decisao" aria-label="Antes de decidir">/);
+	assert.match(h, /<p class="decision-question">Qual é o risco\?<\/p><p class="decision-answer">O custo de errar\.<\/p>/);
+	assert.match(h, /<pre class="ascii-art" tabindex="0"><span class="block-title">Fluxo · infográfico<\/span><span class="ascii-body">A ──▶ B\n    │/);
 });

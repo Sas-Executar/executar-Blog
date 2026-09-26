@@ -1,6 +1,6 @@
 ---
-// Autoria e ações do artigo (ADR-017: botões secundários do design system): avatar com iniciais, autor e papel, tempo de leitura,
-// Copiar link e Salvar (HF02/HF04). Os botões ganham comportamento em scripts/cliente.ts.
+// Byline do artigo (ADR-019, .byline da referência): publicação, autoria, data e as ações do leitor
+// — Copiar link e Salvar (HF02/HF04), que ganham comportamento em scripts/cliente.ts.
 import Icone from './Icone.astro';
 import type { Artigo } from '../lib/artigos';
 
@@ -9,19 +9,24 @@ interface Props {
 }
 const { artigo } = Astro.props;
 const salvo = JSON.stringify({ url: artigo.url, titulo: artigo.titulo, resumo: artigo.resumo, categoria: artigo.categoria, minutos: artigo.minutos });
+const data = artigo.data?.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 ---
 
-<div class="meta-bar mt-6 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-rule pt-3">
-	<div class="flex flex-wrap items-center gap-3">
-		<span class="grid size-10 place-items-center rounded-full bg-brand-soft text-sm font-semibold text-brand-text" aria-hidden="true">{artigo.iniciais}</span>
-		<span class="grid leading-tight">
-			<span class="text-small font-semibold text-ink">{artigo.autor}</span>
-			{artigo.papel && <span class="text-label text-muted">{artigo.papel}</span>}
-		</span>
-		<span class="inline-flex items-center gap-1 font-mono text-xs text-muted"><Icone nome="relogio" tamanho={16} />{artigo.minutos} min de leitura</span>
-	</div>
-	<div class="flex gap-2">
-		<button type="button" class="botao botao--secundario botao--p" data-copiar-link><Icone nome="link" tamanho={16} /><span data-rotulo>Copiar link</span></button>
-		<button type="button" class="botao botao--secundario botao--p" data-salvar={salvo} aria-pressed="false"><Icone nome="salvos" tamanho={16} /><span data-rotulo>Salvar</span></button>
-	</div>
+<div class="byline meta-bar">
+	<span>Artigo para <b>Risco Cognitivo</b></span>
+	<span>Por {artigo.autor}{artigo.papel && ` · ${artigo.papel}`}</span>
+	{data && <time datetime={artigo.data?.toISOString().slice(0, 10)}>{data}</time>}
+	<span class="acoes">
+		<button type="button" class="acao" data-copiar-link><Icone nome="link" tamanho={16} /><span data-rotulo>Copiar link</span></button>
+		<button type="button" class="acao" data-salvar={salvo} aria-pressed="false"><Icone nome="salvos" tamanho={16} /><span data-rotulo>Salvar</span></button>
+	</span>
 </div>
+
+<style>
+	.acoes {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-inline-start: auto;
+	}
+</style>

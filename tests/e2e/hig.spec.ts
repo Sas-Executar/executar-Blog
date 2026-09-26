@@ -5,8 +5,12 @@ const ARTIGO = '/blog/fatores-de-riscos-cognitivos/';
 
 test('texto do corpo ≥ 17 pt e nenhum texto visível < 11 pt', async ({ page }) => {
 	await page.goto(ARTIGO);
-	// Corpo = parágrafos de texto; o rótulo do callout é overline (11 pt, permitido pelo HIG).
-	const corpo = await page.locator('.markdown-body p:not(.callout__titulo)').first().evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+	// Corpo = parágrafos de texto; a linha de rótulo e o corpo do callout (anotação, não leitura
+	// corrida — biblioteca de callouts da referência, ADR-019) ficam de fora.
+	const corpo = await page
+		.locator('.markdown-body p:not(.callout-line):not(.callout__titulo):not(.callout-body p):not(.callout__corpo p)')
+		.first()
+		.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
 	expect(corpo).toBeGreaterThanOrEqual(17);
 	const menores = await page.evaluate(() =>
 		[...document.querySelectorAll('body *')]

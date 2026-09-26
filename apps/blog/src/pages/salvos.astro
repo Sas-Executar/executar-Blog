@@ -1,18 +1,18 @@
 ---
 // Salvos (HF04): lista local do navegador; remover exclui; lista vazia orienta a descoberta.
-// Lista editorial + selo + botão secundário do design system (ADR-017).
+// Lista simples do vocabulário editorial (ADR-019): sem card, filete entre itens.
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 ---
 
 <StarlightPage frontmatter={{ title: 'Salvos', description: 'Artigos que você salvou para ler depois.', template: 'splash', pagefind: false }}>
-	<div class="pagina-larga salvos not-content">
-		<p class="intro max-w-2xl text-lead text-pretty text-muted">Os artigos salvos ficam guardados neste navegador, sem conta e sem prazo para expirar.</p>
+	<div class="salvos faixa not-content">
+		<p class="deck">Os artigos salvos ficam guardados neste navegador, sem conta e sem prazo para expirar.</p>
 		<p class="sr-only" role="status" aria-live="polite" data-estado></p>
-		<ul class="lista lista-editorial mt-8" data-lista></ul>
-		<div class="vazio mt-8" data-vazio hidden>
-			<p><strong class="text-ink">Você ainda não salvou nenhum artigo.</strong></p>
-			<p class="text-muted">Use o botão Salvar no topo de qualquer artigo para guardá-lo aqui.</p>
-			<a href="/explorar/" class="botao botao--secundario mt-2">Explorar artigos</a>
+		<ul class="lista-simples" data-lista></ul>
+		<div class="vazio" data-vazio hidden>
+			<p><strong>Você ainda não salvou nenhum artigo.</strong></p>
+			<p>Use o botão Salvar no topo de qualquer artigo para guardá-lo aqui.</p>
+			<a href="/explorar/" class="edit-btn">Explorar artigos</a>
 		</div>
 	</div>
 </StarlightPage>
@@ -31,23 +31,22 @@ import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 		vazio.hidden = salvos.length > 0;
 		for (const s of salvos) {
 			const li = document.createElement('li');
-			li.className = 'flex flex-wrap items-start justify-between gap-x-6 gap-y-3';
-			li.innerHTML = `<div class="grid min-w-0 flex-1 justify-items-start gap-2"><span class="cat selo"></span><a class="inline-flex min-h-11 items-center font-display text-title font-bold tracking-tight text-ink no-underline hover:text-link"></a><p class="m-0 text-muted"></p><span class="tempo font-mono text-xs text-muted"></span></div><button type="button" class="botao botao--secundario botao--p">Remover</button>`;
-			li.querySelector('.cat')!.textContent = s.categoria;
+			li.innerHTML = `<div><p class="eyebrow"></p><a></a><p class="deck-item"></p><span class="tempo"></span></div><button type="button" class="edit-btn">Remover</button>`;
+			li.querySelector('.eyebrow')!.textContent = s.categoria;
 			const a = li.querySelector('a')!;
 			a.href = s.url;
 			a.textContent = s.titulo;
-			li.querySelector('p')!.textContent = s.resumo;
+			li.querySelector('.deck-item')!.textContent = s.resumo;
 			li.querySelector('.tempo')!.textContent = `${s.minutos} min de leitura`;
 			const botao = li.querySelector('button')!;
-			botao.setAttribute('aria-label', `Remover “${s.titulo}” dos salvos`);
+			botao.setAttribute('aria-label', `Remover "${s.titulo}" dos salvos`);
 			botao.addEventListener('click', () => {
 				if (!removerSalvo(s.url)) {
 					estado.textContent = 'Não foi possível remover. Verifique se o armazenamento do navegador está bloqueado.';
 					return;
 				}
 				render();
-				estado.textContent = `“${s.titulo}” removido dos salvos.`;
+				estado.textContent = `"${s.titulo}" removido dos salvos.`;
 				(document.querySelector<HTMLElement>('.salvos li button') ?? document.querySelector<HTMLElement>('.salvos [data-vazio] a'))?.focus();
 			});
 			lista.append(li);
@@ -56,3 +55,34 @@ import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 	render();
 	document.addEventListener('astro:page-load', render);
 </script>
+
+<style>
+	.salvos .deck {
+		max-width: 640px;
+	}
+	.salvos .vazio {
+		margin-top: 32px;
+		padding-top: 24px;
+		border-top: 1px solid var(--line);
+	}
+	.salvos .vazio[hidden] {
+		display: none;
+	}
+	.salvos .vazio p {
+		margin: 0 0 8px;
+	}
+	.salvos .lista-simples > li > div {
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+		flex: 1;
+	}
+	.salvos .tempo {
+		font: 12px var(--mono);
+		color: var(--muted);
+	}
+	.salvos .deck-item {
+		margin: 0;
+		color: var(--muted);
+	}
+</style>

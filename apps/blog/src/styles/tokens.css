@@ -1,174 +1,14 @@
 /*
- * Ponte do blog (Starlight, GitHub Markdown CSS, shell). As cores e tokens editoriais vêm de
- * @executar/theme (cores.css + editorial.css), compartilhados com o Studio (ADR-014).
+ * Ponte HIG do blog (ADR-019). Depois da reescrita da moldura na estrutura da referência editorial
+ * (risco-cognitivo.css + integracao.css), este arquivo guarda só o que a Apple HIG exige e que não
+ * pertence a nenhuma folha específica: tamanho de texto, movimento reduzido, foco visível e
+ * safe area. Nada aqui depende mais do tema Obsidian, do GitHub Markdown CSS ou do shell de
+ * documentação do Starlight — todos removidos.
  */
-/* Ponte → Starlight / tema Obsidian */
-:root,
-:root[data-theme='light'],
-:root[data-theme='dark'] {
-	--sl-font: var(--font-sans);
-	--sl-font-mono: var(--font-mono);
-	--sl-text-body: var(--font-size-body);
-	--sl-content-width: var(--content-width);
-	--sl-menu-button-size: var(--hit-target);
-	--sl-color-bg: var(--background);
-	--sl-color-bg-nav: var(--surface);
-	--sl-color-bg-sidebar: var(--background);
-	--sl-color-text: var(--foreground);
-	--sl-color-white: var(--foreground);
-	/* Escala de cinzas completa (ADR-018): sem ela, a integração do Tailwind injeta o zinco frio
-	   (--color-gray-*) em bordas e fundos do Starlight (pre, tabelas, cabeçalho). */
-	--sl-color-gray-1: var(--ink);
-	--sl-color-gray-2: var(--foreground);
-	--sl-color-gray-3: var(--muted);
-	--sl-color-gray-4: var(--muted);
-	--sl-color-gray-5: var(--border);
-	--sl-color-gray-6: var(--border-soft);
-	--sl-color-gray-7: var(--code-background);
-	--sl-color-black: var(--background);
-	--sl-color-accent-low: var(--brand-soft);
-	--sl-color-hairline: var(--border);
-	--sl-color-hairline-light: var(--border);
-	--sl-color-text-accent: var(--link);
-	--sl-color-accent: var(--accent);
-	--sl-color-accent-high: var(--accent);
-}
-
-/* Ponte → GitHub Markdown CSS (reconcilia com data-theme em vez de prefers-color-scheme) */
-.markdown-body {
-	--fgColor-default: var(--foreground);
-	--fgColor-muted: var(--muted);
-	--fgColor-accent: var(--link);
-	--bgColor-default: var(--background);
-	--bgColor-muted: var(--code-background);
-	--bgColor-neutral-muted: var(--code-background);
-	--borderColor-default: var(--border);
-	--borderColor-muted: var(--border);
-	color-scheme: inherit;
-	background: transparent;
-	color: var(--foreground);
-	font-family: var(--font-sans);
-	font-size: var(--font-size-body);
-}
-
-/* Escala tipográfica HIG (iOS text styles: Large Title 34, Title 1 28, Title 2 22, Title 3 20, Headline 17) */
-:root {
-	--sl-text-h1: 2.125rem;
-	--sl-text-h2: 1.75rem;
-	--sl-text-h3: 1.375rem;
-	--sl-text-h4: 1.25rem;
-	--sl-text-h5: 1.0625rem;
-}
-/* Starlight envolve títulos (h inline + âncora): o tamanho e a borda do GitHub vão para o wrapper */
-.markdown-body .sl-heading-wrapper > :is(h1, h2, h3, h4, h5, h6) {
-	font-size: inherit;
-	line-height: inherit;
-	margin: 0;
-	/* padding-inline-end fica com o Starlight: é o espaço reservado para o ícone de âncora
-	   (node_modules/@astrojs/starlight/dist/style/anchor-links.css). Zerar tudo aqui empurra
-	   o ícone por cima da última palavra do título. */
-	padding-block: 0;
-	padding-inline-start: 0;
-	border: 0;
-}
-.markdown-body .sl-heading-wrapper:is(.level-h1, .level-h2) {
-	padding-bottom: 0.3em;
-	border-bottom: 1px solid var(--border);
-}
-
-/* O PageFrame do tema já põe o sumário mobile no cabeçalho; esconde o do PageSidebar padrão
-   (o PageSidebar do tema depende do Graph View, ADR-003). */
-.right-sidebar-container mobile-starlight-toc {
-	display: none;
-}
-.markdown-body .sl-heading-wrapper {
-	margin-bottom: 0.5em;
-}
-
-/* HIG: alvos de toque ≥ 44 pt em navegação e controles */
-.sidebar-content a,
-.right-sidebar a,
-.pagination-links a,
-button,
-starlight-theme-select select,
-site-search button {
-	min-height: var(--hit-target);
-}
-.sidebar-content a,
-.right-sidebar a {
-	display: flex;
-	align-items: center;
-}
-/* Botão claro/escuro: botão redondo de 44 pt na superfície elevada (padrão Ajustes, ADR-017). */
-starlight-obsidian-theme-select button {
-	min-width: var(--hit-target);
-	justify-content: center;
-	align-items: center;
-	border-radius: 50%;
-	background: var(--surface-raised);
-	color: var(--ink);
-	box-shadow: 0 1px 2px color-mix(in oklab, var(--ink) 8%, transparent);
-}
-
-/* Painel de gráfico (ADR-007, Grafico.astro). Global (não escopado ao componente) porque o
-   mesmo HTML aparece cru nos artigos gerados do vault (.md), fora do compilador do Astro. */
-.grafico {
-	margin-block: var(--rhythm-block);
-}
-.grafico figcaption {
-	font-weight: 600;
-}
-.grafico .resumo {
-	color: var(--muted);
-	font-size: 0.9em;
-}
-
-/* Ponte do menu mobile (ver Head.astro, ponteMenuMobile): o painel vira popover abaixo de 50rem.
-   Neutraliza o estilo padrão de popover do navegador (margin/borda/tamanho) e liga a visibilidade
-   que o PageFrame do tema Obsidian controla por --sl-sidebar-visibility. */
-#starlight__sidebar[popover] {
-	margin: 0;
-	border: 0;
-	padding: 0;
-	inset: var(--sl-nav-height) 0 0 0;
-	width: 100%;
-	height: auto;
-	max-width: none;
-	max-height: none;
-	color: inherit;
-}
-#starlight__sidebar:popover-open {
-	--sl-sidebar-visibility: visible;
-}
-/* O ☰ vira ✕ com o menu aberto (o Starlight detecta isso por irmão no DOM, que o tema separou). */
-body[data-mobile-menu-expanded] .sl-menu-button .open-menu {
-	display: none;
-}
-body[data-mobile-menu-expanded] .sl-menu-button .close-menu {
-	display: inline-block;
-}
-
-/* Blocos com <figure> (Expressive Code, painel de gráfico): zera a margem lateral padrão do
-   navegador (40px), que estreitava o bloco em relação à coluna de texto, sobretudo no celular. */
-.markdown-body figure {
-	margin-inline: 0;
-}
-
-/* Expressive Code com wrap (astro.config): o GitHub Markdown CSS (camada mais alta) força
-   white-space: pre no código e desfaz a quebra de linha — o bloco voltava a rolar na horizontal. */
-.markdown-body .expressive-code .ec-line .code {
-	white-space: pre-wrap;
-	overflow-wrap: anywhere;
-}
-
-/* WCAG 1.4.1: link no meio do texto não pode depender só da cor. */
-.markdown-body :is(p, li, td):not(:where(.not-content *)) a {
-	text-decoration: underline;
-	text-underline-offset: 0.15em;
-}
 
 /* Layout adaptável: respeita safe areas */
 body {
+	background: var(--paper);
 	padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
 }
 
@@ -184,94 +24,19 @@ body {
 	}
 }
 
-/* ── Leitura editorial (ADR-017) ─────────────────────────────────────────────────────────── */
-/* Títulos de seção sem o traço do GitHub: hierarquia pelo peso, pela tinta e pelo espaço. */
-.markdown-body .sl-heading-wrapper:is(.level-h1, .level-h2),
-.markdown-body :is(h1, h2):not(:where(.not-content *)) {
-	border-bottom: 0;
-	padding-bottom: 0;
-	margin-top: 3rem;
-	font-weight: 700;
-	letter-spacing: -0.015em;
-}
-.markdown-body :is(h1, h2, h3, h4):not(:where(.not-content *)),
-.markdown-body .sl-heading-wrapper > :is(h1, h2, h3, h4) {
-	color: var(--ink);
-	font-family: var(--font-display);
-	text-wrap: balance;
-}
-.markdown-body :is(p, li) {
-	text-wrap: pretty;
-}
-/* Título das páginas (fora dos artigos): mesma voz editorial dos títulos de artigo. */
-.content-panel h1#_top {
-	color: var(--ink);
-	font-family: var(--font-display);
-	font-size: var(--text-headline);
-	font-weight: 700;
-	line-height: 1.08;
-	letter-spacing: -0.025em;
-	text-wrap: balance;
-}
-/* Artigo (ADR-018): página na largura editorial da referência — abertura em duas colunas e grade
-   de leitura (texto + sumário lateral). A coluna de texto continua na medida de leitura. */
-:root:has(.artigo-hero) {
-	--content-width: 72rem;
-}
-.leitura .markdown-body {
-	max-width: var(--container-read);
-}
-/* Primeiro parágrafo do artigo = lead. */
-.leitura .sl-markdown-content > p:first-child {
-	color: var(--ink);
-	font-size: 1.1875rem;
-	line-height: 1.55;
-}
-/* Artigo: o corpo começa logo abaixo da capa (sem o respiro duplo entre os painéis do Starlight). */
-.content-panel:has(.artigo-hero) + .content-panel {
-	padding-top: 0.5rem;
-	border-top: 0;
-}
-/* Artigo = coluna única: no desktop, sem o sumário lateral (o sumário continua no menu do topo). */
-@media (min-width: 72rem) {
-	.page:has(.artigo-hero) .right-sidebar-container {
-		display: none;
-	}
-}
-/* Painel de gráfico: bloco editorial comum (editorial.css); aqui só o título do gráfico. */
-.markdown-body .grafico figcaption {
-	color: var(--ink);
-	font-size: 1.125rem;
-}
-.markdown-body picture img {
-	border-radius: var(--radius-lg);
-}
-/* Próximos artigos (Pagination do Starlight, fora dos artigos): sem caixa. */
-.pagination-links a {
-	border: 0;
-	border-top: var(--rule-strong);
-	border-radius: 0;
-	background: transparent;
-	box-shadow: none;
-}
-
-/* ── Shell e preferências (ADR-012/ADR-017) ───────────────────────────────────── */
-/* Páginas de listagem (Hoje, Explorar, Blog, Categoria, Buscar, Salvos) usam a largura de
-   página do DS (1200px); artigos continuam na coluna de leitura (720px). */
-:root:has(.pagina-larga) {
-	--content-width: var(--page-width);
-}
-body {
-	background: var(--background);
-}
-/* Preferências → tamanho do texto (HF05). HIG: o texto padrão continua 17 pt. */
+/* Preferências → tamanho do texto (HF05). HIG: o texto padrão continua 17 pt. A referência fixa
+   .article-text em px (não rem): o percentual na raiz não o alcança, então repete aqui. */
 :root[data-texto='grande'] {
-	--font-size-body: 1.1875rem;
 	font-size: 106.25%;
 }
+:root[data-texto='grande'] .article-text {
+	font-size: 20.1875px; /* 19px × 1.0625 */
+}
 :root[data-texto='maior'] {
-	--font-size-body: 1.3125rem;
 	font-size: 112.5%;
+}
+:root[data-texto='maior'] .article-text {
+	font-size: 21.375px; /* 19px × 1.125 */
 }
 /* Preferências → movimento reduzido (mesmo efeito do "Reduce Motion" do sistema). */
 :root[data-movimento='reduzido'] *,
@@ -282,17 +47,27 @@ body {
 	transition-duration: 0.01ms !important;
 	scroll-behavior: auto !important;
 }
-/* Foco visível: anel no acento azul (ADR-017). */
+
+/* Foco visível: anel no acento azul, também fora dos controles que a referência já cobre. */
 :focus-visible {
-	outline-color: var(--focus-ring);
+	outline-color: var(--brand);
 }
-/* Componentes próprios (.not-content) não herdam o traço sob títulos do GitHub Markdown CSS. */
-.markdown-body .not-content :is(h1, h2, h3) {
-	border-bottom: 0;
-	padding-bottom: 0;
+
+/* HIG: alvo de toque ≥ 44 pt em todo botão, inclusive os que o Expressive Code desenha (copiar
+   código) — a referência e a integração cobrem os botões próprios; este é o piso geral. */
+button {
+	min-height: var(--hit-target);
 }
-/* Páginas splash (Hoje, listas): o hero já traz respiro próprio. */
-[data-has-hero] .content-panel:first-of-type,
-.pagina-larga {
-	padding-top: 0;
+
+/* Expressive Code com wrap (astro.config): sem forçar white-space:pre nas linhas, para não voltar
+   a rolar na horizontal no celular. */
+.markdown-body .expressive-code .ec-line .code {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+/* WCAG 1.4.1: link no meio do texto não pode depender só da cor. */
+.markdown-body :is(p, li, td) a {
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
 }

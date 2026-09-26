@@ -6,9 +6,11 @@ import { artigos } from '../../lib/artigos';
 const lista = await artigos();
 ---
 
-<StarlightPage frontmatter={{ title: 'Blog', description: 'Todos os artigos do EXECUTAR, na ordem de leitura recomendada.', template: 'splash' }}>
-	<div class="pagina-larga not-content">
-		<p class="intro mb-10 max-w-2xl text-lead text-pretty text-muted">Todos os artigos, na ordem de leitura recomendada: do problema à decisão.</p>
-		<ListaArtigos lista={lista} />
+<StarlightPage frontmatter={{ title: 'Blog', description: 'Todos os artigos do Risco Cognitivo, na ordem de leitura recomendada.', template: 'splash' }}>
+	<div class="faixa not-content">
+		<p class="deck" style="max-width:640px">Todos os artigos, na ordem de leitura recomendada: do problema à decisão.</p>
+		<div style="margin-top:32px">
+			<ListaArtigos lista={lista} />
+		</div>
 	</div>
 </StarlightPage>

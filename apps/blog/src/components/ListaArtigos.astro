@@ -1,5 +1,6 @@
 ---
-// Grade de artigos com estado vazio (usada em Blog, Categoria e Explorar).
+// Grade de artigos com estado vazio (usada em Blog, Categoria e Explorar). Vocabulário da
+// referência: sem cards fechados, filetes entre linhas de texto (ADR-019).
 import PostCard from './PostCard.astro';
 import type { Artigo } from '../lib/artigos';
 
@@ -10,10 +11,39 @@ interface Props {
 const { lista, vazio = 'Nenhum artigo por aqui ainda.' } = Astro.props;
 ---
 
-<div class="lista-artigos grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3" data-lista>
+<div class="grade-cards" data-lista>
 	{lista.map((a) => <PostCard artigo={a} nivel="h2" />)}
 </div>
 <div class="vazio" data-vazio hidden={lista.length > 0}>
 	<p>{vazio}</p>
-	<a href="/explorar/" class="botao botao--quieto -ml-3">Explorar todos os artigos</a>
+	<a href="/explorar/" class="edit-btn">Explorar todos os artigos</a>
 </div>
+
+<style>
+	.grade-cards {
+		display: grid;
+		gap: 40px 32px;
+	}
+	.vazio {
+		padding: 30px 0;
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+	}
+	.vazio[hidden] {
+		display: none;
+	}
+	.vazio p {
+		margin: 0 0 16px;
+		color: var(--ink);
+	}
+	@media (min-width: 36rem) {
+		.grade-cards {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (min-width: 64rem) {
+		.grade-cards {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>

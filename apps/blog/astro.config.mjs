@@ -6,10 +6,6 @@ import { satteri } from '@astrojs/markdown-satteri';
 import { RECURSOS, hastEditorial, pluginsEditoriais } from '@executar/markdown-parser';
 import { indice, urlAsset } from './src/vault.mjs';
 
-// Tema Obsidian referenciado do pacote npm (ADR-003): CSS + overrides, sem o plugin/Graph View,
-// que é incompatível com Astro 7 (ver docs/07-execucao/04a-spike-shell.md).
-const theme = (/** @type {string} */ file) => `starlight-theme-obsidian/${file}`;
-
 export default defineConfig({
 	// Gramática editorial única (ADR-013): Obsidian + diretivas + chart + math + mermaid, lida
 	// direto do vault — a mesma usada pelo Studio (@executar/markdown-parser).
@@ -28,31 +24,32 @@ export default defineConfig({
 			description: 'Fatores de risco cognitivo na execução: conceitos, processos e controles.',
 			defaultLocale: 'root',
 			locales: { root: { label: 'Português', lang: 'pt-BR' } },
-			// Shell do Showroom: sem barra lateral nem sumário (ADR-012).
+			// Shell da referência editorial (ADR-019): sem barra lateral nem sumário de documentação —
+			// a página inteira segue a estrutura de risco-cognitivo-executar-linkedin-v12-dark-mode.html.
 			routeMiddleware: './src/route-data.ts',
-			// Design system (ADR-017): Tailwind v4 + tokens primeiro (define a ordem das camadas CSS).
+			// Ordem das camadas: Tailwind (utilitários, usados no guia de estilo e no dashboard) → tokens
+			// do Desyng System e paleta → folha da referência, sem alterações → integração ao blog
+			// (ponte de tokens, HIG e o markup que o Markdown do vault gera) → o que a referência não
+			// cobre (editorial.css) → ponte HIG final (tokens.css).
 			customCss: [
 				'@executar/theme/tailwind.css',
-				theme('styles/layers.css'),
-				theme('styles/theme.css'),
-				theme('styles/centered-reading.css'),
-				theme('styles/common.css'),
 				'@fontsource-variable/inter',
 				'@executar/theme/ds/variables.css',
 				'@executar/theme/ds/theme.css',
 				'@executar/theme/cores.css',
 				'katex/dist/katex.min.css',
+				'@executar/theme/risco-cognitivo.css',
+				'@executar/theme/integracao.css',
 				'@executar/theme/editorial.css',
-				'./src/styles/github.css',
 				'./src/styles/tokens.css',
 			],
 			components: {
-				Sidebar: theme('overrides/Sidebar.astro'),
-				PageFrame: theme('overrides/PageFrame.astro'),
+				PageFrame: './src/components/PageFrame.astro',
+				TwoColumnContent: './src/components/TwoColumnContent.astro',
+				ContentPanel: './src/components/ContentPanel.astro',
 				Pagination: './src/components/Pagination.astro',
 				Header: './src/components/Header.astro',
 				Footer: './src/components/Footer.astro',
-				ThemeSelect: theme('overrides/ThemeSelect.astro'),
 				PageTitle: './src/components/ArticleHero.astro',
 				MarkdownContent: './src/components/MarkdownContent.astro',
 				Head: './src/components/Head.astro',
@@ -63,7 +60,9 @@ export default defineConfig({
 			// como os outros — rótulo azul em caixa alta, filete, código, filete. Sem caixa, sem raio,
 			// sem fundo e sem sombra; o recuo acompanha a coluna de texto.
 			expressiveCode: {
-				themes: ['github-dark', 'github-light'],
+				// Starlight usa o primeiro tema em modo claro e o segundo em modo escuro; invertidos, o
+				// Expressive Code aplicava a paleta escura sob luz clara e falhava o contraste (axe).
+				themes: ['github-light', 'github-dark'],
 				defaultProps: { wrap: true },
 				styleOverrides: {
 					borderRadius: '0',

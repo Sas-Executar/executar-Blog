@@ -390,7 +390,7 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 			<Rotulo>Componentes</Rotulo>
 			<h2 id="controles-titulo" class={h2}>Controles de formulário</h2>
 			<p class="intro-secao">Controles nativos tingidos pelo acento: acessíveis por padrão, sem biblioteca extra.</p>
-			<form class="grid gap-x-10 gap-y-8 md:grid-cols-2" onsubmit="return false">
+			<form class="grid gap-x-10 gap-y-8 md:grid-cols-2 [&>div]:min-w-0" onsubmit="return false">
 				<div>
 					<Campo id="guia-nome" rotulo="Campo de texto" placeholder="Digite aqui" ajuda="Texto de ajuda abaixo do campo." />
 				</div>

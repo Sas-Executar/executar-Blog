@@ -5,163 +5,72 @@
  * seus helpers (cssclasses img-grid, wide, cards) estão normalizados aqui em tokens.
  */
 
-/* ── Família editorial (ADR-017 + ADR-018) ─────────────────────────────────────────────────
- * Um único sistema para todos os blocos especiais do artigo: tipografia + espaço + divisor.
- *   bloco  → fundo transparente, sem caixa, sem raio; filete inferior de 1px; mesma largura do texto
- *   rótulo → caixa alta 11 pt, tracking largo, azul (o mesmo em callout, decisão, terminal,
- *            plain text, infográfico, sumário, diagrama, gráfico e diretivas)
- *   azul   → só acento (rótulos, números, links, detalhes); nada de superfícies azul-claras
- * Os tokens abaixo são a única fonte: ajustar o ritmo aqui ajusta todos os blocos juntos. */
+/* ── Blocos da gramática do vault que a referência não cobre (ADR-019) ─────────────────────
+ * Callouts, ponto de atenção, decisão, terminal, plain text, infográfico e pullquote vêm da folha
+ * da referência (risco-cognitivo.css). Aqui ficam os demais blocos, no mesmo vocabulário:
+ * rótulo azul em caixa alta, filetes finos, sem superfícies. */
 :root {
-	--bloco-margem: var(--rhythm-block); /* respiro antes/depois de cada bloco */
-	--bloco-filete: 1px solid var(--border); /* divisor único dos blocos */
-	--bloco-folga: 1rem; /* espaço entre conteúdo e filete */
-	--bloco-rotulo-espaco: 0.625rem; /* espaço entre rótulo e conteúdo */
+	--bloco-margem: 34px;
+	--bloco-filete: 1px solid var(--editorial-rule, var(--border));
+	--bloco-folga: 22px;
+	--bloco-rotulo-espaco: 18px;
 }
-
-/* Bloco editorial (base comum) */
-.callout,
-.infografico,
-.markdown-body .expressive-code,
 .diagrama,
-.markdown-body .grafico,
+.grafico,
 details.toggle,
 .tabs,
 .cartao,
 .comparacao,
-.propriedades {
+.propriedades,
+.markdown-body .expressive-code {
 	margin-block: var(--bloco-margem);
-	padding: 0 0 var(--bloco-folga);
+	padding: var(--bloco-folga) 0;
 	border: 0;
-	border-bottom: var(--bloco-filete);
+	border-block: var(--bloco-filete);
 	border-radius: 0;
 	background: transparent;
 	box-shadow: none;
-	color: var(--foreground);
 }
-
-/* Rótulo editorial (base comum) */
-.callout__titulo,
-.infografico figcaption,
-.expressive-code .frame .header .title,
-.expressive-code .frame:not(.has-title):not(.is-terminal):has(> pre[data-language='text'], > pre[data-language='plaintext'], > pre[data-language='txt'])::before,
-.toc__titulo,
 .comparacao__lado h3,
 .propriedades > summary,
-details.toggle > summary {
+details.toggle > summary,
+.expressive-code .frame .header .title {
 	margin: 0;
-	padding: 0;
-	border: 0;
-	background: transparent;
-	color: var(--brand-text);
+	color: var(--brand);
 	font-family: var(--font-sans);
-	font-size: 0.6875rem !important;
-	font-weight: 700;
-	line-height: 1.5;
-	letter-spacing: 0.14em;
+	font-size: 11px !important;
+	font-weight: 800;
+	line-height: 1.3;
+	letter-spacing: 0.16em;
 	text-transform: uppercase;
 }
-
-/* ── Callouts: rótulo + texto + filete ─────────────────────────────────── */
-.callout__titulo {
+html[data-theme='dark'] :is(.comparacao__lado h3, .propriedades > summary, details.toggle > summary, .expressive-code .frame .header .title) {
+	color: var(--brand-on-dark, var(--accent));
+}
+details.toggle > summary {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-}
-.callout__corpo {
-	margin-top: var(--bloco-rotulo-espaco);
-	color: var(--foreground);
-}
-.callout__corpo > :first-child {
-	margin-top: 0;
-}
-.callout__corpo > :last-child {
-	margin-bottom: 0;
-}
-/* Semântica sem superfície: só o rótulo muda de cor. */
-.callout--perigo .callout__titulo {
-	color: var(--error-text);
-}
-/* Frase-síntese: o texto fala mais alto que a caixa — lead em tinta. */
-.callout--dica .callout__corpo {
-	color: var(--ink);
-	font-size: 1.1875rem;
-	line-height: 1.5;
-}
-details.callout > summary,
-details.toggle > summary {
-	cursor: pointer;
 	min-height: var(--hit-target);
 	list-style: none;
+	cursor: pointer;
 }
-details.callout > summary,
-details.toggle > summary {
-	display: flex;
-	align-items: center;
+details.toggle > summary::-webkit-details-marker {
+	display: none;
 }
-details.callout > summary::after,
 details.toggle > summary::after {
 	content: '+';
 	margin-inline-start: auto;
-	color: var(--brand-text);
-	font: 700 1rem/1 var(--font-mono);
+	font: 700 16px/1 var(--font-mono);
 	letter-spacing: 0;
 }
-details.callout[open] > summary::after,
 details.toggle[open] > summary::after {
 	content: '−';
 }
-:is(details.callout, details.toggle) > summary::-webkit-details-marker {
-	display: none;
-}
 
-/* ── Decisão/reflexão: rótulo + perguntas numeradas separadas por filetes ─ */
-.callout--decisao .callout__corpo > ol {
-	counter-reset: decisao;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-.callout--decisao .callout__corpo > ol > li {
-	position: relative;
-	counter-increment: decisao;
-	margin: 0;
-	padding: 1rem 0 1rem 2.5rem;
-	border-top: var(--rule);
-	color: var(--muted);
-	font-size: 0.9375rem;
-	line-height: 1.5;
-}
-.callout--decisao .callout__corpo > ol > li::before {
-	content: counter(decisao, decimal-leading-zero);
-	position: absolute;
-	inset-inline-start: 0;
-	top: 1.2rem;
-	color: var(--link);
-	font: 700 0.75rem/1.3 var(--font-mono);
-	letter-spacing: 0.03em;
-}
-.callout--decisao .callout__corpo > ol > li > :is(strong, p > strong):first-child {
-	display: block;
-	margin-bottom: 0.25rem;
-	color: var(--ink);
-	font-size: 1.0625rem;
-	font-weight: 650;
-	line-height: 1.35;
-	letter-spacing: -0.01em;
-}
-.callout--decisao .callout__corpo > ol > li > p {
-	margin: 0;
-}
-.callout--decisao {
-	padding-bottom: 0;
-}
-
-/* ── Terminal e plain text (Expressive Code): mesmo bloco, sem moldura ─── */
-/* A moldura do Expressive Code vira rótulo + filete + código + filete (astro.config: styleOverrides). */
+/* Código com linguagem (Expressive Code) = mesmo bloco do "Plain txt" da referência. */
 .markdown-body .expressive-code .frame {
 	border-radius: 0;
-	outline: 0 !important; /* o tema Obsidian contorna terminal e blocos com título */
+	outline: 0 !important;
 	box-shadow: none;
 }
 .markdown-body .expressive-code .frame .header {
@@ -170,64 +79,25 @@ details.toggle[open] > summary::after {
 	margin: 0 0 var(--bloco-rotulo-espaco);
 	padding: 0 !important;
 	border: 0 !important;
-	border-radius: 0 !important;
 	background: transparent !important;
 }
 .markdown-body .expressive-code .frame .header::before,
-.markdown-body .expressive-code .frame .header .title::after,
-.markdown-body .expressive-code .frame .header .title::before {
+.markdown-body .expressive-code .frame .header::after,
+.markdown-body .expressive-code .frame .header .title::after {
 	display: none;
 }
 .markdown-body .expressive-code .frame:not(.has-title):not(.is-terminal) .header {
 	display: none !important;
 }
-.expressive-code .frame.is-terminal .header .title:empty::after {
-	content: 'Plain txt · terminal';
-	display: inline !important;
-}
-.expressive-code .frame:not(.has-title):not(.is-terminal):has(> pre[data-language='text'], > pre[data-language='plaintext'], > pre[data-language='txt'])::before {
-	content: 'Plain txt';
-	display: block;
-	margin-bottom: var(--bloco-rotulo-espaco);
-}
 .markdown-body .expressive-code .frame pre {
-	padding: 0.875rem 0 0;
+	padding: 0;
 	border: 0 !important;
-	border-top: var(--bloco-filete) !important;
 	border-radius: 0 !important;
 	background: transparent !important;
 }
-.markdown-body .expressive-code .frame pre > code {
-	padding-inline: 0 !important;
-}
+.markdown-body .expressive-code .frame pre > code,
 .markdown-body .expressive-code .ec-line .code {
 	padding-inline: 0 !important;
-}
-
-/* ── Infográfico ASCII: rótulo + filete + desenho + filete ─────────────── */
-.infografico {
-	overflow: visible;
-}
-.infografico figcaption {
-	margin-bottom: var(--bloco-rotulo-espaco);
-}
-.infografico pre {
-	display: block;
-	margin: 0;
-	padding: 1rem 0 0;
-	overflow-x: auto;
-	border: 0;
-	border-top: var(--bloco-filete);
-	border-radius: 0;
-	background: transparent;
-	color: var(--foreground);
-	font: 0.875rem/1.55 var(--font-mono);
-	white-space: pre;
-	tab-size: 2;
-}
-.infografico pre:focus-visible {
-	outline: 2px solid var(--focus-ring);
-	outline-offset: 2px;
 }
 
 /* ── Inline: destaque, tags, wikilinks ───────────────────────────────────── */
@@ -369,17 +239,6 @@ mark {
 	font-weight: 600;
 }
 
-/* ── Listas numeradas: marcador mono azul, ritmo editorial ─────────────── */
-.markdown-body ol:not(.contains-task-list):not(:where(.not-content, .not-content *)) > li::marker {
-	color: var(--link);
-	font-family: var(--font-mono);
-	font-size: 0.875em;
-	font-weight: 700;
-}
-.markdown-body :is(ol, ul):not(:where(.not-content, .not-content *)) > li + li {
-	margin-top: 0.5rem;
-}
-
 /* ── Math, diagramas, notas de rodapé ────────────────────────────────────── */
 .formula {
 	overflow-x: auto;
@@ -387,7 +246,23 @@ mark {
 	padding-block: 0.5rem;
 }
 .diagrama {
+	margin-block: var(--bloco-margem);
+	margin-inline: 0;
 	text-align: center;
+}
+.citacao,
+.figura {
+	margin-inline: 0;
+}
+.grafico figcaption {
+	color: var(--ink);
+	font-family: var(--font-display, var(--sans));
+	font-size: 1.125rem;
+	font-weight: 600;
+}
+.grafico .resumo {
+	color: var(--muted);
+	font-size: 0.9em;
 }
 /* O desenho não ganha moldura nem sombra: é conteúdo do bloco, como o código. */
 .markdown-body .diagrama pre.mermaid {
@@ -592,30 +467,6 @@ details.toggle {
 .citacao {
 	margin: var(--rhythm-block) 0;
 }
-/* Citações e destaques = pullquote: filete azul à esquerda, filetes finos em cima/embaixo. */
-.citacao blockquote,
-.markdown-body blockquote:not(.callout):not(:where(.not-content *)) {
-	margin: 0;
-	padding: 1.75rem 0 1.75rem 1.5rem;
-	border: 0;
-	border-block: var(--rule);
-	border-inline-start: 4px solid var(--brand) !important;
-	border-radius: 0;
-	background: transparent;
-	color: var(--ink);
-	font-family: var(--font-display);
-	font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.625rem);
-	font-weight: 700;
-	line-height: 1.25;
-	letter-spacing: -0.015em;
-	text-wrap: balance;
-}
-.markdown-body blockquote:not(.callout):not(:where(.not-content *)) {
-	margin-block: var(--rhythm-block);
-}
-.markdown-body blockquote:not(.callout):not(:where(.not-content *)) > :last-child {
-	margin-bottom: 0;
-}
 .citacao figcaption,
 .figura figcaption {
 	margin-top: 0.5rem;
@@ -631,12 +482,13 @@ details.toggle {
 	border: 0;
 	border-radius: var(--radius-card);
 }
-/* Sumário editorial: lista com filetes e número mono azul (sem caixa). */
-.toc {
+/* Diretiva :::toc (sumário no meio do texto): lista com filetes e número mono azul, sem caixa.
+   Classe "toc-bloco": a sidebar do artigo usa .toc, no vocabulário da própria referência. */
+.toc-bloco {
 	margin-block: var(--rhythm-block);
-	counter-reset: toc;
+	counter-reset: toc-bloco;
 }
-.toc__titulo {
+.toc-bloco__titulo {
 	margin: 0 0 0.5rem;
 	color: var(--brand-text);
 	font-size: 0.6875rem;
@@ -644,21 +496,21 @@ details.toggle {
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
 }
-.toc ol {
+.toc-bloco ol {
 	margin: 0;
 	padding: 0;
 	border-top: var(--rule-strong);
 	list-style: none;
 }
-.toc li {
+.toc-bloco li {
 	margin: 0;
 	border-bottom: var(--rule);
-	counter-increment: toc;
+	counter-increment: toc-bloco;
 }
-.toc .toc__nivel-3 {
+.toc-bloco .toc-bloco__nivel-3 {
 	padding-inline-start: 2rem;
 }
-.toc a {
+.toc-bloco a {
 	display: flex;
 	gap: 0.75rem;
 	align-items: baseline;
@@ -670,17 +522,17 @@ details.toggle {
 	line-height: 1.4;
 	text-decoration: none !important;
 }
-.toc a::before {
-	content: counter(toc, decimal-leading-zero);
+.toc-bloco a::before {
+	content: counter(toc-bloco, decimal-leading-zero);
 	flex: none;
 	color: var(--link);
 	font: 800 0.75rem/1.4 var(--font-mono);
 }
-.toc a:hover {
+.toc-bloco a:hover {
 	color: var(--link);
 }
 @media (min-width: 53.125rem) {
-	.toc--colunas ol {
+	.toc-bloco--colunas ol {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		column-gap: 1.5rem;
@@ -822,26 +674,4 @@ details.toggle {
 .colunas > .coluna > :first-child,
 .comparacao__lado > :first-child {
 	margin-top: 0 !important;
-}
-/* O tema de leitura estiliza <details> com uma barra lateral própria; os componentes definem a sua. */
-/* O tema de leitura dá borda, barra lateral (Obsidian: details::before) e seta (Starlight:
-   summary::before) próprios a <details>; os blocos editoriais usam só o filete e o +/− comuns. */
-.markdown-body :is(details.callout, details.toggle)::before,
-.markdown-body :is(details.callout, details.toggle) > summary::before {
-	display: none !important;
-}
-.markdown-body :is(details.callout, details.toggle) > summary {
-	margin: 0;
-	padding: 0;
-}
-.markdown-body :is(details.callout, details.toggle)[open] > summary {
-	margin-bottom: var(--bloco-rotulo-espaco);
-}
-.markdown-body :is(details.callout, details.toggle) {
-	padding: 0 0 var(--bloco-folga);
-	border: 0;
-	border-bottom: var(--bloco-filete);
-}
-.markdown-body details.toggle {
-	border-top: var(--bloco-filete);
 }

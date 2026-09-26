@@ -99,7 +99,7 @@ export default function diretivas({ indice, avisar = () => {} }) {
 			const a = node.attributes ?? {};
 			const { filhos } = rotuloEFilhos(node);
 			const fonte = [a.autor, a.cite].filter(Boolean).join(', ');
-			return bloco('figure', { class: 'citacao' }, [bloco('blockquote', {}, filhos), ...(fonte ? [bloco('figcaption', {}, [texto(`— ${fonte}`)])] : [])]);
+			return bloco('figure', { class: 'citacao' }, [bloco('blockquote', { class: 'pullquote' }, filhos), ...(fonte ? [bloco('figcaption', {}, [texto(`— ${fonte}`)])] : [])]);
 		},
 		figure(node) {
 			const { rotulo, filhos } = rotuloEFilhos(node);
@@ -117,9 +117,11 @@ export default function diretivas({ indice, avisar = () => {} }) {
 			return html(`<figure class="embed"><iframe src="${escapar(a.url)}" title="${escapar(titulo || 'Conteúdo incorporado')}" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></figure>`);
 		},
 		toc() {
-			if (!titulos.length) return bloco('p', { class: 'toc toc--vazio' }, [texto('Sem seções.')]);
-			const itens = titulos.map((t) => `<li class="toc__nivel-${t.nivel}"><a href="#${t.id}">${escapar(t.texto)}</a></li>`).join('');
-			return html(`<nav class="toc" aria-label="Nesta página"><p class="toc__titulo">Nesta página</p><ol>${itens}</ol></nav>`);
+			// Classe "toc-bloco" (não "toc"): a sidebar do artigo já usa .toc no vocabulário da
+			// referência editorial (ADR-019); esta é a diretiva :::toc dentro do próprio texto.
+			if (!titulos.length) return bloco('p', { class: 'toc-bloco toc-bloco--vazio' }, [texto('Sem seções.')]);
+			const itens = titulos.map((t) => `<li class="toc-bloco__nivel-${t.nivel}"><a href="#${t.id}">${escapar(t.texto)}</a></li>`).join('');
+			return html(`<nav class="toc-bloco" aria-label="Nesta página"><p class="toc-bloco__titulo">Nesta página</p><ol>${itens}</ol></nav>`);
 		},
 		database(node) {
 			const a = node.attributes ?? {};

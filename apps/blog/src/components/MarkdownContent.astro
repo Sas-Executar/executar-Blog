@@ -1,71 +1,67 @@
 ---
-// Override oficial do Starlight: escopo do GitHub Markdown CSS (ADR-005) e as cssclasses do
-// frontmatter do Obsidian, normalizadas como classes do tema (ADR-013: img-grid, wide, cards...).
-// Nos artigos (ADR-018), grade de leitura da referência editorial: coluna de texto + sumário
-// "Neste artigo" fixo na lateral (desktop) ou recolhível acima do texto (celular). O sumário vem
-// dos títulos do próprio Markdown (route data do Starlight), sem duplicar conteúdo.
-import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+// Override oficial do MarkdownContent (ADR-019). Nos artigos, a grade de leitura da referência
+// editorial: byline, texto (.article-text), temas e a barra lateral "Neste artigo" com o sumário
+// numerado e a nota de destaque. Nas demais páginas, o corpo na faixa da página.
+// As cssclasses do Obsidian continuam virando classes do tema (ADR-013).
+import MetaBar from './MetaBar.astro';
 import Propriedades from './Propriedades.astro';
-import { eArtigo } from '../lib/artigos';
+import { eArtigo, paraArtigo } from '../lib/artigos';
 
 const { entry, headings } = Astro.locals.starlightRoute;
 const cssclasses = ((entry.data as { cssclasses?: string[] }).cssclasses ?? []).map((c) => `cssclass-${String(c).replace(/[^a-z0-9-]/gi, '')}`);
-const artigo = eArtigo(entry.id) && entry.id !== 'blog';
+const artigo = eArtigo(entry.id) && entry.id !== 'blog' ? paraArtigo(entry) : undefined;
 const secoes = headings.filter((h) => h.depth === 2);
 const numero = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
 {
 	artigo ? (
-		<div class="leitura grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,1fr)_15rem]">
-			{secoes.length > 1 && (
-				<>
-					<aside class="leitura__sumario not-content hidden lg:order-2 lg:block" aria-labelledby="sumario-lateral">
-						<nav class="sticky top-24" aria-labelledby="sumario-lateral">
-							<p class="rotulo" id="sumario-lateral">Neste artigo</p>
-							<ol class="sumario">
-								{secoes.map((h, i) => (
-									<li>
-										<a href={`#${h.slug}`}>
-											<span aria-hidden="true">{numero(i)}</span>
-											{h.text}
-										</a>
-									</li>
-								))}
-							</ol>
-						</nav>
-					</aside>
-					<details class="leitura__sumario-movel not-content lg:hidden">
-						<summary>Neste artigo · {secoes.length} seções</summary>
-						<nav aria-label="Neste artigo">
-							<ol class="sumario">
-								{secoes.map((h, i) => (
-									<li>
-										<a href={`#${h.slug}`}>
-											<span aria-hidden="true">{numero(i)}</span>
-											{h.text}
-										</a>
-									</li>
-								))}
-							</ol>
-						</nav>
-					</details>
-				</>
-			)}
-			<div class="min-w-0 lg:order-1">
+		<div class="reading-grid leitura">
+			<div class="leitura__principal">
+				<MetaBar artigo={artigo} />
 				<Propriedades dados={entry.data as Record<string, unknown>} />
-				<div class:list={['markdown-body', ...cssclasses]}>
-					<Default>
-						<slot />
-					</Default>
+				<div class:list={['article-text markdown-body', ...cssclasses]} id="artigo">
+					<slot />
 				</div>
+				{artigo.temas.length > 0 && (
+					<div class="tags" aria-label="Temas do artigo">
+						{artigo.temas.map((t) => (
+							<a href={`/blog/categoria/${artigo.categoriaSlug}/`}>{t}</a>
+						))}
+					</div>
+				)}
 			</div>
+			<aside class="sidebar leitura__sumario" aria-label="Sumário">
+				<div class="aside-inner">
+					{secoes.length > 1 && (
+						<nav aria-labelledby="neste-artigo">
+							<h2 class="aside-label" id="neste-artigo">
+								Neste artigo
+							</h2>
+							<ol class="toc">
+								{secoes.map((h, i) => (
+									<li>
+										<a href={`#${h.slug}`}>
+											<span aria-hidden="true">{numero(i)}</span>
+											{h.text}
+										</a>
+									</li>
+								))}
+							</ol>
+						</nav>
+					)}
+					{artigo.destaque && (
+						<div class="aside-note">
+							<span class="label">Ponto de atenção</span>
+							<p>{artigo.destaque}</p>
+						</div>
+					)}
+				</div>
+			</aside>
 		</div>
 	) : (
-		<div class:list={['markdown-body', ...cssclasses]}>
-			<Default>
-				<slot />
-			</Default>
+		<div class:list={['page-body faixa', ...cssclasses]}>
+			<slot />
 		</div>
 	)
 }

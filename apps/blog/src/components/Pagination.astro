@@ -1,6 +1,6 @@
 ---
-// Override oficial da Pagination (ADR-012/ADR-017): nos artigos vira "Continue lendo" (próximo passo do
-// HF02) — os outros artigos na ordem editorial, a partir do seguinte — e o convite para perguntar.
+// Override oficial da Pagination (ADR-019): "Continue lendo" (HF02) com os próximos artigos na
+// ordem editorial, no vocabulário da referência (rótulo de seção + cards).
 import PostCard from './PostCard.astro';
 import { artigos, eArtigo } from '../lib/artigos';
 
@@ -12,16 +12,46 @@ const proximos = i < 0 ? [] : [...lista.slice(i + 1), ...lista.slice(0, i)].slic
 
 {
 	proximos.length > 0 && (
-		<section class="continue not-content mt-16 border-t border-rule pt-8" aria-labelledby="continue-lendo">
-			<h2 id="continue-lendo" class="rotulo">Continue lendo</h2>
-			<div class="grid gap-x-8 gap-y-10 md:grid-cols-3">
+		<section class="continue not-content" aria-labelledby="continue-lendo">
+			<h2 id="continue-lendo" class="secao-rotulo">
+				Continue lendo
+			</h2>
+			<div class="grade-cards">
 				{proximos.map((a) => (
 					<PostCard artigo={a} />
 				))}
 			</div>
-			<p class="mt-10 text-muted">
-				Ficou com dúvida? <a href="/perguntar/" class="font-semibold text-link">Pergunte aos artigos</a>.
+			<p class="continue-cta">
+				Ficou com dúvida? <a href="/perguntar/">Pergunte aos artigos</a>.
 			</p>
 		</section>
 	)
 }
+
+<style>
+	.continue {
+		max-width: var(--max);
+		margin: 56px auto 0;
+		padding: 44px 0 0;
+		border-top: 1px solid var(--line);
+	}
+	.grade-cards {
+		display: grid;
+		gap: 40px 32px;
+	}
+	.continue-cta {
+		margin: 40px 0 0;
+		color: var(--muted);
+	}
+	.continue-cta a {
+		color: var(--brand);
+		font-weight: 600;
+		text-decoration-color: var(--brand);
+		text-underline-offset: 4px;
+	}
+	@media (min-width: 48rem) {
+		.grade-cards {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>

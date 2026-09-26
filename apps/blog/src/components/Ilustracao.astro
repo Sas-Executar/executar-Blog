@@ -11,7 +11,7 @@ interface Props {
 const { icone, grande = false } = Astro.props;
 ---
 
-<div class:list={['ilustracao relative aspect-video overflow-hidden rounded-card border border-rule-soft bg-surface', { grande }]} aria-hidden="true">
+<div class:list={['ilustracao hero-art relative aspect-video overflow-hidden', { grande }]} aria-hidden="true">
 	<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet" class="size-full">
 		<line x1="70" y1="70" x2="170" y2="130" class="traco"></line>
 		<line x1="330" y1="70" x2="240" y2="125" class="traco"></line>
@@ -35,6 +35,10 @@ const { icone, grande = false } = Astro.props;
 </div>
 
 <style>
+	.ilustracao {
+		border-radius: 18px;
+		background: var(--soft);
+	}
 	.traco {
 		stroke: var(--brand-line);
 		stroke-width: 1.5;

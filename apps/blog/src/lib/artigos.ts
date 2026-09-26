@@ -21,6 +21,12 @@ export interface Artigo {
 	pilar?: keyof typeof PILARES;
 	consciencia?: keyof typeof CONSCIENCIA;
 	icone: Icone;
+	/** Data de publicação (frontmatter `data`), para a byline. */
+	data?: Date;
+	/** Temas do artigo: `tags` do frontmatter ou, na falta, categoria, pilar e consciência. */
+	temas: string[];
+	/** Frase de destaque da barra lateral (frontmatter `destaque`, ADR-019). */
+	destaque?: string;
 }
 
 const rotulo = (slug: string) => slug.charAt(0).toUpperCase() + slug.slice(1).replaceAll('-', ' ');
@@ -56,6 +62,11 @@ export function paraArtigo(entry: CollectionEntry<'docs'>): Artigo {
 		pilar: entry.data.pilar,
 		consciencia: entry.data.consciencia,
 		icone,
+		data: entry.data.data,
+		temas: entry.data.tags?.length
+			? entry.data.tags
+			: [rotulo(categoriaSlug), entry.data.pilar && PILARES[entry.data.pilar], entry.data.consciencia && CONSCIENCIA[entry.data.consciencia]].filter((t): t is string => Boolean(t)),
+		destaque: entry.data.destaque,
 	};
 }
 
