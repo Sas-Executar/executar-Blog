@@ -13,9 +13,9 @@ const lista = (await artigos()).filter((a) => a.categoriaSlug === slug);
 ---
 
 <StarlightPage frontmatter={{ title: nome, description: `Artigos da categoria ${nome}.`, template: 'splash' }}>
-	<div class="faixa not-content">
-		<nav class="crumb trilha" aria-label="Trilha" style="padding:0 0 20px;border-bottom:1px solid var(--line)"><a href="/blog/">Blog</a> &nbsp;/&nbsp; <b>{nome}</b></nav>
-		<p class="contagem" style="margin-top:24px">{lista.length} {lista.length === 1 ? 'artigo' : 'artigos'} nesta categoria.</p>
+	<div class="pagina-larga not-content">
+		<nav class="trilha" aria-label="Trilha"><a href="/blog/">Blog</a> <span aria-hidden="true">/</span> {nome}</nav>
+		<p class="intro mb-10 font-mono text-xs tracking-wide text-muted uppercase">{lista.length} {lista.length === 1 ? 'artigo' : 'artigos'} nesta categoria.</p>
 		<ListaArtigos lista={lista} vazio="Esta categoria ainda não tem artigos." />
 	</div>
 </StarlightPage>

@@ -206,19 +206,6 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
   - nenhum texto removido.
 - **Evidência:** ver o commit (`npm run check`, `npm run build`, e2e com teste novo do artigo e da unificação); capturas lado a lado revisadas no laboratório e nos artigos, em desktop e celular, claro e escuro.
 
-## A casca inteira na estrutura da referência editorial (ADR-019) — 2026-09-26 — VERIFIED (local)
-- **Pedido do usuário:** o HTML de referência batia com o showroom, mas artigos, cards e componentes reais ainda divergiam ("deveriam ser excluídos e reescritos com base no novo design system"). Decisões via `AskUserQuestion`: (1) "Trocar a casca inteira" — excluir `starlight-theme-obsidian` e `github-markdown-css` das páginas do blog, Starlight só como motor; (2) "Igual ao HTML" — biblioteca de callouts com cartão arredondado e ícone (camada final V9 da referência), mantendo Ponto de Atenção/Decisão/Terminal/Plain Text/Infográfico só com filete.
-- **O que foi feito:**
-  - `packages/theme/src/risco-cognitivo.css` (novo): cópia verbatim do `<style>` da referência, fonte de verdade visual.
-  - `packages/theme/src/integracao.css` (novo): ponte de tokens, reforço da Apple HIG e o markup que Astro/Markdown geram e o HTML estático não precisava.
-  - Overrides do Starlight trocados por componentes próprios: `PageFrame`, `Header`, `Footer`, `ArticleHero` (PageTitle), `MarkdownContent`, `TwoColumnContent`, `ContentPanel`, `Head`.
-  - `nos.mjs`/`codigo.mjs`/`obsidian.mjs`/`diretivas.mjs`: callouts com a anatomia completa da referência (ícone circular, cartão); nova função `decisao()`; blocos terminal/plain text/ascii deixam de passar pelo Expressive Code.
-  - Cartões e listas (`PostCard`, `Ilustracao`, `Pagination`, `Hoje`, `buscar`, `explorar`, `salvos`, `preferencias`, `blog/*`) no vocabulário de classes da própria referência.
-  - Fora do escopo desta fase, por decisão de tempo/risco: `/guia-de-estilo/` e `DashboardSinteseTdah` continuam no vocabulário Tailwind do ADR-017 (com uma seção de compatibilidade em `integracao.css` para os componentes que o guia ainda usa).
-- **Bugs corrigidos durante a validação** (detalhe no ADR-019): overflow horizontal de 344px em toda página no celular (regra de alvo de toque sem media query vencendo o `display:none` da própria referência pela ordem da folha); item de grid maior que a viewport na Home e no formulário de busca do guia (SVG/botão sem `min-width:0`); alvo de toque de 32px no botão "copiar" do Expressive Code (regra genérica perdida ao enxugar `tokens.css`); contraste insuficiente em modo escuro em quatro componentes e no botão primário do guia em modo claro (a referência zera `a{color:inherit}` fora de camada e vence os utilitários do Tailwind, dentro de `@layer components`, na cascata de camadas); tema do Expressive Code invertido (`themes:['github-dark','github-light']`, pré-existente, corrigido por ser causa raiz simples); texto do artigo não crescia com "Texto maior" (a referência fixa `.article-text` em `px`, não `rem`).
-- **Limitação conhecida, reportada e não corrigida:** um token de sintaxe do Expressive Code no exemplo `npm run check` do guia de estilo usa uma cor do tema `github-light` do Shiki abaixo de 4.5:1 contra o papel `#f7f7f3` da referência. Só essa palavra, nesse exemplo, fora do escopo desta fase; não afeta blocos de código dos artigos reais.
-- **Evidência:** `npm run check` (astro check + tsc + 97 testes unitários + contraste 23 pares × 4 modos + guard + validate-ops + plugin:check) limpo; `npm run build` (todos os apps) ok; `npx playwright test` — 44 casos, 42 aprovados e os 2 restantes documentados como a limitação acima; `git ls-files | grep -cE 'app\.css|\.env$'` = 0.
-
 ## Nova conta Cloudflare (2026-09-24)
 
 - O usuário criou uma conta nova, `Sas_executar@outlook.com's Account` (`99b69…`), para um build e deploy do zero. A conta antiga (`92fdc…`, Worker `executar-blogg`) fica desativada para este fluxo.

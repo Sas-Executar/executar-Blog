@@ -1,7 +1,8 @@
 ---
-// Card de artigo (ADR-019, .rc-card em integracao.css): capa, categoria, título, resumo e autoria,
-// no mesmo vocabulário tipográfico da referência — filete + eyebrow + título + deck. O card inteiro
-// é clicável (link esticado). Os data-* alimentam os filtros do Explorar sem nova requisição.
+// Card de artigo (ADR-017): cartão editorial — capa, categoria, título, resumo e autoria, com
+// tipografia + espaço + divisor no lugar de caixa e sombra. O card inteiro é clicável (link
+// esticado). Os data-* alimentam os filtros do Explorar sem nova requisição.
+import CategoryPill from './CategoryPill.astro';
 import Icone from './Icone.astro';
 import Ilustracao from './Ilustracao.astro';
 import type { Artigo } from '../lib/artigos';
@@ -15,16 +16,28 @@ const { artigo, destaque = false, nivel = 'h3' } = Astro.props;
 const Titulo = nivel;
 ---
 
-<article class:list={['rc-card post-card', { 'rc-card--destaque': destaque }]} data-categoria={artigo.categoriaSlug} data-pilar={artigo.pilar} data-consciencia={artigo.consciencia}>
+<article
+	class:list={['post-card group relative grid content-start gap-4 rounded-card transition-colors duration-200 ease-standard focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-(--focus-ring)', { destaque }]}
+	data-categoria={artigo.categoriaSlug}
+	data-pilar={artigo.pilar}
+	data-consciencia={artigo.consciencia}
+>
 	<Ilustracao icone={artigo.icone} grande={destaque} />
-	<div class="rc-card__corpo">
-		<p class="eyebrow">{artigo.categoria}</p>
-		<Titulo class="rc-card__titulo">
-			<a href={artigo.url}>{artigo.titulo}</a>
+	<div class="grid justify-items-start gap-2 border-t border-rule pt-4">
+		<CategoryPill nome={artigo.categoria} />
+		<Titulo
+			class:list={[
+				'm-0 font-display font-bold tracking-tight text-balance text-ink transition-colors group-hover:text-link',
+				destaque ? 'text-title md:text-[1.75rem] md:leading-tight' : 'text-lg leading-snug',
+			]}
+		>
+			<a href={artigo.url} class="text-inherit no-underline after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] focus-visible:outline-none">{artigo.titulo}</a>
 		</Titulo>
-		<p class="rc-card__deck">{artigo.resumo}</p>
-		<p class="rc-card__meta">
-			Por {artigo.autor} · <Icone nome="relogio" tamanho={12} /> {artigo.minutos} min
+		<p class="m-0 text-base leading-relaxed text-pretty text-muted">{artigo.resumo}</p>
+		<p class="m-0 mt-1 flex flex-wrap items-center gap-1.5 text-label text-muted">
+			<span>Por {artigo.autor}</span>
+			<span aria-hidden="true">·</span>
+			<span class="inline-flex items-center gap-1 font-mono text-xs"><Icone nome="relogio" tamanho={14} />{artigo.minutos} min</span>
 		</p>
 	</div>
 </article>

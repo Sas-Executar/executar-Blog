@@ -1,19 +1,23 @@
 ---
-// "Pergunte aos artigos" (ADR-008): Turnstile + POST /api/perguntar. Campo e botão no vocabulário
-// da referência editorial (ADR-019).
+// "Pergunte aos artigos" (ADR-008): Turnstile + POST /api/perguntar. Campo e botão do design system (ADR-017).
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 ---
 
-<form class="perguntar" data-perguntar>
-	<label for="pergunta">Sua pergunta sobre os artigos</label>
-	<textarea id="pergunta" name="pergunta" rows="3" minlength="3" maxlength="500" required placeholder="Ex.: Como reduzir a troca de tarefas no dia a dia?"></textarea>
+<form class="perguntar grid gap-4" data-perguntar>
+	<div>
+		<label class="campo-rotulo" for="pergunta">Sua pergunta sobre os artigos</label>
+		<div class="campo items-start">
+			<textarea id="pergunta" name="pergunta" rows="3" minlength="3" maxlength="500" required
+				placeholder="Ex.: Como reduzir a troca de tarefas no dia a dia?"></textarea>
+		</div>
+	</div>
 	<div class="cf-turnstile" data-sitekey={siteKey} data-language="pt-BR"></div>
-	<button type="submit" class="edit-btn">Perguntar</button>
-	<p class="estado" role="status" aria-live="polite"></p>
-	<div class="resposta" hidden>
-		<div class="texto"></div>
-		<p class="secao-rotulo">Fontes</p>
-		<ul class="fontes"></ul>
+	<button type="submit" class="botao justify-self-start">Perguntar</button>
+	<p class="estado m-0 text-small text-muted" role="status" aria-live="polite"></p>
+	<div class="resposta border-t border-rule pt-6" hidden>
+		<div class="texto whitespace-pre-wrap text-fg"></div>
+		<h3 class="rotulo mt-6">Fontes</h3>
+		<ul class="fontes lista-editorial"></ul>
 	</div>
 </form>
 
@@ -60,60 +64,3 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 		});
 	}
 </script>
-
-<style>
-	.perguntar {
-		display: grid;
-		gap: 16px;
-		max-width: 640px;
-	}
-	.perguntar label {
-		display: block;
-		margin-bottom: 8px;
-		color: var(--ink);
-		font-weight: 600;
-	}
-	.perguntar textarea {
-		width: 100%;
-		padding: 14px 16px;
-		border: 1px solid var(--line);
-		border-radius: 12px;
-		background: var(--soft);
-		color: var(--ink);
-		font: inherit;
-		resize: vertical;
-	}
-	.perguntar textarea:focus-visible {
-		outline: 3px solid var(--brand);
-		outline-offset: 2px;
-	}
-	.perguntar button {
-		justify-self: start;
-	}
-	.perguntar .estado {
-		margin: 0;
-		color: var(--muted);
-		font-size: 14px;
-	}
-	.resposta {
-		margin-top: 8px;
-		padding-top: 24px;
-		border-top: 1px solid var(--line);
-	}
-	.resposta .texto {
-		white-space: pre-wrap;
-		color: var(--ink);
-	}
-	.fontes {
-		margin: 16px 0 0;
-		padding: 0;
-		list-style: none;
-	}
-	.fontes li {
-		padding: 12px 0;
-		border-bottom: 1px solid var(--line);
-	}
-	.fontes a {
-		color: var(--brand);
-	}
-</style>

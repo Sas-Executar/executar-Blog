@@ -1,61 +1,54 @@
 ---
-// Override oficial do PageTitle (ADR-019). Nos artigos, a abertura da referência editorial: trilha,
-// capa e texto (eyebrow, título, deck, "Ler o artigo" e tempo de leitura) e a linha de crédito.
-// Nas demais páginas: trilha + título + deck. Na página inicial, o título fica com a própria Hoje.
+// Override oficial do PageTitle (ADR-017/ADR-018). Nos artigos, abertura na estrutura da referência
+// editorial: capa à esquerda e texto à direita (trilha, selo, título, deck, autoria e ações); no
+// celular, capa em cima. As propriedades vão para a coluna de leitura (MarkdownContent.astro).
+// Na página inicial o título fica com o hero da Hoje; nas demais páginas, título simples.
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+import CategoryPill from './CategoryPill.astro';
 import Ilustracao from './Ilustracao.astro';
-import { PILARES, eArtigo, paraArtigo } from '../lib/artigos';
+import MetaBar from './MetaBar.astro';
+import { eArtigo, paraArtigo } from '../lib/artigos';
 
 const { entry } = Astro.locals.starlightRoute;
 const artigo = eArtigo(entry.id) && entry.id !== 'blog' ? paraArtigo(entry) : undefined;
 const inicio = entry.id === 'index' || entry.id === '';
-const eyebrow = artigo && [artigo.pilar && PILARES[artigo.pilar], artigo.categoria].filter(Boolean).join(' · ');
+// Subtítulo = description, exceto quando o próprio texto já a repete (callout de frase-síntese).
+const subtitulo = entry.data.description && !(entry.body ?? '').includes(entry.data.description) ? entry.data.description : undefined;
 ---
 
 {
 	artigo ? (
-		<>
-			<div class="crumb trilha">
-				<a href="/">Risco Cognitivo</a> &nbsp; / &nbsp;{' '}
-				<a href={`/blog/categoria/${artigo.categoriaSlug}/`}>
-					<b>{artigo.categoria}</b>
-				</a>
+		<header class="artigo-hero mt-2 grid items-center gap-8 border-b border-rule pb-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:gap-12">
+			<div class="capa">
+				<Ilustracao icone={artigo.icone} grande />
 			</div>
-			<section class="hero artigo-hero" aria-label="Abertura do artigo">
-				<figure class="hero-art">
-					<Ilustracao icone={artigo.icone} grande />
-				</figure>
-				<div class="hero-copy">
-					<p class="eyebrow">{eyebrow}</p>
-					<h1 id="_top">{entry.data.title}</h1>
-					{entry.data.description && <p class="deck">{entry.data.description}</p>}
-					<div class="hero-bottom">
-						<a href="#artigo">Ler o artigo ↓</a>
-						<span id="reading-time">{artigo.minutos} min de leitura</span>
-					</div>
-				</div>
-			</section>
-			<p class="credit">
-				Ilustração editorial Risco Cognitivo. Texto: {artigo.autor}
-				{artigo.papel && `, ${artigo.papel}`}.
-			</p>
-		</>
+			<div class="grid justify-items-start gap-3">
+				<nav class="trilha" aria-label="Trilha">
+					<a href="/blog/">Blog</a>
+					<span aria-hidden="true">/</span>
+					<a href={`/blog/categoria/${artigo.categoriaSlug}/`}>{artigo.categoria}</a>
+				</nav>
+				<CategoryPill nome={artigo.categoria} href={`/blog/categoria/${artigo.categoriaSlug}/`} />
+				<Default />
+				{subtitulo && <p class="m-0 max-w-xl text-lead text-pretty text-muted">{subtitulo}</p>}
+				<MetaBar artigo={artigo} />
+			</div>
+		</header>
 	) : inicio ? null : (
-		<>
-			<div class="crumb trilha faixa">
-				<a href="/">Risco Cognitivo</a> &nbsp; / &nbsp; <b>{entry.data.title}</b>
-			</div>
-			<header class="page-head faixa">
-				<h1 id="_top">{entry.data.title}</h1>
-				{entry.data.description && <p class="deck">{entry.data.description}</p>}
-			</header>
-		</>
+		<Default />
 	)
 }
 
 <style>
-	/* A capa ilustrada ocupa a área da imagem da referência. */
-	.hero-art :global(.ilustracao) {
-		width: 100%;
-		border-radius: 18px;
+	/* O <h1> vem do PageTitle do Starlight (Default): título editorial grande, tinta, sem traço. */
+	.artigo-hero :global(h1#_top) {
+		margin-top: 0.25rem;
+		color: var(--ink);
+		font-family: var(--font-display);
+		font-size: var(--text-display);
+		font-weight: 700;
+		line-height: 1.02;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
 	}
 </style>

@@ -1,7 +1,7 @@
 ---
 // Preferências (HF05): cada opção mostra o estado atual e muda a experiência na hora, em todas as
-// páginas (aplicada cedo pelo script de Head.astro, para não piscar). Vocabulário editorial
-// (ADR-019): filetes finos, sem cartão elevado.
+// páginas (aplicada cedo pelo script de Head.astro, para não piscar). Layout em listas agrupadas,
+// no padrão de Ajustes do iOS (ADR-017, SOT-REF-003).
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import Icone from '../components/Icone.astro';
 
@@ -46,70 +46,70 @@ const atalhos = [
 ] as const;
 const sobre = [
 	{ href: '/perguntar/', rotulo: 'Pergunte aos artigos', icone: 'documento' },
-	{ href: '/guia-de-estilo/', rotulo: 'Guia de estilo', icone: 'estilo', valor: 'ADR-019' },
+	{ href: '/guia-de-estilo/', rotulo: 'Guia de estilo', icone: 'estilo', valor: 'ADR-017' },
 ] as const;
 ---
 
 <StarlightPage frontmatter={{ title: 'Preferências', description: 'Ajuste tema, tamanho do texto e movimento.', template: 'splash', pagefind: false }}>
-	<div class="preferencias faixa not-content">
-		<p class="deck">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
+	<div class="preferencias not-content mx-auto max-w-read">
+		<p class="intro m-0 text-lead text-pretty text-muted">As escolhas ficam guardadas neste navegador e valem para todas as páginas.</p>
 
-		<div class="grupo-secao">
-			<p class="grupo-secao__rotulo">Aparência</p>
+		<p class="grupo-rotulo" id="grupo-aparencia">Aparência</p>
+		<ul class="grupo" aria-labelledby="grupo-aparencia">
 			{
 				opcoes.map((o) => (
-					<div class="opcao" data-preferencia={o.chave}>
-						<p class="opcao__cabecalho">
-							<span class="opcao__icone">
-								<Icone nome={o.icone} />
-							</span>
-							{o.rotulo}
-						</p>
-						<p class="opcao__ajuda">{o.ajuda}</p>
-						<div class="opcao__controle">
-							<div class="segmentado">
-								{o.valores.map(([valor, nome]) => (
-									<label>
-										<input type="radio" name={o.chave} value={valor} />
-										<span>{nome}</span>
-									</label>
-								))}
+					<li>
+						<fieldset data-preferencia={o.chave} class="m-0 border-0 px-5 py-4">
+							<legend class="float-left m-0 flex w-full items-center gap-4 p-0 text-[1.0625rem] font-medium text-ink">
+								<span class="grupo__icone"><Icone nome={o.icone} /></span>
+								{o.rotulo}
+							</legend>
+							<p class="clear-both m-0 pt-1 pb-3 pl-10 text-label text-muted">{o.ajuda}</p>
+							<div class="sm:pl-10">
+								<div class="segmentado flex w-full flex-nowrap [&_label]:flex-1 [&_label]:justify-center [&_label]:px-2">
+									{o.valores.map(([valor, nome]) => (
+										<label>
+											<input type="radio" name={o.chave} value={valor} />
+											<span>{nome}</span>
+										</label>
+									))}
+								</div>
+								<p class="atual mt-2 mb-0 font-mono text-xs tracking-wide text-muted uppercase" data-atual />
 							</div>
-							<p class="opcao__atual" data-atual />
-						</div>
-					</div>
+						</fieldset>
+					</li>
 				))
 			}
-		</div>
+		</ul>
 
-		<div class="grupo-secao">
-			<p class="grupo-secao__rotulo">Sua leitura</p>
+		<p class="grupo-rotulo" id="grupo-leitura">Sua leitura</p>
+		<ul class="grupo" aria-labelledby="grupo-leitura">
 			{
 				atalhos.map((a) => (
-					<a class="grupo-linha" href={a.href}>
-						<span class="grupo-linha__icone">
-							<Icone nome={a.icone} />
-						</span>
-						<span>{a.rotulo}</span>
-					</a>
+					<li>
+						<a class="grupo__linha" href={a.href}>
+							<span class="grupo__icone"><Icone nome={a.icone} /></span>
+							<span>{a.rotulo}</span>
+						</a>
+					</li>
 				))
 			}
-		</div>
+		</ul>
 
-		<div class="grupo-secao">
-			<p class="grupo-secao__rotulo">Sobre</p>
+		<p class="grupo-rotulo" id="grupo-sobre">Sobre</p>
+		<ul class="grupo" aria-labelledby="grupo-sobre">
 			{
 				sobre.map((a) => (
-					<a class="grupo-linha" href={a.href}>
-						<span class="grupo-linha__icone">
-							<Icone nome={a.icone} />
-						</span>
-						<span>{a.rotulo}</span>
-						{'valor' in a && <span class="grupo-linha__valor">{a.valor}</span>}
-					</a>
+					<li>
+						<a class="grupo__linha" href={a.href}>
+							<span class="grupo__icone"><Icone nome={a.icone} /></span>
+							<span>{a.rotulo}</span>
+							{'valor' in a && <span class="grupo__valor font-mono text-xs">{a.valor}</span>}
+						</a>
+					</li>
 				))
 			}
-		</div>
+		</ul>
 		<p class="sr-only" role="status" aria-live="polite" data-estado></p>
 	</div>
 </StarlightPage>
@@ -147,7 +147,7 @@ const sobre = [
 	}
 
 	function iniciar() {
-		document.querySelectorAll<HTMLElement>('[data-preferencia]').forEach((grupo) => {
+		document.querySelectorAll<HTMLFieldSetElement>('[data-preferencia]').forEach((grupo) => {
 			const chave = grupo.dataset.preferencia as Chave;
 			const atual = grupo.querySelector<HTMLElement>('[data-atual]')!;
 			const pintar = () => {
@@ -161,16 +161,10 @@ const sobre = [
 				const valor = (e.target as HTMLInputElement).value;
 				aplicar(chave, valor);
 				pintar();
-				anunciar(`${grupo.querySelector('.opcao__cabecalho')!.textContent}: ${atual.textContent!.replace('Atual: ', '')}.`);
+				anunciar(`${grupo.querySelector('legend')!.textContent}: ${atual.textContent!.replace('Atual: ', '')}.`);
 			});
 		});
 	}
 	iniciar();
 	document.addEventListener('astro:page-load', iniciar);
 </script>
-
-<style>
-	.preferencias .deck {
-		max-width: 640px;
-	}
-</style>

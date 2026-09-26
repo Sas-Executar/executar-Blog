@@ -1,11 +1,12 @@
 ---
-// Selo de categoria (ADR-019): eyebrow azul da referência, opcionalmente como link.
+// Selo de categoria (ADR-017): o mesmo .selo do design system, em azul.
+import Selo from './ui/Selo.astro';
+
 interface Props {
 	nome: string;
 	href?: string;
 }
 const { nome, href } = Astro.props;
-const Tag = href ? 'a' : 'p';
 ---
 
-<Tag class="eyebrow selo-categoria" href={href}>{nome}</Tag>
+<Selo class="selo-categoria" href={href}>{nome}</Selo>

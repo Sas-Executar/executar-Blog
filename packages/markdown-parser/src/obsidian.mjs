@@ -151,12 +151,11 @@ export function callouts() {
 		blockquote(node) {
 			const primeiro = node.children[0];
 			const t0 = primeiro?.type === 'paragraph' ? primeiro.children[0] : null;
-			if (t0?.type !== 'text') return { ...node, data: { ...node.data, hProperties: { ...node.data?.hProperties, class: 'pullquote' } } };
+			if (t0?.type !== 'text') return;
 			const quebra = t0.value.indexOf('\n');
 			const linha = quebra < 0 ? t0.value : t0.value.slice(0, quebra);
 			const m = CALLOUT.exec(linha);
-			// Citação comum = pullquote da referência (ADR-019).
-			if (!m) return { ...node, data: { ...node.data, hProperties: { ...node.data?.hProperties, class: 'pullquote' } } };
+			if (!m) return;
 			const [, tipo, dobra, titulo] = m;
 			const restoTexto = quebra < 0 ? '' : t0.value.slice(quebra + 1);
 			const restoPrimeiro = [...(restoTexto ? [texto(restoTexto)] : []), ...primeiro.children.slice(1)];

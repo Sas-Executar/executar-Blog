@@ -1,9 +1,12 @@
 ---
-// Página "Hoje" (HF01; ADR-019): abertura no vocabulário da referência editorial — eyebrow, título,
-// deck e busca, com a capa ao lado; categorias em chips; destaque e recentes em cards.
+// Página "Hoje" (HF01; ADR-017: componentes do design system): hero com busca, categorias, destaque e artigos recentes.
+import CategoryPill from './CategoryPill.astro';
 import Icone from './Icone.astro';
 import Ilustracao from './Ilustracao.astro';
 import PostCard from './PostCard.astro';
+import Botao from './ui/Botao.astro';
+import Chip from './ui/Chip.astro';
+import Rotulo from './ui/Rotulo.astro';
 import { artigos, categorias } from '../lib/artigos';
 
 const lista = await artigos();
@@ -11,43 +14,42 @@ const cats = await categorias();
 const [destaque, ...recentes] = lista;
 ---
 
-<div class="hoje faixa not-content">
-	<section class="hero" aria-labelledby="hoje-titulo">
-		<figure class="hero-art">
-			<Ilustracao icone="grafico" grande />
-		</figure>
-		<div class="hero-copy">
-			<p class="eyebrow">Conhecimento em prática</p>
-			<h1 id="hoje-titulo">Riscos cognitivos na execução, explicados com clareza.</h1>
-			<p class="deck">Artigos sobre atenção, processos e o sistema ao redor de quem executa — do problema ao que fazer a respeito.</p>
-			<form class="busca" action="/buscar/" method="get" role="search">
+<div class="hoje pagina-larga not-content">
+	<section class="hero grid items-center gap-8 border-b border-rule pt-6 pb-12 md:grid-cols-[1.1fr_1fr] md:gap-12" aria-labelledby="hoje-titulo">
+		<div>
+			<Rotulo>Conhecimento em prática</Rotulo>
+			<h1 id="hoje-titulo" class="m-0 font-display text-display font-bold tracking-tighter text-balance text-ink">Riscos cognitivos na execução, explicados com clareza.</h1>
+			<p class="mt-5 mb-7 max-w-xl text-lead text-pretty text-muted">Artigos sobre atenção, processos e o sistema ao redor de quem executa — do problema ao que fazer a respeito.</p>
+			<form class="campo campo--busca max-w-md" action="/buscar/" method="get" role="search">
 				<label class="sr-only" for="hoje-busca">Buscar artigos</label>
 				<Icone nome="buscar" />
 				<input id="hoje-busca" name="q" type="search" placeholder="Buscar artigos, temas, conceitos…" autocomplete="off" />
-				<button type="submit" class="edit-btn">Buscar</button>
+				<button type="submit" class="botao">Buscar</button>
 			</form>
+		</div>
+		<div class="hero-arte">
+			<Ilustracao icone="grafico" grande />
 		</div>
 	</section>
 
-	<nav class="categorias" aria-label="Categorias">
-		<a href="/blog/" class="categoria-chip is-active">Todos</a>
-		{cats.map((c) => <a href={`/blog/categoria/${c.slug}/`} class="categoria-chip">{c.nome}</a>)}
+	<nav class="categorias -mx-1 flex gap-2 overflow-x-auto px-1 pt-6 pb-2 [scrollbar-width:none]" aria-label="Categorias">
+		<Chip href="/blog/" ativo>Todos</Chip>
+		{cats.map((c) => <Chip href={`/blog/categoria/${c.slug}/`}>{c.nome}</Chip>)}
 	</nav>
 
 	{
 		destaque && (
-			<section aria-labelledby="em-destaque" class="secao">
-				<h2 id="em-destaque" class="secao-rotulo">
-					Em destaque
-				</h2>
-				<div class="destaque-grade">
+			<section aria-labelledby="em-destaque" class="mt-10">
+				<Rotulo como="h2" id="em-destaque">Em destaque</Rotulo>
+				<div class="grid gap-8 md:grid-cols-[1.6fr_1fr]">
 					<PostCard artigo={destaque} destaque />
-					<aside class="convite" aria-labelledby="convite-titulo">
-						<p class="label">Pergunte aos artigos</p>
-						<p id="convite-titulo">Tem uma situação concreta?</p>
-						<a href="/perguntar/" class="edit-btn">
+					<aside class="convite grid content-center justify-items-start gap-3 border-t-4 border-accent bg-brand-soft p-6 md:p-8" aria-labelledby="convite-titulo">
+						<CategoryPill nome="Pergunte aos artigos" />
+						<h3 id="convite-titulo" class="m-0 font-display text-title font-bold tracking-tight text-ink">Tem uma situação concreta?</h3>
+						<p class="m-0 text-fg">Descreva o que acontece na sua execução e receba uma resposta baseada nos artigos, com as fontes.</p>
+						<Botao href="/perguntar/">
 							Perguntar <Icone nome="seta" tamanho={16} />
-						</a>
+						</Botao>
 					</aside>
 				</div>
 			</section>
@@ -56,11 +58,9 @@ const [destaque, ...recentes] = lista;
 
 	{
 		recentes.length > 0 && (
-			<section aria-labelledby="mais-recentes" class="secao">
-				<h2 id="mais-recentes" class="secao-rotulo">
-					Mais recentes
-				</h2>
-				<div class="grade-cards">
+			<section aria-labelledby="mais-recentes" class="mt-14">
+				<Rotulo como="h2" id="mais-recentes">Mais recentes</Rotulo>
+				<div class="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
 					{recentes.map((a) => (
 						<PostCard artigo={a} />
 					))}
@@ -69,123 +69,3 @@ const [destaque, ...recentes] = lista;
 		)
 	}
 </div>
-
-<style>
-	.hoje {
-		padding: 42px 0 88px;
-	}
-	.hero {
-		display: grid;
-		gap: 42px;
-		align-items: center;
-		padding-bottom: 20px;
-		border-bottom: 1px solid var(--line);
-	}
-	/* min-width:auto de item de grid usa o tamanho intrínseco do SVG (viewBox), não o do bloco —
-	   sem isto a ilustração força a coluna a ficar mais larga que a viewport no celular. */
-	.hero > * {
-		min-width: 0;
-	}
-	.hero-art {
-		margin: 0;
-	}
-	.hero-copy h1 {
-		margin: 0 0 25px;
-	}
-	.busca {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		width: 100%;
-		max-width: 26rem;
-		min-height: 46px;
-		padding-inline: 16px 6px;
-		border: 1px solid var(--line);
-		border-radius: 999px;
-		background: var(--soft);
-		color: var(--muted);
-	}
-	.busca:focus-within {
-		outline: 3px solid var(--brand);
-		outline-offset: 2px;
-	}
-	.busca input {
-		flex: 1;
-		min-width: 0;
-		min-height: 44px;
-		border: 0;
-		background: transparent;
-		color: var(--ink);
-		font: inherit;
-		outline: none;
-	}
-	.categorias {
-		display: flex;
-		gap: 8px;
-		overflow-x: auto;
-		padding-block: 24px 8px;
-		scrollbar-width: none;
-	}
-	.categoria-chip {
-		display: inline-flex;
-		align-items: center;
-		flex: none;
-		min-height: 44px;
-		padding-inline: 16px;
-		border: 1px solid var(--line);
-		border-radius: 999px;
-		color: var(--ink);
-		font-size: 15px;
-		text-decoration: none;
-	}
-	.categoria-chip.is-active {
-		border-color: var(--ink);
-		background: var(--ink);
-		color: var(--paper);
-	}
-	.secao {
-		margin-top: 44px;
-		padding-top: 42px;
-		border-top: 1px solid var(--line);
-	}
-	.destaque-grade,
-	.grade-cards {
-		display: grid;
-		gap: 40px 32px;
-	}
-	.convite {
-		display: grid;
-		gap: 12px;
-		align-content: center;
-		justify-items: start;
-		padding-top: 22px;
-		border-top: 4px solid var(--brand);
-	}
-	.convite .label {
-		margin: 0;
-		color: var(--brand);
-		font-size: 11px;
-		font-weight: 800;
-		letter-spacing: 0.16em;
-		text-transform: uppercase;
-	}
-	.convite p#convite-titulo {
-		margin: 0;
-		color: var(--ink);
-		font-family: var(--display);
-		font-size: 27px;
-		font-weight: 700;
-		letter-spacing: -0.75px;
-	}
-	@media (min-width: 48rem) {
-		.hero {
-			grid-template-columns: 1.05fr 0.95fr;
-		}
-		.destaque-grade {
-			grid-template-columns: 1.6fr 1fr;
-		}
-		.grade-cards {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-</style>

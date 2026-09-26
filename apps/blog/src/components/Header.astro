@@ -1,27 +1,29 @@
 ---
-// Override oficial do Header (ADR-019): cabeçalho da referência — marca com filete azul, seções em
-// caixa alta, alternância de tema e a ação principal (Pergunte aos artigos).
+// Override oficial do Header (ADR-012/ADR-017): marca, seções principais e tema.
+// No celular as seções vão para a barra inferior (Footer.astro); aqui ficam marca e tema.
+import ThemeSelect from 'starlight-theme-obsidian/overrides/ThemeSelect.astro';
+import Marca from './ui/Marca.astro';
 import { SECOES, secaoAtual } from '../lib/navegacao';
 
 const atual = secaoAtual(Astro.url.pathname);
 ---
 
-<header class="header cabecalho">
-	<nav class="nav" aria-label="Seções">
-		<a class="brand" href="/" aria-label="Risco Cognitivo, página inicial">
-			<span class="brand-mark" aria-hidden="true"></span>
-			<span>RISCO COGNITIVO<small>Ideias sob análise</small></span>
-		</a>
-		<div class="nav-links">
-			{
-				SECOES.map((s) => (
-					<a href={s.href} aria-current={atual === s.href ? 'page' : undefined}>
-						{s.rotulo}
-					</a>
-				))
-			}
-			<button class="theme-toggle theme-toggle--header" type="button" data-alternar-tema aria-pressed="false" aria-label="Ativar modo noturno"></button>
-			<a class="edit-btn" href="/perguntar/">Perguntar</a>
-		</div>
+<div class="cabecalho mx-auto flex h-full max-w-page items-center justify-between gap-4">
+	<Marca href="/" />
+	<nav class="hidden gap-1 md:flex" aria-label="Seções">
+		{
+			SECOES.map((s) => (
+				<a
+					href={s.href}
+					aria-current={atual === s.href ? 'page' : undefined}
+					class="inline-flex min-h-11 items-center px-3 text-small font-medium text-muted no-underline transition-colors hover:text-ink aria-[current=page]:font-semibold aria-[current=page]:text-ink aria-[current=page]:shadow-[inset_0_-2px_0_var(--accent)]"
+				>
+					{s.rotulo}
+				</a>
+			))
+		}
 	</nav>
-</header>
+	<div class="flex items-center gap-1">
+		<ThemeSelect />
+	</div>
+</div>

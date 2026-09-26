@@ -32,74 +32,22 @@ export function grupoCallout(tipo) {
 	return GRUPOS[tipo.toLowerCase()] ?? 'nota';
 }
 
-/** Grupo → variante visual da biblioteca de callouts da referência (ADR-019): ícone e superfície. */
-const VARIANTES = { nota: 'note', dica: 'evidence callout--soft', sucesso: 'approved', pergunta: 'question', atencao: 'attention', perigo: 'attention callout--danger', exemplo: 'action', citacao: 'note' };
-
-/** Bloco de decisão (ADR-019, .decision-card): cada item "**Pergunta** resposta" vira pergunta + resposta. */
-function decisao(titulo, corpo) {
-	const itens = [];
-	const resto = [];
-	for (const no of corpo) {
-		if (no.type === 'list' && !itens.length) {
-			no.children.forEach((item, i) => {
-				const [primeiro, ...demais] = item.children ?? [];
-				const inl = primeiro?.type === 'paragraph' ? [...primeiro.children] : [];
-				const temPergunta = inl[0]?.type === 'strong';
-				const pergunta = temPergunta ? inl[0].children : inl;
-				const resposta = temPergunta ? inl.slice(1) : [];
-				if (resposta[0]?.type === 'text') resposta[0] = texto(resposta[0].value.replace(/^\s+/, ''));
-				itens.push(
-					bloco('li', { class: 'decision-item' }, [
-						inline('span', { class: 'decision-number', 'aria-hidden': 'true' }, [texto(String(i + 1).padStart(2, '0'))]),
-						bloco('div', { class: 'decision-copy' }, [
-							bloco('p', { class: 'decision-question' }, pergunta),
-							...(resposta.length ? [bloco('p', { class: 'decision-answer' }, resposta)] : []),
-							...demais,
-						]),
-					]),
-				);
-			});
-		} else resto.push(no);
-	}
-	return bloco('section', { class: 'decision-card callout--decisao', 'aria-label': textoDe({ children: titulo }).trim() }, [
-		bloco('p', { class: 'decision-label callout__titulo' }, titulo),
-		...(itens.length ? [bloco('ol', { class: 'decision-list' }, itens)] : []),
-		...(resto.length ? [bloco('div', { class: 'callout__corpo' }, resto)] : []),
-	]);
-}
-
 /**
  * Callout (Obsidian `> [!tipo]` e diretiva :::callout). dobra: '' fixo, '+' aberto, '-' fechado.
- * Markup da biblioteca de callouts da referência (ADR-019): ícone + linha de título + corpo.
- * Exceções da própria referência: atenção sem título = "Ponto de atenção" (.aside-note: rótulo,
- * frase e filetes) e decisão = .decision-card.
  * @param {string} tipo @param {any[]} tituloNos @param {any[]} corpo @param {''|'+'|'-'} dobra
  */
 export function callout(tipo, tituloNos, corpo, dobra = '') {
 	const grupo = grupoCallout(tipo);
-	const semTitulo = !(tituloNos.length && textoDe({ children: tituloNos }).trim());
-	const titulo = semTitulo ? [texto(TITULOS[grupo])] : tituloNos;
-	const rotulo = textoDe({ children: titulo }).trim();
-	if (grupo === 'decisao') return decisao(titulo, corpo);
-	if (grupo === 'atencao' && semTitulo && !dobra) {
-		return bloco('aside', { class: 'aside-note callout--atencao', 'data-callout': tipo.toLowerCase(), 'aria-label': rotulo }, [
-			inline('span', { class: 'label callout__titulo' }, titulo),
+	const titulo = tituloNos.length && textoDe({ children: tituloNos }).trim() ? tituloNos : [texto(TITULOS[grupo])];
+	const props = { class: `callout callout--${grupo}`, 'data-callout': tipo.toLowerCase() };
+	if (dobra) {
+		return bloco('details', { ...props, ...(dobra === '+' ? { open: '' } : {}) }, [
+			bloco('summary', { class: 'callout__titulo' }, titulo),
 			bloco('div', { class: 'callout__corpo' }, corpo),
 		]);
 	}
-	const props = { class: `callout callout--${VARIANTES[grupo]} callout--${grupo}`, 'data-callout': tipo.toLowerCase() };
-	const icone = inline('span', { class: 'callout-icon', 'aria-hidden': 'true' }, []);
-	if (dobra) {
-		return bloco('details', { ...props, ...(dobra === '+' ? { open: '' } : {}) }, [
-			bloco('summary', { class: 'callout-line' }, [icone, inline('strong', { class: 'callout__titulo' }, titulo)]),
-			bloco('div', { class: 'callout-body callout__corpo' }, corpo),
-		]);
-	}
-	return bloco('aside', { ...props, 'aria-label': rotulo }, [
-		icone,
-		bloco('div', { class: 'callout-content' }, [
-			bloco('p', { class: 'callout-line' }, [inline('strong', { class: 'callout__titulo' }, titulo)]),
-			bloco('div', { class: 'callout-body callout__corpo' }, corpo),
-		]),
+	return bloco('aside', { ...props, 'aria-label': textoDe({ children: titulo }).trim() }, [
+		bloco('p', { class: 'callout__titulo' }, titulo),
+		bloco('div', { class: 'callout__corpo' }, corpo),
 	]);
 }

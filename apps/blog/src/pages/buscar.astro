@@ -1,6 +1,6 @@
 ---
-// Busca (HF03): índice do Pagefind (gerado no build pelo Starlight), resultados em lista simples e
-// estado vazio que convida a reformular (ADR-019: vocabulário da referência editorial).
+// Busca (HF03): índice do Pagefind (gerado no build pelo Starlight), resultados em cards e estado
+// vazio que convida a reformular. A consulta fica na URL (?q=), então o resultado é compartilhável.
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import Icone from '../components/Icone.astro';
 import { artigos } from '../lib/artigos';
@@ -8,21 +8,21 @@ import { artigos } from '../lib/artigos';
 const sugestoes = (await artigos()).map((a) => a.titulo);
 ---
 
-<StarlightPage frontmatter={{ title: 'Buscar', description: 'Busque nos artigos do Risco Cognitivo.', template: 'splash', pagefind: false }}>
-	<div class="buscar faixa not-content">
-		<form class="campo-busca" role="search" data-form>
+<StarlightPage frontmatter={{ title: 'Buscar', description: 'Busque nos artigos do EXECUTAR.', template: 'splash', pagefind: false }}>
+	<div class="pagina-larga buscar not-content">
+		<form class="campo campo--busca max-w-2xl" role="search" data-form>
 			<label class="sr-only" for="q">Buscar nos artigos</label>
 			<Icone nome="buscar" />
 			<input id="q" name="q" type="search" placeholder="Ex.: atenção, notificações, checklist…" autocomplete="off" />
-			<button type="submit" class="edit-btn">Buscar</button>
+			<button type="submit" class="botao">Buscar</button>
 		</form>
-		<p class="estado-busca" role="status" aria-live="polite" data-estado>Digite um termo e pressione Buscar.</p>
-		<ol class="resultados" data-resultados></ol>
-		<div class="vazio" data-vazio hidden>
-			<p>Nenhum resultado para "<strong data-termo></strong>".</p>
-			<p>Tente outras palavras, um termo mais amplo ou um destes artigos:</p>
-			<ul class="sugestoes">
-				{sugestoes.map((s) => <li><button type="button" class="filtro-chip" data-sugestao={s}>{s}</button></li>)}
+		<p class="estado mt-6 font-mono text-xs tracking-wide text-muted uppercase" role="status" aria-live="polite" data-estado>Digite um termo e pressione Buscar.</p>
+		<ol class="resultados lista-editorial" data-resultados></ol>
+		<div class="vazio mt-6" data-vazio hidden>
+			<p>Nenhum resultado para “<strong data-termo class="text-ink"></strong>”.</p>
+			<p class="text-muted">Tente outras palavras, um termo mais amplo ou um destes artigos:</p>
+			<ul class="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
+				{sugestoes.map((s) => <li class="m-0"><button type="button" class="chip" data-sugestao={s}>{s}</button></li>)}
 			</ul>
 		</div>
 	</div>
@@ -65,16 +65,19 @@ const sugestoes = (await artigos()).map((a) => a.titulo);
 				if (dados.length === 0) {
 					vazio.querySelector('[data-termo]')!.textContent = q;
 					vazio.hidden = false;
-					estado.textContent = `Nenhum resultado para "${q}".`;
+					estado.textContent = `Nenhum resultado para “${q}”.`;
 					return;
 				}
-				estado.textContent = dados.length === 1 ? `1 resultado para "${q}".` : `${dados.length} resultados para "${q}".`;
+				estado.textContent = dados.length === 1 ? `1 resultado para “${q}”.` : `${dados.length} resultados para “${q}”.`;
 				for (const d of dados) {
 					const li = document.createElement('li');
+					li.className = 'grid gap-1';
 					const a = document.createElement('a');
+					a.className = 'inline-flex min-h-11 items-center font-display text-title font-bold tracking-tight text-ink no-underline hover:text-link';
 					a.href = d.url;
 					a.textContent = d.meta.title ?? d.url;
 					const p = document.createElement('p');
+					p.className = 'm-0 text-muted [&_mark]:bg-brand-soft [&_mark]:text-brand-text';
 					p.innerHTML = d.excerpt; // HTML do próprio índice do Pagefind (<mark> nos termos)
 					li.append(a, p);
 					lista.append(li);
@@ -104,21 +107,3 @@ const sugestoes = (await artigos()).map((a) => a.titulo);
 	iniciar();
 	document.addEventListener('astro:page-load', iniciar);
 </script>
-
-<style>
-	.buscar .campo-busca {
-		max-width: 40rem;
-	}
-	.buscar .vazio {
-		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid var(--line);
-	}
-	.buscar .vazio[hidden] {
-		display: none;
-	}
-	.buscar .vazio p {
-		margin: 0 0 8px;
-		color: var(--ink);
-	}
-</style>

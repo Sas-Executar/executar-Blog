@@ -176,7 +176,3 @@ ENTRADA ──▶ LEITURA ──▶ DECISÃO
 ```sh
 npm run check
 ```
-
-```js
-const risco = 'cognitivo';
-```

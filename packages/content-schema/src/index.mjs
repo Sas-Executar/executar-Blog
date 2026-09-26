@@ -37,8 +37,6 @@ export function esquemaEditorial(z) {
 			cssclasses: lista.optional(),
 			links: lista.optional(),
 			publish: z.boolean().optional(),
-			// Frase de destaque da barra lateral do artigo (ADR-019, nota "Ponto de atenção").
-			destaque: z.string().optional(),
 			// Propriedades tipadas no estilo Notion (select, status, relation, url, email...).
 			propriedades: z.record(z.string(), propriedade).optional(),
 		})
@@ -70,7 +68,7 @@ export function normalizarPropriedade(nome, bruto) {
 }
 
 /** Chaves que o layout já mostra ou que são técnicas — não entram no painel de propriedades. */
-export const CHAVES_DE_LAYOUT = new Set(['title', 'description', 'autor', 'papel', 'pilar', 'consciencia', 'data', 'aliases', 'cssclasses', 'publish', 'draft', 'editUrl', 'template', 'hero', 'head', 'sidebar', 'pagefind', 'tableOfContents', 'lastUpdated', 'prev', 'next', 'banner', 'slug', 'propriedades', 'destaque']);
+export const CHAVES_DE_LAYOUT = new Set(['title', 'description', 'autor', 'papel', 'pilar', 'consciencia', 'data', 'aliases', 'cssclasses', 'publish', 'draft', 'editUrl', 'template', 'hero', 'head', 'sidebar', 'pagefind', 'tableOfContents', 'lastUpdated', 'prev', 'next', 'banner', 'slug', 'propriedades']);
 
 /** Lista de propriedades exibíveis (frontmatter plano + bloco `propriedades:`). */
 export function propriedadesExibiveis(dados) {

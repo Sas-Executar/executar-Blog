@@ -1,6 +1,6 @@
 ---
-// Override do Head do Starlight: preferências aplicadas antes da pintura. Gráficos, Mermaid e abas
-// ficam em @executar/ui (carregado em scripts/cliente.ts). Sem menu lateral desde o ADR-019.
+// Override do Head do Starlight: preferências aplicadas antes da pintura e a ponte do menu mobile.
+// Gráficos, Mermaid e abas ficam em @executar/ui (carregado em scripts/cliente.ts).
 import Default from '@astrojs/starlight/components/Head.astro';
 ---
 
@@ -12,4 +12,39 @@ import Default from '@astrojs/starlight/components/Head.astro';
 		document.documentElement.dataset.texto = localStorage.getItem('executar:texto') || 'padrao';
 		document.documentElement.dataset.movimento = localStorage.getItem('executar:movimento') || 'padrao';
 	} catch {}
+</script>
+<script>
+	// Ponte do menu mobile: o botão ☰ do Starlight 0.42 abre o menu pela Popover API nativa
+	// (popovertarget="starlight__sidebar"), mas o PageFrame do starlight-theme-obsidian 0.4.1 (última
+	// versão) renderiza o painel sem o atributo `popover` e ainda espera o mecanismo antigo
+	// (aria-expanded). Resultado: no celular o ☰ não abria nada e o botão claro/escuro, que fica
+	// dentro desse menu, ficava inalcançável. Mesmo comportamento do PageFrame padrão do Starlight:
+	// popover só abaixo de 50rem. Remover quando o tema publicar versão compatível.
+	function ponteMenuMobile() {
+		const painel = document.getElementById('starlight__sidebar');
+		if (!painel || painel.dataset.ponteMenu) return;
+		painel.dataset.ponteMenu = 'true';
+		const desktop = matchMedia('(min-width: 50rem)');
+		const ajustar = () => {
+			if (desktop.matches) {
+				if (painel.matches(':popover-open')) painel.hidePopover();
+				painel.removeAttribute('popover');
+			} else {
+				painel.setAttribute('popover', 'auto');
+			}
+		};
+		ajustar();
+		desktop.addEventListener('change', ajustar);
+		// Ao abrir/fechar: liga o atributo que o tema usa para deslizar o painel para dentro
+		// (body[data-mobile-menu-expanded], centered-reading.css) e mantém o foco no menu aberto
+		// (mesmo tratamento do Starlight: conteúdo atrás fica inert).
+		painel.addEventListener('toggle', (e) => {
+			const aberto = (e as ToggleEvent).newState === 'open';
+			document.body.toggleAttribute('data-mobile-menu-expanded', aberto);
+			document.querySelectorAll<HTMLElement>('.main-frame > :not(.mobile-header), .sl-skip-link').forEach((el) => el.toggleAttribute('inert', aberto));
+		});
+	}
+
+	ponteMenuMobile();
+	document.addEventListener('astro:page-load', ponteMenuMobile);
 </script>
