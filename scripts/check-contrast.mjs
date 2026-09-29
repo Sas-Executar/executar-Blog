@@ -35,6 +35,10 @@ export const PAIRS = [
 	['ink', 'surface-raised'],
 	['muted', 'surface-raised'],
 	['link', 'surface-raised'],
+	// ADR-019: texto terciário (metadados, legendas, barra de contexto). Nunca renderizado sobre
+	// --code-background no markup atual, por isso esse par não entra aqui.
+	['faint', 'background'],
+	['faint', 'surface'],
 ];
 
 function luminance(hex) {

@@ -1,0 +1,17 @@
+---
+// TransactionalCard (DESIGN-HANDOFF-001 UI-009, ADR-019). O blog não envia e-mail transacional
+// hoje: demo estática com código fictício ("000 000", nunca um valor real), só para documentar o
+// padrão no guia de estilo — a regra do handoff (§10) é literal: jamais um token real em fixture.
+import Marca from './Marca.astro';
+---
+
+<div class="cartao-transacional">
+	<div class="cartao-transacional__corpo">
+		<Marca tamanho="m" />
+		<p class="m-0 mt-4 text-title font-display font-bold text-ink">Confirme seu acesso</p>
+		<p class="m-0 mt-2 text-small text-muted">Use o código abaixo para continuar. Ele expira em 10 minutos.</p>
+		<p class="cartao-transacional__codigo" aria-label="Código de exemplo, não use">000 000</p>
+		<p class="m-0 text-label text-muted">Não pediu este código? Ignore este e-mail.</p>
+	</div>
+	<div class="cartao-transacional__rodape">Exemplo estático do padrão visual — dado fictício, sem envio real.</div>
+</div>

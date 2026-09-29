@@ -1,86 +1,117 @@
 /*
- * Fundações do design system editorial (ADR-017). Única fonte de cor do blog e do Studio:
- * papel off-white, tinta quase preta, cinzas discretos e azul como único acento. Escalas de
- * espaço, raio, tipo e movimento continuam vindo do Desyng System (ds/variables.css) e são
- * expostas ao Tailwind em tailwind.css (@theme). Apple HIG vence qualquer conflito (ADR-006):
- * corpo 17 pt, alvo 44 pt e contraste ≥ 4,5:1 — os pares abaixo são verificados por
- * scripts/check-contrast.mjs nos modos claro, escuro e "Increase Contrast".
+ * Fundações do design system editorial — UI Foundation v2 (ADR-019, sobre a base do ADR-017).
+ * Única fonte de cor do blog e do Studio: canvas branco, texto quase preto, cinzas discretos e
+ * azul de marca (amostrado do logo aprovado) como único acento. Cantos quadrados em toda a
+ * interface (ADR-019/addendum "Swiss square corners" — os cinco tokens de raio do Desyng System
+ * são sobrescritos para 0 aqui, então todo componente que consome --radius-* fica reto sem precisar
+ * editar cada um). Espaço e tipo continuam vindo do Desyng System (ds/variables.css) e são expostos
+ * ao Tailwind em tailwind.css (@theme). Apple HIG vence qualquer conflito (ADR-006): corpo 17 pt,
+ * alvo 44 pt e contraste ≥ 4,5:1 — os pares abaixo são verificados por scripts/check-contrast.mjs
+ * nos modos claro, escuro e "Increase Contrast".
  *
  * Breakpoints (custom properties não funcionam em @media; os mesmos valores estão no @theme):
  *   sm 36.25rem (580px) · md 53.125rem (850px) · lg 64rem (1024px) · xl 80rem (1280px)
  */
 :root {
-	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-	--font-display: var(--font-sans);
+	--font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 	--font-mono: ui-monospace, 'SF Mono', SFMono-Regular, 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-	--font-size-body: 1.0625rem; /* HIG: texto padrão 17 pt (o DS usa 16px; HIG vence) */
-	--content-width: 45rem; /* coluna de leitura (DS --container-reading 720px) */
-	--page-width: 75rem; /* largura de página (DS --container-page 1200px) */
-	--container-read: 45rem;
-	--container-wide: 75rem;
+	--font-size-body: 1.0625rem; /* HIG: texto padrão 17 pt */
+	--content-width: 48.75rem; /* coluna de leitura (referência v3: article-max 780px) */
+	--page-width: 73.75rem; /* largura de página (referência v3: content-max 1180px) */
+	--container-read: 48.75rem;
+	--container-wide: 73.75rem;
 	--hit-target: 44px; /* HIG: controle mínimo 44×44 pt */
 
 	/* Ritmo editorial: tipografia + espaço + divisor no lugar de caixas. */
 	--rhythm-block: 2rem; /* entre blocos editoriais */
 	--rhythm-item: 1.125rem; /* entre itens de uma lista editorial */
-	--radius-control: var(--radius-lg); /* 12px: botões, campos, segmentado */
-	--radius-card: var(--radius-xl); /* 16px: callouts, blocos mono, cartões de superfície */
+
+	/* ADR-019: cantos quadrados em toda a interface. Sobrescreve o Desyng System (ds/variables.css),
+	   que entra antes deste arquivo no customCss — nenhum componente precisa mudar, porque todos já
+	   usam var(--radius-*). Nenhum pill, card, popover, botão ou painel reintroduz raio local. */
+	--radius-none: 0;
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-xl: 0;
+	--radius-pill: 0;
+	--radius-full: 0;
+	--radius-control: 0;
+	--radius-card: 0;
+
 	--rule: 1px solid var(--border-soft);
 	--rule-strong: 1px solid var(--border);
-	--shadow-none: none;
 	--focus-ring: var(--accent);
-	--ease-standard: cubic-bezier(0.2, 0.75, 0.2, 1);
+	--ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+	/* Sombra (ADR-019): cantos retos precisam de outro recurso para separar planos flutuantes —
+	   filete + sombra em vez de raio decorativo. Nenhum bloco editorial usa sombra (ADR-018
+	   continua valendo: tipografia + espaço + divisor); só cabeçalho fixo, capa do artigo e
+	   controles elevados. */
+	--shadow-none: none;
+	--shadow-1: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--shadow-2: 0 8px 24px rgba(0, 0, 0, 0.12);
+	--shadow-3: 0 16px 40px rgba(0, 0, 0, 0.16);
 }
 
 :root,
 :root[data-theme='light'] {
 	color-scheme: light;
-	--background: #f7f7f3; /* papel off-white */
-	--surface: #fbfbf8; /* superfície: callouts, blocos mono, controles */
-	--surface-raised: #ffffff; /* grupos de lista e botões redondos (padrão Ajustes) */
-	--foreground: #26262a; /* texto corrido */
-	--ink: #0b0b0c; /* títulos e ênfase */
-	--muted: #5d605e; /* texto secundário */
-	--border: #d9d9d2; /* filete forte */
-	--border-soft: #e5e5df; /* filete suave (divisores de lista) */
-	--accent: #0a66c2; /* azul: ação primária com texto branco (AA) */
-	--link: #0a66c2;
-	--code-background: #f1f1ed;
+	--background: #ffffff; /* canvas branco (referência v3: color-bg-canvas) */
+	--surface: #f5f5f7; /* superfície sutil: controles, código, cartões sem caixa */
+	--surface-raised: #ffffff; /* superfície elevada: grupos de lista e botões redondos */
+	--surface-selected: #eaf3ff; /* item selecionado/ativo */
+	--foreground: #1d1d1f; /* texto corrido */
+	--ink: #1d1d1f; /* títulos e ênfase (mesma tinta do corpo nesta paleta) */
+	--muted: #6b6b70; /* texto secundário (ajustado de #6e6e73 para bater 4,5:1 sobre --code-background) */
+	--faint: #707075; /* texto terciário: metadados, legendas de crédito (ajustado para 4,5:1) */
+	--border: #b8b8bd; /* filete forte: divisor de bloco editorial */
+	--border-soft: #d2d2d7; /* filete suave: divisores menores, cabeçalho, contexto */
+	--accent: #1f5ecc; /* azul de marca, amostrado do logo aprovado (brand-tokens.css) */
+	--accent-hover: #17469b;
+	--link: #1f5ecc;
+	--code-background: #f0f1f3;
 	--on-accent: #ffffff;
-	--brand: #0a66c2; /* superfícies e ícones de marca */
-	--brand-soft: #eef3f8;
-	--brand-line: #b7cce4;
-	--brand-text: #004182; /* rótulos em azul (overline, selo) */
-	--info-soft: #eef3f8;
-	--success-soft: #e9f3ec;
-	--success-text: #1f6b3a;
-	--warning-soft: #f6efe3;
+	--overlay: rgba(0, 0, 0, 0.16);
+	--brand: #1f5ecc; /* superfícies e ícones de marca */
+	--brand-soft: #eaf3ff;
+	--brand-line: #b9d6f7;
+	--brand-text: #0a3d80; /* rótulos em azul (overline, selo) — mais escuro para 11px */
+	--info-soft: #eaf3ff;
+	--success-soft: #e6f6ea;
+	--success-text: #1a6b34;
+	--warning-soft: #fbf0dd;
 	--warning-text: #7a4a00;
-	--error-soft: #f7ebe9;
-	--error-text: #a4262c;
+	--error-soft: #fbeae9;
+	--error-text: #a02622;
 }
 
 :root[data-theme='dark'] {
 	color-scheme: dark;
-	--background: #232527; /* grafite */
-	--surface: #2b2e31;
-	--surface-raised: #2f3236;
-	--foreground: #e9eae8;
-	--ink: #f3f4f2;
-	--muted: #a9adb2;
-	--border: #454a50;
-	--border-soft: #3b3f44;
-	--accent: #79b8f3;
-	--link: #79b8f3;
-	--code-background: #292c2f;
-	--on-accent: #0b0b0c;
-	--brand: #79b8f3;
-	--brand-soft: #1f3347;
-	--brand-line: #34597f;
-	--brand-text: #9ccaf6;
-	--info-soft: #1f3347;
-	--success-soft: #1d3326;
-	--success-text: #8fd6a6;
+	--background: #1c1c1e;
+	--surface: #242426;
+	--surface-raised: #2c2c2e;
+	--surface-selected: #12385e;
+	--foreground: #f5f5f7;
+	--ink: #f5f5f7;
+	--muted: #b7b7bd;
+	--faint: #96969b; /* ajustado para 4,5:1 sobre --code-background */
+	--border: #545458;
+	--border-soft: #3a3a3c;
+	--accent: #4da3ff;
+	--accent-hover: #76b8ff;
+	--link: #4da3ff;
+	--code-background: #2c2c2e;
+	--on-accent: #06172c;
+	--overlay: rgba(0, 0, 0, 0.4);
+	--brand: #4da3ff;
+	--brand-soft: #132f4a;
+	--brand-line: #2a5788;
+	--brand-text: #a9d1ff;
+	--info-soft: #132f4a;
+	--success-soft: #163524;
+	--success-text: #7fd99a;
 	--warning-soft: #3a2f1c;
 	--warning-text: #f0c36b;
 	--error-soft: #3a2224;
@@ -96,9 +127,9 @@
 		--muted: #3d3f3e;
 		--border: #6f6f68;
 		--border-soft: #8a8a82;
-		--link: #004182;
-		--accent: #004182;
-		--brand-text: #002b57;
+		--link: #0a3d80;
+		--accent: #0a3d80;
+		--brand-text: #062347;
 	}
 	:root[data-theme='dark'] {
 		--foreground: #ffffff;
@@ -106,8 +137,8 @@
 		--muted: #d5d8dc;
 		--border: #8a9097;
 		--border-soft: #767c83;
-		--link: #a8d1f7;
-		--accent: #a8d1f7;
-		--brand-text: #c4e0fa;
+		--link: #bcdcff;
+		--accent: #bcdcff;
+		--brand-text: #d8ecff;
 	}
 }

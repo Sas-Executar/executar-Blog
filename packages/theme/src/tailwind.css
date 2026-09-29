@@ -31,9 +31,12 @@
 	--color-rule: var(--border);
 	--color-rule-soft: var(--border-soft);
 	--color-accent: var(--accent);
+	--color-accent-hover: var(--accent-hover);
 	--color-link: var(--link);
 	--color-on-accent: var(--on-accent);
 	--color-code: var(--code-background);
+	--color-faint: var(--faint);
+	--color-surface-selected: var(--surface-selected);
 	--color-brand: var(--brand);
 	--color-brand-soft: var(--brand-soft);
 	--color-brand-line: var(--brand-line);
@@ -64,9 +67,12 @@
 	/* Raio, largura e movimento */
 	--radius-control: var(--radius-control);
 	--radius-card: var(--radius-card);
-	--container-read: 45rem;
-	--container-page: 75rem;
+	--container-read: var(--container-read);
+	--container-page: var(--container-wide);
 	--ease-standard: var(--ease-standard);
+	--shadow-1: var(--shadow-1);
+	--shadow-2: var(--shadow-2);
+	--shadow-3: var(--shadow-3);
 }
 
 @theme {
@@ -115,7 +121,7 @@
 		width: 1.35em;
 		height: 0.13em;
 		min-height: 2px;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 		background: var(--accent);
 	}
 	.logo--m {
@@ -145,7 +151,7 @@
 		margin: 0;
 		padding: 0;
 		overflow: hidden;
-		border-radius: 1.5rem;
+		border-radius: var(--radius-xl);
 		background: var(--surface-raised);
 		list-style: none;
 	}
@@ -222,7 +228,7 @@
 		width: var(--hit-target);
 		height: var(--hit-target);
 		border: 0;
-		border-radius: 50%;
+		border-radius: var(--radius-pill);
 		background: var(--surface-raised);
 		color: var(--ink);
 		box-shadow: 0 1px 2px color-mix(in oklab, var(--ink) 8%, transparent);
@@ -488,7 +494,7 @@
 		left: 0.125rem;
 		width: 1.25rem;
 		height: 1.25rem;
-		border-radius: 50%;
+		border-radius: var(--radius-pill);
 		background: var(--muted);
 		transition: transform 220ms var(--ease-standard);
 	}
@@ -530,7 +536,7 @@
 		align-items: center;
 		min-height: var(--hit-target);
 		padding-inline: 1rem;
-		border-radius: calc(var(--radius-control) - 0.25rem);
+		border-radius: var(--radius-control);
 		color: var(--muted);
 		font-weight: 500;
 		cursor: pointer;
@@ -718,5 +724,188 @@
 	.status--estatico {
 		position: static;
 		transform: none;
+	}
+
+	/* ── DESIGN-HANDOFF-001 — padrões sem tela própria hoje, documentados no guia (ADR-019) ──── */
+
+	/* AppLauncherPopover (UI-005): grade de atalhos, [popover] nativo (Escape/clique fora fecham). */
+	.lancador {
+		padding: var(--space-6, 1.5rem);
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-xl);
+		background: var(--surface-raised);
+		box-shadow: var(--shadow-3);
+		inset: auto;
+		margin: 0.5rem 0 0 0;
+	}
+	.lancador__grade {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.25rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.lancador__item {
+		display: grid;
+		place-items: center;
+		gap: 0.5rem;
+		min-height: var(--hit-target);
+		padding: 0.5rem;
+		border: 0;
+		border-radius: var(--radius-md);
+		background: transparent;
+		color: var(--foreground);
+		font-size: 0.75rem;
+		text-align: center;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	.lancador__item:hover,
+	.lancador__item:focus-visible {
+		background: var(--surface);
+		color: var(--ink);
+	}
+	.lancador__icone {
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-md);
+		background: var(--surface);
+	}
+
+	/* CalendarMonthGrid (UI-006): mês estático de referência, 7 colunas, dados fictícios. */
+	.calendario {
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+	}
+	.calendario__cabecalho {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		border-bottom: 1px solid var(--border-soft);
+		background: var(--surface);
+	}
+	.calendario__cabecalho span {
+		padding: 0.5rem;
+		color: var(--muted);
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-align: center;
+		text-transform: uppercase;
+	}
+	.calendario__semana {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+	}
+	.calendario__dia {
+		position: relative;
+		min-height: 3.5rem;
+		padding: 0.375rem 0.5rem;
+		border-inline-start: 1px solid var(--border-soft);
+		border-block-start: 1px solid var(--border-soft);
+		font-size: 0.8125rem;
+		color: var(--foreground);
+	}
+	.calendario__dia:first-child {
+		border-inline-start: 0;
+	}
+	.calendario__semana:first-child .calendario__dia {
+		border-block-start: 0;
+	}
+	.calendario__dia--fora {
+		color: var(--faint);
+	}
+	.calendario__dia--hoje {
+		background: var(--brand-soft);
+		font-weight: 700;
+	}
+	.calendario__evento {
+		display: block;
+		margin-top: 0.25rem;
+		padding: 0.0625rem 0.375rem;
+		border-radius: var(--radius-sm);
+		background: var(--accent);
+		color: var(--on-accent);
+		font-size: 0.6875rem;
+		font-weight: 600;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* Coachmark + TourStepper (UI-007/UI-008): dica ancorada, popover nativo. */
+	.dica-guiada {
+		max-width: 21rem;
+		padding: 1.25rem;
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-lg);
+		background: var(--surface-raised);
+		box-shadow: var(--shadow-3);
+		color: var(--foreground);
+		inset: auto;
+		margin: 0.5rem 0 0 0;
+	}
+	.dica-guiada__titulo {
+		margin: 0 0 0.375rem;
+		color: var(--ink);
+		font-size: 1.0625rem;
+		font-weight: 700;
+	}
+	.dica-guiada__texto {
+		margin: 0;
+		color: var(--muted);
+		font-size: 0.9375rem;
+		line-height: 1.5;
+	}
+	.dica-guiada__rodape {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+	.dica-guiada__passo {
+		color: var(--faint);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+	}
+	.dica-guiada__acoes {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	/* TransactionalCard (UI-009): demo estático — nunca um código real, só o padrão visual. */
+	.cartao-transacional {
+		max-width: 26rem;
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-lg);
+		background: var(--surface-raised);
+		box-shadow: var(--shadow-1);
+		overflow: hidden;
+	}
+	.cartao-transacional__corpo {
+		padding: 1.75rem 1.75rem 1.25rem;
+		text-align: center;
+	}
+	.cartao-transacional__codigo {
+		margin: 1rem 0;
+		color: var(--ink);
+		font-family: var(--font-mono);
+		font-size: 1.75rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		user-select: all;
+	}
+	.cartao-transacional__rodape {
+		padding: 0.875rem 1.75rem;
+		border-top: 1px solid var(--border-soft);
+		background: var(--surface);
+		color: var(--faint);
+		font-size: 0.75rem;
+		text-align: center;
 	}
 }
