@@ -230,6 +230,26 @@ details.toggle[open] > summary::after {
 	outline-offset: 2px;
 }
 
+/* ── Letra capitular editorial (ADR-019/addendum): primeiro parágrafo do corpo e de cada seção
+   nova. Só a primeira letra troca de fonte (--font-display); o resto do parágrafo não muda —
+   sem elemento HTML novo, sem imagem, leitura por leitor de tela intacta. Na impressão, menor. */
+.markdown-body > p:first-of-type::first-letter,
+.markdown-body > h2 + p::first-letter {
+	float: left;
+	padding: 0.03em 0.12em 0 0;
+	color: var(--ink);
+	font-family: var(--font-display);
+	font-size: 5.2em;
+	font-weight: 700;
+	line-height: 0.78;
+}
+@media print {
+	.markdown-body > p:first-of-type::first-letter,
+	.markdown-body > h2 + p::first-letter {
+		font-size: 4.2em;
+	}
+}
+
 /* ── Inline: destaque, tags, wikilinks ───────────────────────────────────── */
 mark {
 	padding-inline: 0.15em;
@@ -292,7 +312,7 @@ mark {
 	height: 1.1em;
 	margin-inline-end: 0.4em;
 	border: 1.5px solid var(--muted);
-	border-radius: 0.25em;
+	border-radius: 0; /* ADR-019: cantos quadrados */
 	vertical-align: -0.15em;
 	font-size: 0.95em;
 	line-height: 1;

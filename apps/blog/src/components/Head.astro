@@ -1,10 +1,23 @@
 ---
 // Override do Head do Starlight: preferências aplicadas antes da pintura e a ponte do menu mobile.
 // Gráficos, Mermaid e abas ficam em @executar/ui (carregado em scripts/cliente.ts).
+// Favicon/PWA/social (ADR-019): brand kit derivado do logo aprovado (docs/03-design/sot/).
+// O favicon principal (.ico) é declarado no astro.config (starlight.favicon); aqui só o resto.
 import Default from '@astrojs/starlight/components/Head.astro';
 ---
 
 <Default><slot /></Default>
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#1F5ECC" />
+<meta name="msapplication-config" content="/browserconfig.xml" />
+<meta property="og:image" content="/social/og-image-1200x630.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="/social/twitter-card-1200x630.png" />
 <script is:inline>
 	// Preferências (HF05) aplicadas antes da pintura: tamanho do texto e movimento. O tema já é
 	// aplicado pelo próprio Starlight (chave starlight-theme), antes deste script.

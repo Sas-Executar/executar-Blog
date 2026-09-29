@@ -29,11 +29,11 @@ test('botão claro/escuro no celular: tema troca e diagrama acompanha', async ({
 	await toggle.click();
 	await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).not.toBe(antes);
 	const depois = await page.evaluate(() => document.documentElement.dataset.theme);
-	// Mermaid é redesenhado no navegador com a paleta do tema escolhido (--brand-soft, ADR-017).
+	// Mermaid é redesenhado no navegador com a paleta do tema escolhido (--brand-soft, ADR-019).
 	const diagrama = page.locator('pre.mermaid[data-desenhado] svg').first();
 	await expect(diagrama).toBeVisible({ timeout: 15_000 });
 	const fundo = () => diagrama.locator('.node rect, .node polygon').first().evaluate((el) => getComputedStyle(el).fill);
-	await expect.poll(fundo).toBe(depois === 'dark' ? 'rgb(31, 51, 71)' : 'rgb(238, 243, 248)');
+	await expect.poll(fundo).toBe(depois === 'dark' ? 'rgb(19, 47, 74)' : 'rgb(234, 243, 255)');
 	await page.reload();
 	expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe(depois);
 	await ctx.close();
@@ -108,7 +108,8 @@ test('Hoje e Artigo (HF01/HF02): destaque, autoria, referências e próximo pass
 	await expect(page.locator('.meta-bar')).toContainText('Equipe EXECUTAR');
 	await expect(page.locator('.markdown-body')).toContainText('Fontes e aprofundamento');
 	await expect(page.getByRole('heading', { name: 'Continue lendo' })).toBeVisible();
-	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain('Inter');
+	// Fonte do sistema (ADR-019), não mais Inter.
+	expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain('-apple-system');
 });
 
 test('Explorar (HF01): filtros por pilar e consciência, com estado vazio', async ({ page }) => {

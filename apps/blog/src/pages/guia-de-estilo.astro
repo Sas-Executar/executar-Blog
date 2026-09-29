@@ -12,8 +12,12 @@ import CategoryPill from '../components/CategoryPill.astro';
 import Icone from '../components/Icone.astro';
 import PostCard from '../components/PostCard.astro';
 import Botao from '../components/ui/Botao.astro';
+import Calendario from '../components/ui/Calendario.astro';
 import Campo from '../components/ui/Campo.astro';
+import CartaoTransacional from '../components/ui/CartaoTransacional.astro';
 import Chip from '../components/ui/Chip.astro';
+import DicaGuiada from '../components/ui/DicaGuiada.astro';
+import Lancador from '../components/ui/Lancador.astro';
 import Marca from '../components/ui/Marca.astro';
 import Rotulo from '../components/ui/Rotulo.astro';
 import Selo from '../components/ui/Selo.astro';
@@ -144,7 +148,7 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 	<div class="guia pagina-larga">
 		<header class="not-content grid gap-6 border-b border-rule pb-10 md:grid-cols-[1.4fr_1fr] md:items-end">
 			<div>
-				<Rotulo>Design system · ADR-017</Rotulo>
+				<Rotulo>Design system · ADR-017/ADR-019</Rotulo>
 				<p class="m-0 font-display text-display font-bold tracking-tighter text-balance text-ink">Tipografia primeiro. Azul como único acento.</p>
 				<p class="mt-5 mb-0 max-w-2xl text-lead text-pretty text-muted">
 					Documentação viva do sistema visual do EXECUTAR: papel off-white, tinta quase preta, cinzas discretos, linhas finas e muito espaço
@@ -152,7 +156,7 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 				</p>
 			</div>
 			<dl class="m-0 grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-xs text-muted">
-				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Fonte</dt><dd class="m-0 p-0 text-ink">Inter + mono do sistema</dd></div>
+				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Fonte</dt><dd class="m-0 p-0 text-ink">Fonte do sistema (SF Pro/Segoe UI/Roboto) + mono do sistema</dd></div>
 				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Stack</dt><dd class="m-0 p-0 text-ink">Starlight + Tailwind v4</dd></div>
 				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Regras</dt><dd class="m-0 p-0 text-ink">Apple HIG (ADR-006)</dd></div>
 				<div class="border-t border-rule pt-2"><dt class="rotulo rotulo--neutro m-0 not-italic">Contraste</dt><dd class="m-0 p-0 text-ink">≥ 4,5:1 em 4 modos</dd></div>
@@ -191,16 +195,16 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 				<div>
 					<h3 class={h3}>Construção</h3>
 					<ul class="lista-editorial text-small text-muted">
-						<li>Inter 800, caixa alta, entrelinha 0,92, tracking −0,035em</li>
-						<li>Barra: 1,35em × 0,13em, cantos arredondados, <code>--accent</code></li>
+						<li>Fonte do sistema, peso 800, caixa alta, entrelinha 0,92, tracking −0,035em</li>
+						<li>Barra: 1,35em × 0,13em, cantos quadrados (ADR-019), <code>--accent</code></li>
 						<li>Respiro entre texto e barra: 0,26em; área mínima de toque 44 pt</li>
 					</ul>
 				</div>
 				<div>
 					<h3 class={h3}>Ícone (favicon)</h3>
 					<div class="flex items-center gap-4">
-						<img src="/favicon.svg" alt="" width="64" height="64" class="rounded-control border border-rule" />
-						<p class="m-0 text-small text-muted">"RC" com a mesma barra azul, para aba do navegador e atalhos.</p>
+						<img src="/favicon-96x96.png" alt="" width="64" height="64" class="border border-rule" />
+						<p class="m-0 text-small text-muted">Logo aprovado (brand kit, ADR-019), para aba do navegador e atalhos.</p>
 					</div>
 				</div>
 			</div>
@@ -269,7 +273,7 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 		<section id="tipografia" class="secao not-content" aria-labelledby="tipografia-titulo">
 			<Rotulo>Fundações</Rotulo>
 			<h2 id="tipografia-titulo" class={h2}>Tipografia</h2>
-			<p class="intro-secao">A tipografia é o principal elemento visual: Inter em pesos 400–800, tracking negativo nos títulos, mono para números.</p>
+			<p class="intro-secao">A tipografia é o principal elemento visual: fonte do sistema em pesos 400–800, tracking negativo nos títulos, mono para números.</p>
 			<ul class="lista-editorial">
 				{
 					tipos.map((t) => (
@@ -540,7 +544,7 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 					<p class="rotulo rotulo--neutro">Superfície</p>
 					<article class="cartao-superficie grid gap-2">
 						<h3 class="m-0 text-title font-bold tracking-tight text-ink">Resultado de busca</h3>
-						<p class="m-0 text-muted">Borda de 1px, raio de 16px, nenhuma sombra. O hover acende o filete em azul.</p>
+						<p class="m-0 text-muted">Borda de 1px, cantos quadrados (ADR-019), nenhuma sombra. O hover acende o filete em azul.</p>
 					</article>
 				</div>
 			</div>
@@ -661,7 +665,7 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 				<div class="grid gap-2 bg-paper p-6 md:col-span-3 md:p-8">
 					<p class="rotulo m-0">Tipografia</p>
 					<p class="m-0 font-display text-[clamp(3.5rem,2rem+6vw,6.5rem)] leading-none font-extrabold tracking-tighter text-ink" aria-hidden="true">Aa</p>
-					<p class="m-0 text-small text-muted">Inter 400–800 · tracking −0,035em nos títulos · mono do sistema para números.</p>
+					<p class="m-0 text-small text-muted">Fonte do sistema 400–800 · tracking −0,035em nos títulos · mono do sistema para números.</p>
 				</div>
 				<div class="grid content-start gap-3 bg-paper p-6 md:col-span-3 md:p-8">
 					<p class="rotulo m-0">Composição e ritmo</p>
@@ -767,6 +771,103 @@ const h3 = 'm-0 mb-4 border-0 p-0 text-title font-bold tracking-tight text-ink';
 					))
 				}
 			</ol>
+		</section>
+
+		<!-- 13. Padrões do DESIGN-HANDOFF-001 sem tela própria hoje -->
+		<section id="padroes-handoff" class="secao not-content" aria-labelledby="padroes-handoff-titulo">
+			<Rotulo>Referência</Rotulo>
+			<h2 id="padroes-handoff-titulo" class={h2}>Padrões adicionais (DESIGN-HANDOFF-001)</h2>
+			<p class="intro-secao">
+				O inventário de 20 componentes do handoff cobre famílias de interface (agenda, e-mail, tour de onboarding) que o blog não tem hoje. Os sete abaixo existem só aqui, como
+				referência viva do padrão — com dados fictícios, nunca reais.
+			</p>
+
+			<div class="grid gap-10">
+				<div>
+					<h3 class={h3}>Trilha (breadcrumbs)</h3>
+					<nav class="trilha" aria-label="Exemplo">
+						<a href="/blog/">Blog</a>
+						<span aria-hidden="true">/</span>
+						<a href="/blog/categoria/pessoa-e-cognicao/">Pessoa e cognição</a>
+					</nav>
+				</div>
+
+				<div>
+					<h3 class={h3}>Sumário do artigo (TOC)</h3>
+					<nav class="max-w-xs" aria-label="Exemplo">
+						<ol class="sumario">
+							<li><a href="#"><span aria-hidden="true">00</span>Introdução</a></li>
+							<li><a href="#"><span aria-hidden="true">01</span>O fator de risco</a></li>
+							<li><a href="#"><span aria-hidden="true">02</span>Como reduzir</a></li>
+						</ol>
+					</nav>
+				</div>
+
+				<div>
+					<h3 class={h3}>Navegação em acordeão (rodapé)</h3>
+					<div class="max-w-sm">
+						<details class="toggle">
+							<summary>Seções</summary>
+							<ul class="m-0 flex list-none flex-col gap-2 p-0 text-small text-muted">
+								<li><a href="/">Hoje</a></li>
+								<li><a href="/explorar/">Explorar</a></li>
+								<li><a href="/buscar/">Buscar</a></li>
+							</ul>
+						</details>
+						<details class="toggle">
+							<summary>Sobre</summary>
+							<ul class="m-0 flex list-none flex-col gap-2 p-0 text-small text-muted">
+								<li><a href="/guia-de-estilo/">Guia de estilo</a></li>
+								<li><a href="/perguntar/">Pergunte aos artigos</a></li>
+							</ul>
+						</details>
+					</div>
+				</div>
+
+				<div>
+					<h3 class={h3}>Seletor de idioma</h3>
+					<p class="m-0 mb-3 text-small text-muted">O blog é só em português hoje; o padrão abaixo é o mesmo controle segmentado, para quando houver uma 2ª língua.</p>
+					<div class="segmentado" role="radiogroup" aria-label="Idioma (exemplo)">
+						<label>
+							<input type="radio" name="guia-idioma" value="pt" checked />
+							Português
+						</label>
+						<label>
+							<input type="radio" name="guia-idioma" value="en" disabled />
+							English (em breve)
+						</label>
+					</div>
+				</div>
+
+				<div>
+					<h3 class={h3}>Divisor</h3>
+					<hr class="m-0 border-0 border-t border-rule" />
+				</div>
+
+				<div>
+					<h3 class={h3}>Popover de aplicativos</h3>
+					<p class="m-0 mb-3 text-small text-muted">Grade de atalhos ancorada, com dados fictícios.</p>
+					<Lancador id="guia-lancador" />
+				</div>
+
+				<div>
+					<h3 class={h3}>Dica guiada (coachmark)</h3>
+					<p class="m-0 mb-3 text-small text-muted">Roteiro de exemplo — o blog não tem onboarding guiado hoje.</p>
+					<DicaGuiada id="guia-dica" />
+				</div>
+
+				<div>
+					<h3 class={h3}>Grade de calendário</h3>
+					<p class="m-0 mb-3 text-small text-muted">O blog não tem agenda; mês fictício só para documentar a grade de 7 colunas.</p>
+					<Calendario />
+				</div>
+
+				<div>
+					<h3 class={h3}>Cartão transacional</h3>
+					<p class="m-0 mb-3 text-small text-muted">O blog não envia e-mail transacional; código fictício, nunca real (regra do handoff §10).</p>
+					<CartaoTransacional />
+				</div>
+			</div>
 		</section>
 	</div>
 </StarlightPage>

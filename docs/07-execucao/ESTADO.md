@@ -2,7 +2,7 @@
 
 > Atualize a cada estágio. Não dependa da memória da conversa.
 
-**Última atualização:** 2026-09-25 (unificação dos blocos editoriais + artigo reescrito, ADR-018)
+**Última atualização:** 2026-09-29 (UI Foundation v2 — brand kit + DESIGN-HANDOFF-001, ADR-019)
 **Estágio atual:** 9 — Preview → Produção (⛔ USER_ACTION_REQUIRED — caminho agora é o import pelo painel, issue #3)
 **Plano aprovado:** BLOG-PLAN-001 v3 (Cloudflare templates + Starlight/Obsidian + Apple HIG + Claude Agent SDK)
 
@@ -205,6 +205,35 @@ Legenda: ⬜ pendente · 🔄 em andamento · ✅ concluído · ⛔ bloqueado
   - em Topologia: 19 diagramas passaram a ` ```ascii `;
   - nenhum texto removido.
 - **Evidência:** ver o commit (`npm run check`, `npm run build`, e2e com teste novo do artigo e da unificação); capturas lado a lado revisadas no laboratório e nos artigos, em desktop e celular, claro e escuro.
+
+## UI Foundation v2 — brand kit + DESIGN-HANDOFF-001 (ADR-019) — 2026-09-29 — VERIFIED (local)
+- **Pedido do usuário:** três anexos novos (`risco-cognitivo-brand-kit.zip`, DESIGN-HANDOFF-001,
+  `risco-cognitivo-v3.html`) e depois um addendum (cantos quadrados + letra capitular). "100%
+  fiel" às referências, inclusive construindo os componentes do handoff sem tela própria no
+  blog hoje, com dados fictícios, visíveis em uma rota real. Commit direto na `main` autorizado
+  pelo ADR-011/CLAUDE.md, mas esta sessão remota segue branch + PR (ver seção "Branch, merge e
+  produção" do ADR-019).
+- **Entrega:** ver `docs/02-adr/ADR-019.md` para a decisão completa. Resumo: canvas branco,
+  cantos quadrados em toda a interface (5 tokens de raio zerados em `cores.css`, cascata sobre
+  o Desyng System), sombras novas, fonte do sistema (Inter removido), azul de marca `#1F5ECC`
+  do logo aprovado, letra capitular editorial, barra de contexto no cabeçalho, favicon/OG/PWA
+  reais do brand kit, e 7 componentes do DESIGN-HANDOFF-001 sem tela própria (agenda, popover
+  de apps, coachmark, cartão transacional, acordeão, seletor de idioma, divisor) documentados
+  com dados fictícios em `/guia-de-estilo/#padroes-handoff`.
+- **Evidência:**
+  - `npm run check`: astro check 0 erros (blog 46 arquivos, studio 8), 97/97 testes unitários,
+    contraste 25 pares × 4 modos ≥ 4,5:1, guard ok, validate-ops ok, plugin:check ok.
+  - `npm run build`: blog e studio, sem erros.
+  - `npm run test:e2e`: **44/44** (axe claro/escuro, alvos de 44pt, overflow em 4 larguras,
+    todas as rotas HF01–HF06, Studio) — os dois testes ajustados (fonte do sistema em vez de
+    "Inter"; cor nova do Mermaid) por causa da troca de paleta/fonte intencional.
+  - Capturas revisadas em 1280px, claro e escuro: Hoje, artigo e `/guia-de-estilo/`, incluindo
+    o popover do lançador, o coachmark (com avanço de passo) e a grade de calendário abertos.
+- **Limitações:** os componentes sem tela própria (Calendar, AppLauncher, Coachmark,
+  TransactionalCard) existem só como referência documentada — nenhuma funcionalidade real de
+  agenda, e-mail ou onboarding foi adicionada ao blog. LanguageSelector mostra só português
+  ativo (o blog é mono-idioma).
+- **Pendente (usuário):** nada — aguardando push, PR e merge desta sessão.
 
 ## Nova conta Cloudflare (2026-09-24)
 

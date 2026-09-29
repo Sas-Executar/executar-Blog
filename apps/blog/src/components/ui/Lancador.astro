@@ -1,0 +1,48 @@
+---
+// AppLauncherPopover (DESIGN-HANDOFF-001 UI-005, ADR-019). Sem tela própria no blog hoje: demo com
+// dados fictícios, documentada no guia de estilo. [popover] nativo: Escape e clique fora fecham,
+// foco volta ao gatilho — mesma técnica já usada no menu mobile (Head.astro).
+import Icone from '../Icone.astro';
+
+interface Item {
+	nome: string;
+	icone: Parameters<typeof Icone>[0]['nome'];
+}
+interface Props {
+	id: string;
+	rotulo?: string;
+	itens?: Item[];
+}
+const {
+	id,
+	rotulo = 'Aplicativos',
+	itens = [
+		{ nome: 'Artigos', icone: 'documento' },
+		{ nome: 'Gráficos', icone: 'grafico' },
+		{ nome: 'Pessoas', icone: 'pessoas' },
+		{ nome: 'Módulos', icone: 'cubo' },
+		{ nome: 'Histórico', icone: 'relogio' },
+		{ nome: 'Ajustes', icone: 'preferencias' },
+	],
+} = Astro.props;
+---
+
+<button type="button" class="botao-icone" popovertarget={id} aria-label={`Abrir ${rotulo.toLowerCase()}`}>
+	<Icone nome="cubo" />
+</button>
+<div id={id} popover="auto" class="lancador" role="dialog" aria-label={rotulo}>
+	<ul class="lancador__grade">
+		{
+			itens.map((item) => (
+				<li>
+					<button type="button" class="lancador__item">
+						<span class="lancador__icone">
+							<Icone nome={item.icone} tamanho={22} />
+						</span>
+						{item.nome}
+					</button>
+				</li>
+			))
+		}
+	</ul>
+</div>

@@ -1,0 +1,65 @@
+---
+// Coachmark + TourStepper (DESIGN-HANDOFF-001 UI-007/UI-008, ADR-019). Sem onboarding real no blog
+// hoje: demo autocontida com roteiro fictício, para documentar o padrão no guia de estilo.
+// [popover] nativo: Escape e clique fora fecham; "Depois" e "Avançar" trocam o passo por script.
+interface Props {
+	id: string;
+}
+const { id } = Astro.props;
+const passos = [
+	{ titulo: 'Sumário lateral', texto: 'O "Neste artigo" acompanha a seção que você está lendo e pula direto para ela.' },
+	{ titulo: 'Salvar para depois', texto: 'Guarda o artigo no seu navegador, sem precisar de conta — aparece em "Salvos".' },
+	{ titulo: 'Pergunte aos artigos', texto: 'Busca com IA que responde só com o que está publicado no blog.' },
+];
+---
+
+<button type="button" class="botao botao--secundario botao--p" popovertarget={id}>
+	Ver tour de exemplo
+</button>
+<div id={id} popover="auto" class="dica-guiada" role="dialog" aria-live="polite" data-dica-guiada data-passo="0">
+	{
+		passos.map((p, i) => (
+			<div data-passo-conteudo={i} hidden={i !== 0}>
+				<p class="dica-guiada__titulo">{p.titulo}</p>
+				<p class="dica-guiada__texto">{p.texto}</p>
+			</div>
+		))
+	}
+	<div class="dica-guiada__rodape">
+		<span class="dica-guiada__passo" data-passo-rotulo>
+			1 de {passos.length}
+		</span>
+		<div class="dica-guiada__acoes">
+			<button type="button" class="botao botao--quieto botao--p" popovertarget={id} popovertargetaction="hide">Depois</button>
+			<button type="button" class="botao botao--p" data-dica-avancar>Avançar</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function ligar(raiz: HTMLElement) {
+		const conteudos = Array.from(raiz.querySelectorAll<HTMLElement>('[data-passo-conteudo]'));
+		const rotulo = raiz.querySelector<HTMLElement>('[data-passo-rotulo]');
+		const avancar = raiz.querySelector<HTMLButtonElement>('[data-dica-avancar]');
+		const total = conteudos.length;
+		const mostrar = (passo: number) => {
+			raiz.dataset.passo = String(passo);
+			conteudos.forEach((el, i) => (el.hidden = i !== passo));
+			if (rotulo) rotulo.textContent = `${passo + 1} de ${total}`;
+			if (avancar) avancar.textContent = passo === total - 1 ? 'Concluir' : 'Avançar';
+		};
+		avancar?.addEventListener('click', () => {
+			const atual = Number(raiz.dataset.passo ?? '0');
+			if (atual >= total - 1) {
+				raiz.hidePopover?.();
+				mostrar(0);
+			} else {
+				mostrar(atual + 1);
+			}
+		});
+		raiz.addEventListener('toggle', (e) => {
+			if ((e as ToggleEvent).newState === 'open') mostrar(0);
+		});
+	}
+	document.querySelectorAll<HTMLElement>('[data-dica-guiada]').forEach(ligar);
+</script>

@@ -28,16 +28,21 @@ export default defineConfig({
 			description: 'Fatores de risco cognitivo na execução: conceitos, processos e controles.',
 			defaultLocale: 'root',
 			locales: { root: { label: 'Português', lang: 'pt-BR' } },
+			// Brand kit (ADR-019): favicon derivado do logo aprovado; o resto (apple-touch-icon,
+			// manifest, OG/Twitter) vai pelo Head.astro.
+			favicon: '/favicon.ico',
 			// Shell do Showroom: sem barra lateral nem sumário (ADR-012).
 			routeMiddleware: './src/route-data.ts',
-			// Design system (ADR-017): Tailwind v4 + tokens primeiro (define a ordem das camadas CSS).
+			// Design system (ADR-017/ADR-019): Tailwind v4 + tokens primeiro (define a ordem das camadas
+			// CSS). Fonte do sistema (ADR-019/ADR-006): sem @fontsource, sem arquivo embutido.
+			// ds/variables.css continua entrando (raio/tipo/espaço do Desyng System), mas cores.css
+			// sobrescreve os cinco tokens de raio para 0 (ADR-019: cantos quadrados).
 			customCss: [
 				'@executar/theme/tailwind.css',
 				theme('styles/layers.css'),
 				theme('styles/theme.css'),
 				theme('styles/centered-reading.css'),
 				theme('styles/common.css'),
-				'@fontsource-variable/inter',
 				'@executar/theme/ds/variables.css',
 				'@executar/theme/ds/theme.css',
 				'@executar/theme/cores.css',

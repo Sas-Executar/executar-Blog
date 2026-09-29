@@ -1,0 +1,44 @@
+---
+// CalendarMonthGrid (DESIGN-HANDOFF-001 UI-006, ADR-019). Sem tela própria no blog hoje (não há
+// agenda): grade estática de um mês fictício, só para documentar o padrão visual no guia de estilo.
+interface Props {
+	mes?: string;
+}
+interface Dia {
+	n: number;
+	fora?: boolean;
+	hoje?: boolean;
+	evento?: string;
+}
+const { mes = 'Outubro 2026' } = Astro.props;
+const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+// Grade fictícia de exemplo (mês começando na quinta, 30 dias) — não é um calendário real.
+const semanas: Dia[][] = [
+	[{ n: 28, fora: true }, { n: 29, fora: true }, { n: 30, fora: true }, { n: 1 }, { n: 2 }, { n: 3 }, { n: 4 }],
+	[{ n: 5 }, { n: 6 }, { n: 7, evento: 'Publicação' }, { n: 8 }, { n: 9 }, { n: 10 }, { n: 11 }],
+	[{ n: 12 }, { n: 13 }, { n: 14, hoje: true, evento: 'Revisão' }, { n: 15 }, { n: 16 }, { n: 17 }, { n: 18 }],
+	[{ n: 19 }, { n: 20 }, { n: 21 }, { n: 22, evento: 'Publicação' }, { n: 23 }, { n: 24 }, { n: 25 }],
+	[{ n: 26 }, { n: 27 }, { n: 28 }, { n: 29 }, { n: 30 }, { n: 1, fora: true }, { n: 2, fora: true }],
+];
+---
+
+<figure class="calendario m-0">
+	<figcaption class="sr-only">{mes} (exemplo, dados fictícios)</figcaption>
+	<div class="calendario__cabecalho" aria-hidden="true">
+		{dias.map((d) => <span>{d}</span>)}
+	</div>
+	<div class="calendario__grade" role="grid" aria-label={mes}>
+		{
+			semanas.map((semana, i) => (
+				<div class="calendario__semana" role="row">
+					{semana.map((d) => (
+						<div class:list={['calendario__dia', { 'calendario__dia--fora': d.fora, 'calendario__dia--hoje': d.hoje }]} role="gridcell" aria-current={d.hoje ? 'date' : undefined}>
+							{d.n}
+							{d.evento && <span class="calendario__evento">{d.evento}</span>}
+						</div>
+					))}
+				</div>
+			))
+		}
+	</div>
+</figure>
