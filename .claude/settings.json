@@ -2,13 +2,20 @@
   "enabledPlugins": {
     "engineering@knowledge-work-plugins": true,
     "design@knowledge-work-plugins": true,
-    "security-guidance@knowledge-work-plugins": true
+    "security-guidance@knowledge-work-plugins": true,
+    "copiloto-operacional@executar-blog": true
   },
   "extraKnownMarketplaces": {
     "knowledge-work-plugins": {
       "source": {
         "source": "github",
         "repo": "anthropics/knowledge-work-plugins"
+      }
+    },
+    "executar-blog": {
+      "source": {
+        "source": "directory",
+        "path": "."
       }
     }
   },
