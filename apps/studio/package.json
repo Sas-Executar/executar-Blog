@@ -23,7 +23,7 @@
     "@executar/ui": "*",
     "@napi-rs/wasm-runtime": "1.2.4",
     "@tailwindcss/vite": "4.3.3",
-    "astro": "7.3.4",
+    "astro": "7.3.5",
     "github-markdown-css": "5.9.0",
     "katex": "0.18.9",
     "satteri": "0.10.5",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
-    "typescript": "6.0.3",
-    "wrangler": "4.137.0"
+    "typescript": "7.0.2",
+    "wrangler": "4.141.0"
   }
 }
