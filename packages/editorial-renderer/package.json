@@ -9,6 +9,6 @@
   },
   "dependencies": {
     "@executar/markdown-parser": "*",
-    "satteri": "0.10.5"
+    "satteri": "0.11.6"
   }
 }

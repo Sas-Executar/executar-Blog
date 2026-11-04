@@ -26,8 +26,8 @@
     "plugin:check": "tsc -p plugins/copiloto-operacional/src && node scripts/build-plugin.mjs --checar"
   },
   "devDependencies": {
-    "@axe-core/playwright": "4.13.0",
-    "@playwright/test": "1.63.0",
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
     "esbuild": "0.28.2"
   }
 }
